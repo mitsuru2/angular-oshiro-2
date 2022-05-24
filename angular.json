@@ -103,9 +103,62 @@
             ],
             "scripts": []
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
+        },
+        "cypress-run": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "devServerTarget": "angular-oshiro-2:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "angular-oshiro-2:serve:production"
+            }
+          }
+        },
+        "cypress-open": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "watch": true,
+            "headless": false
+          }
+        },
+        "e2e": {
+          "builder": "@cypress/schematic:cypress",
+          "options": {
+            "devServerTarget": "angular-oshiro-2:serve",
+            "watch": true,
+            "headless": false
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "angular-oshiro-2:serve:production"
+            }
+          }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {
+            "prerender": false,
+            "ssr": false,
+            "browserTarget": "angular-oshiro-2:build:production",
+            "firebaseProject": "angular-oshiro-2",
+            "firebaseHostingSite": "angular-oshiro-2"
+          }
         }
       }
     }
   },
-  "defaultProject": "angular-oshiro-2"
+  "defaultProject": "angular-oshiro-2",
+  "cli": {
+    "defaultCollection": "@angular-eslint/schematics"
+  }
 }

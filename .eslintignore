@@ -1,0 +1,6 @@
+.angular
+.firebase
+.vscode
+dist
+node_modules
+cypress

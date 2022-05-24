@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "angular-oshiro-2": {
+      "hosting": {
+        "angular-oshiro-2": [
+          "angular-oshiro-2"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "angular-oshiro-2"
+  }
+}
