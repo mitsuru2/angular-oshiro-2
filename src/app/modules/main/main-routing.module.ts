@@ -4,8 +4,7 @@ import { NewCharacterComponent } from './components/new-character/new-character.
 import { MainComponent } from './main.component';
 
 const routes: Routes = [
-  { path: '', component: MainComponent },
-  { path: 'new-character', component: NewCharacterComponent },
+  { path: '', component: MainComponent, children: [{ path: 'new-character', component: NewCharacterComponent }] },
 ];
 
 @NgModule({

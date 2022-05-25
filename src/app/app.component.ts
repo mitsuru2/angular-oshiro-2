@@ -18,7 +18,9 @@ export class AppComponent {
   geographTypes2: GeographType[] | undefined;
 
   constructor(private firestore: AngularFirestore) {
-    this.geographTypes$ = this.firestore.collection<GeographType>('GeographTypes', (ref) => ref.orderBy('order')).valueChanges();
+    this.geographTypes$ = this.firestore
+      .collection<GeographType>('GeographTypes', (ref) => ref.orderBy('order'))
+      .valueChanges();
     this.geographTypes$.subscribe((x) => (this.geographTypes = x));
     this.geographTypes$.subscribe((x) => (this.geographTypes2 = x.sort((a, b) => a.id - b.id)));
   }
