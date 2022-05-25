@@ -5,3 +5,4 @@ dist
 node_modules
 cypress
 **/*.spec.ts
+test.ts
