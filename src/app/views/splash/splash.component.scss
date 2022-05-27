@@ -1,0 +1,16 @@
+.splash-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 50%;
+  height: 40%;
+  margin: auto;
+  color: var(--primary-color-text);
+  text-align: center;
+  background-color: var(--primary-color);
+  border-radius: 1rem;
+}

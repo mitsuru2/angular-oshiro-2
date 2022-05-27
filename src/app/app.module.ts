@@ -8,10 +8,15 @@ import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
 import { HttpClientModule } from '@angular/common/http'; // for NGX Logger.
+
+// PrimeNG modules.
 import { ButtonModule } from 'primeng/button';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { DividerModule } from 'primeng/divider';
+import { SplashComponent } from './views/splash/splash.component';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, SplashComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -24,6 +29,8 @@ import { ButtonModule } from 'primeng/button';
       level: NgxLoggerLevel.TRACE,
     }),
     ButtonModule,
+    ProgressSpinnerModule,
+    DividerModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

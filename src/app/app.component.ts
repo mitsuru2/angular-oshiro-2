@@ -10,7 +10,11 @@ import { NGXLogger } from 'ngx-logger';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'angular-oshiro-2';
+  isInitialized: boolean = false;
+
+  statusMessage: string = '';
+
+  readonly title: string = '御城プロジェクト:RE - ユニット管理くん';
 
   @ViewChild('mainComponent', { read: ViewContainerRef })
   mainComponent!: ViewContainerRef;
@@ -27,8 +31,14 @@ export class AppComponent {
     this.geographTypes$ = this.firestore
       .collection<GeographType>('GeographTypes', (ref) => ref.orderBy('order'))
       .valueChanges();
-    this.geographTypes$.subscribe((x) => (this.geographTypes = x));
-    this.geographTypes$.subscribe((x) => (this.geographTypes2 = x.sort((a, b) => a.id - b.id)));
+    this.geographTypes$.subscribe((x) => {
+      this.geographTypes = x;
+      this.statusMessage = 'GeographType has been loaded.';
+    });
+    this.geographTypes$.subscribe((x) => {
+      this.geographTypes2 = x.sort((a, b) => a.id - b.id);
+      this.isInitialized = false;
+    });
   }
 
   async loadModule() {

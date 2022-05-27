@@ -1,6 +1,8 @@
-<button pButton type="button" label="Click" icon="pi pi-check" iconPos="left" (click)="loadModule()"></button>
-<router-outlet></router-outlet>
+<app-splash [message]="statusMessage" [title]="title">
+  <p-divider></p-divider>
 
----
+  <button pButton type="button" label="Click" icon="pi pi-check" iconPos="left" (click)="loadModule()"></button>
+  <router-outlet></router-outlet>
 
-<ng-template #mainComponent></ng-template>
+  <ng-template #mainComponent></ng-template>
+</app-splash>
