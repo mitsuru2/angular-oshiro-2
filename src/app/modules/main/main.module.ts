@@ -8,5 +8,6 @@ import { NewCharacterComponent } from './components/new-character/new-character.
 @NgModule({
   declarations: [MainComponent, NewCharacterComponent],
   imports: [CommonModule, MainRoutingModule],
+  bootstrap: [MainComponent],
 })
 export class MainModule {}
