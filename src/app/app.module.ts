@@ -6,6 +6,8 @@ import { AppComponent } from './app.component';
 import { environment } from '../environments/environment';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
+import { HttpClientModule, HttpHeaders } from '@angular/common/http'; // for NGX Logger.
 
 @NgModule({
   declarations: [AppComponent],
@@ -14,6 +16,12 @@ import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
+    HttpClientModule,
+    LoggerModule.forRoot({
+      serverLoggingUrl: 'http://localhost:8080/',
+      level: NgxLoggerLevel.DEBUG,
+      serverLogLevel: NgxLoggerLevel.INFO,
+    }),
   ],
   providers: [],
   bootstrap: [AppComponent],

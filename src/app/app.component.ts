@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import { GeographType } from './geograph-type.interface';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { NGXLogger } from 'ngx-logger';
 
 @Component({
   selector: 'app-root',
@@ -17,7 +18,10 @@ export class AppComponent {
 
   geographTypes2: GeographType[] | undefined;
 
-  constructor(private firestore: AngularFirestore) {
+  constructor(private firestore: AngularFirestore, private logger: NGXLogger) {
+    this.logger.debug('My debug message.');
+    this.logger.info('NGX logger is imported.');
+
     this.geographTypes$ = this.firestore
       .collection<GeographType>('GeographTypes', (ref) => ref.orderBy('order'))
       .valueChanges();
