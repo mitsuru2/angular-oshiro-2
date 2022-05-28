@@ -1,4 +1,4 @@
-.splash-panel {
+.enter-panel {
   position: absolute;
   top: 0;
   right: 0;
@@ -15,4 +15,8 @@
   text-align: center;
   background-color: var(--primary-color);
   border-radius: 1rem;
+}
+
+.enter-button {
+  width: 50%;
 }

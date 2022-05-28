@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
 
 @Component({
@@ -6,14 +6,12 @@ import { NGXLogger } from 'ngx-logger';
   templateUrl: './splash.component.html',
   styleUrls: ['./splash.component.scss'],
 })
-export class SplashComponent implements OnInit {
-  @Input() title: string = '';
+export class SplashComponent {
+  @Input() title?: string;
 
-  @Input() message: string = '';
+  @Input() message?: string;
 
   constructor(private logger: NGXLogger) {
     this.logger.trace('new SplashComponent()');
   }
-
-  ngOnInit(): void {}
 }

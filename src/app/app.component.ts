@@ -24,6 +24,9 @@ export class AppComponent {
       this.logger.debug(e);
       if (e.type === FirestoreLoadingEventType.Completed) {
         this.statusMessage = 'Data loading finished.';
+        setTimeout(() => {
+          this.isInitialized = true;
+        }, 1000);
       } else if (e.type === FirestoreLoadingEventType.End) {
         this.statusMessage = `Data ${e.name} has been loaded.`;
       }
