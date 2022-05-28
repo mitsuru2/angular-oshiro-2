@@ -1,8 +1,6 @@
 import { Component, ViewChild, ViewContainerRef } from '@angular/core';
-import { Observable } from 'rxjs';
-import { GeographType } from './geograph-type.interface';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { NGXLogger } from 'ngx-logger';
+import { FirestoreDataService, FirestoreLoadingEventType } from './services/firestore-data/firestore-data.service';
 
 @Component({
   selector: 'app-root',
@@ -14,30 +12,21 @@ export class AppComponent {
 
   statusMessage: string = '';
 
-  readonly title: string = '御城プロジェクト:RE - ユニット管理くん';
+  readonly title: string = 'スプラッシュ画面デモ';
 
   @ViewChild('mainComponent', { read: ViewContainerRef })
   mainComponent!: ViewContainerRef;
 
-  geographTypes$: Observable<GeographType[]> | undefined;
-
-  geographTypes: GeographType[] | undefined;
-
-  geographTypes2: GeographType[] | undefined;
-
-  constructor(private firestore: AngularFirestore, private logger: NGXLogger) {
+  constructor(private logger: NGXLogger, private firestore: FirestoreDataService) {
     this.logger.trace('new AppComponent()');
 
-    this.geographTypes$ = this.firestore
-      .collection<GeographType>('GeographTypes', (ref) => ref.orderBy('order'))
-      .valueChanges();
-    this.geographTypes$.subscribe((x) => {
-      this.geographTypes = x;
-      this.statusMessage = 'GeographType has been loaded.';
-    });
-    this.geographTypes$.subscribe((x) => {
-      this.geographTypes2 = x.sort((a, b) => a.id - b.id);
-      this.isInitialized = false;
+    this.firestore.subscribeLoadingEvent((e) => {
+      this.logger.debug(e);
+      if (e.type === FirestoreLoadingEventType.Completed) {
+        this.statusMessage = 'Data loading finished.';
+      } else if (e.type === FirestoreLoadingEventType.End) {
+        this.statusMessage = `Data ${e.name} has been loaded.`;
+      }
     });
   }
 
