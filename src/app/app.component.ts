@@ -1,6 +1,7 @@
 import { Component, ViewChild, ViewContainerRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { NGXLogger } from 'ngx-logger';
+import { AppInfo } from './app-info.enum';
 import { AppNavigateService } from './services/app-navigate/app-navigate.service';
 import { AppStatus } from './services/app-navigate/app-status.enum';
 import { FirestoreDataService, FirestoreLoadingEventType } from './services/firestore-data/firestore-data.service';
@@ -15,7 +16,7 @@ export class AppComponent {
 
   statusMessage: string = '';
 
-  readonly title: string = 'スプラッシュ画面デモ';
+  readonly title: string = AppInfo.title;
 
   @ViewChild('mainComponent', { read: ViewContainerRef })
   mainComponent!: ViewContainerRef;

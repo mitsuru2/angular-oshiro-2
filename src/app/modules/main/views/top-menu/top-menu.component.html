@@ -1,0 +1,18 @@
+<p-toolbar>
+  <div class="p-toolbar-group-left">
+    <p-button icon="pi pi-bars" class="left-button" (onClick)="toggleSideMenu()"></p-button>
+    <span class="title">{{ title }}</span>
+  </div>
+  <div class="p-toolbar-group-right">
+    <p-button icon="pi pi-cog" class="middle-button"></p-button>
+    <p-button *ngIf="isSignedIn === true" icon="pi pi-user" class="middle-button"></p-button>
+    <p-button *ngIf="isSignedIn === false" icon="pi pi-user" [disabled]="true" class="middle-button"></p-button>
+    <p-button
+      *ngIf="isSignedIn === true"
+      icon="pi pi-sign-out"
+      class="right-button"
+      (onClick)="requestSignOut()"
+    ></p-button>
+    <p-button *ngIf="isSignedIn === false" icon="pi pi-sign-in" class="right-button"></p-button>
+  </div>
+</p-toolbar>
