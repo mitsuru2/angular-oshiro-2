@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { AngularFirestore, QueryFn } from '@angular/fire/compat/firestore';
-import { FirestoreCollectionName } from './firestore-collection-name.const';
+import { FirestoreCollectionName } from './firestore-collection-name.enum';
 import { GeographType } from './geograph-type.interface';
 import { Region } from './region.interface';
 
