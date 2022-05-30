@@ -1,9 +1,26 @@
 <p-confirmDialog header="Confirmation" icon="pi pi-question-circle" [style]="{ width: '50vw' }"></p-confirmDialog>
-<app-top-menu
-  [title]="appInfo.title"
-  [isSignedIn]="isSignedIn"
-  (toggleSideMenuEvent)="toggleSideMenu()"
-  (requestSignOutEvent)="askSignOut()"
-></app-top-menu>
-<p>main works!</p>
-<router-outlet></router-outlet>
+<div class="tool-bar">
+  <app-top-menu
+    [title]="appInfo.title"
+    [isSignedIn]="isSignedIn"
+    (toggleSideMenuEvent)="toggleSideMenu()"
+    (requestSignOutEvent)="askSignOut()"
+  ></app-top-menu>
+</div>
+<div class="container">
+  <div
+    class="side-bar"
+    [@openClose]="isSideMenuOpen ? 'open' : 'close'"
+    (@openClose.start)="animationStart($event)"
+    (@openClose.done)="animationDone($event)"
+  >
+    <div *ngIf="isVisible">
+      <app-side-menu></app-side-menu>
+    </div>
+  </div>
+  <div class="content">
+    <button pButton label="trigger animation" (click)="toggleSideMenu()"></button>
+    <p>くぁｗせｄｒｆｔｇｙふじこｌｐ</p>
+  </div>
+</div>
+<div class="footer"></div>

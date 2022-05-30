@@ -1,0 +1,28 @@
+$too-bar-height: 4.7rem;
+$foooter-height: 1.5rem;
+
+.tool-bar {
+  height: $too-bar-height;
+}
+
+.container {
+  display: flex;
+  height: calc(100vh - $too-bar-height - $foooter-height);
+  background-color: red;
+
+  .side-bar {
+    //width: 15rem;
+    //visibility: visible;
+    background-color: orange;
+  }
+
+  .content {
+    margin-left: 1rem;
+    background-color: cyan;
+  }
+}
+
+.footer {
+  height: $foooter-height;
+  background-color: green;
+}
