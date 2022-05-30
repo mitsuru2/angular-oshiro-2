@@ -1,5 +1,11 @@
-<div class="side-bar">
+<div
+  class="side-bar"
+  [@openClose]="isOpen ? 'open' : 'close'"
+  (@openClose.start)="animationStart($event)"
+  (@openClose.done)="animationDone($event)"
+>
   <p-menu
+    *ngIf="isMenuVisible"
     [model]="items"
     [style]="{ 'white-space': 'nowrap', width: '15rem', border: 'none', 'border-radius': '0px' }"
   ></p-menu>

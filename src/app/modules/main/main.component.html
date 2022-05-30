@@ -8,16 +8,7 @@
   ></app-top-menu>
 </div>
 <div class="container">
-  <div
-    class="side-bar"
-    [@openClose]="isSideMenuOpen ? 'open' : 'close'"
-    (@openClose.start)="animationStart($event)"
-    (@openClose.done)="animationDone($event)"
-  >
-    <div *ngIf="isVisible">
-      <app-side-menu></app-side-menu>
-    </div>
-  </div>
+  <app-side-menu [isOpen]="isSideMenuOpen"></app-side-menu>
   <div class="content">
     <button pButton label="trigger animation" (click)="toggleSideMenu()"></button>
     <p>くぁｗせｄｒｆｔｇｙふじこｌｐ</p>
