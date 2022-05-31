@@ -5,6 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToolbarModule } from 'primeng/toolbar';
 import { MenuModule } from 'primeng/menu';
+import { PanelModule } from 'primeng/panel';
 
 import { MainRoutingModule } from './main-routing.module';
 import { MainComponent } from './main.component';
@@ -13,10 +14,18 @@ import { ListCharacterComponent } from './components/list-character/list-charact
 import { TopMenuComponent } from './views/top-menu/top-menu.component';
 import { ConfirmationService } from 'primeng/api';
 import { SideMenuComponent } from './views/side-menu/side-menu.component';
+import { LegalComponent } from './components/legal/legal.component';
 
 @NgModule({
-  declarations: [MainComponent, NewCharacterComponent, ListCharacterComponent, TopMenuComponent, SideMenuComponent],
-  imports: [CommonModule, MainRoutingModule, ToolbarModule, ButtonModule, ConfirmDialogModule, MenuModule],
+  declarations: [
+    MainComponent,
+    NewCharacterComponent,
+    ListCharacterComponent,
+    TopMenuComponent,
+    SideMenuComponent,
+    LegalComponent,
+  ],
+  imports: [CommonModule, MainRoutingModule, ToolbarModule, ButtonModule, ConfirmDialogModule, MenuModule, PanelModule],
   bootstrap: [MainComponent],
   providers: [ConfirmationService],
 })

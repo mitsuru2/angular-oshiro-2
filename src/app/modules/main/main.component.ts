@@ -22,13 +22,19 @@ export class MainComponent implements OnInit {
     {
       label: 'new',
       command: () => {
-        this.goToNewCharacter();
+        this.navigate('/main/new-character');
       },
     },
     {
       label: 'list',
       command: () => {
-        this.goToListCharacter();
+        this.navigate('/main/list-character');
+      },
+    },
+    {
+      label: 'legal',
+      command: () => {
+        this.navigate('/main/legal');
       },
     },
   ];
@@ -54,13 +60,8 @@ export class MainComponent implements OnInit {
     this.isSideMenuOpen = !this.isSideMenuOpen;
   }
 
-  goToNewCharacter(): void {
-    this.logger.trace('MainComponent.goToNewCharacters()');
-    this.router.navigateByUrl('/main/new-character');
-  }
-
-  goToListCharacter(): void {
-    this.logger.trace('MainComponent.goToListCharacters()');
-    this.router.navigateByUrl('/main/list-character');
+  navigate(url: string): void {
+    this.logger.trace(`MainComponent.goToNewCharacters(${url})`);
+    this.router.navigateByUrl(url);
   }
 }

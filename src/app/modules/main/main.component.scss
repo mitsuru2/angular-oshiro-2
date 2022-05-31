@@ -1,5 +1,6 @@
 $too-bar-height: 5rem;
-$foooter-height: 1.5rem;
+
+//$foooter-height: 1.5rem;
 
 .tool-bar {
   height: $too-bar-height;
@@ -7,17 +8,18 @@ $foooter-height: 1.5rem;
 
 .container {
   display: flex;
-  height: calc(100vh - $too-bar-height - $foooter-height);
+  height: calc(100vh - $too-bar-height /*- $foooter-height*/);
 
   .content {
     padding-right: 1rem;
     padding-left: 1rem;
     overflow: auto;
-    background-color: cyan;
+
+    //background-color: cyan;
   }
 }
 
-.footer {
-  height: $foooter-height;
-  background-color: green;
-}
+//.footer {
+//  height: $foooter-height;
+//  text-align: center;
+//}
