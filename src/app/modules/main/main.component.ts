@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { NGXLogger } from 'ngx-logger';
 import { ConfirmationService } from 'primeng/api';
 import { AppInfo } from 'src/app/app-info.enum';
@@ -17,7 +18,22 @@ export class MainComponent implements OnInit {
 
   isSideMenuOpen = true;
 
-  constructor(private logger: NGXLogger, private confirmDialog: ConfirmationService) {
+  sideMenuItems = [
+    {
+      label: 'new',
+      command: () => {
+        this.goToNewCharacter();
+      },
+    },
+    {
+      label: 'list',
+      command: () => {
+        this.goToListCharacter();
+      },
+    },
+  ];
+
+  constructor(private logger: NGXLogger, private confirmDialog: ConfirmationService, private router: Router) {
     this.logger.trace('new MainComponent()');
   }
 
@@ -36,5 +52,15 @@ export class MainComponent implements OnInit {
   toggleSideMenu(): void {
     this.logger.trace('MainComponent.toggleSideMenu()');
     this.isSideMenuOpen = !this.isSideMenuOpen;
+  }
+
+  goToNewCharacter(): void {
+    this.logger.trace('MainComponent.goToNewCharacters()');
+    this.router.navigateByUrl('/main/new-character');
+  }
+
+  goToListCharacter(): void {
+    this.logger.trace('MainComponent.goToListCharacters()');
+    this.router.navigateByUrl('/main/list-character');
   }
 }

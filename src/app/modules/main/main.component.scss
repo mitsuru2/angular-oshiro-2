@@ -1,4 +1,4 @@
-$too-bar-height: 4.7rem;
+$too-bar-height: 5rem;
 $foooter-height: 1.5rem;
 
 .tool-bar {
@@ -8,16 +8,11 @@ $foooter-height: 1.5rem;
 .container {
   display: flex;
   height: calc(100vh - $too-bar-height - $foooter-height);
-  background-color: red;
-
-  .side-bar {
-    //width: 15rem;
-    //visibility: visible;
-    background-color: orange;
-  }
 
   .content {
-    margin-left: 1rem;
+    padding-right: 1rem;
+    padding-left: 1rem;
+    overflow: auto;
     background-color: cyan;
   }
 }

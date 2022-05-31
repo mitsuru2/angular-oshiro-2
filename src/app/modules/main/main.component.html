@@ -8,10 +8,9 @@
   ></app-top-menu>
 </div>
 <div class="container">
-  <app-side-menu [isOpen]="isSideMenuOpen"></app-side-menu>
+  <app-side-menu [isOpen]="isSideMenuOpen" [items]="sideMenuItems"></app-side-menu>
   <div class="content">
-    <button pButton label="trigger animation" (click)="toggleSideMenu()"></button>
-    <p>くぁｗせｄｒｆｔｇｙふじこｌｐ</p>
+    <router-outlet></router-outlet>
   </div>
 </div>
 <div class="footer"></div>

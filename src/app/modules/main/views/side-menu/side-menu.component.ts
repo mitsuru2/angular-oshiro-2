@@ -16,17 +16,16 @@ import { trigger, style, state, animate, transition, AnimationEvent } from '@ang
   ],
 })
 export class SideMenuComponent implements OnInit {
-  @Input() isOpen!: boolean;
+  @Input() isOpen: boolean = false;
 
-  items!: MenuItem[];
+  @Input() items: MenuItem[] = [];
 
   isMenuVisible!: boolean;
 
   constructor() {}
 
   ngOnInit(): void {
-    this.isMenuVisible = this.isOpen;
-    this.items = [{ label: 'New' }, { label: 'List' }];
+    this.isMenuVisible = this.isOpen; // It shall be initialized here. (After @Input() parameters has been updated.)
   }
 
   animationStart(event: AnimationEvent) {
