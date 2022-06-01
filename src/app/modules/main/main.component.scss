@@ -11,11 +11,11 @@ $too-bar-height: 5rem;
   height: calc(100vh - $too-bar-height /*- $foooter-height*/);
 
   .content {
+    width: 80vw;
     padding-right: 1rem;
     padding-left: 1rem;
     overflow: auto;
-
-    //background-color: cyan;
+    background-color: cyan;
   }
 }
 

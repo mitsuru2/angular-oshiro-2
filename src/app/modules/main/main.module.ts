@@ -1,11 +1,13 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToolbarModule } from 'primeng/toolbar';
 import { MenuModule } from 'primeng/menu';
 import { PanelModule } from 'primeng/panel';
+import { DropdownModule } from 'primeng/dropdown';
 
 import { MainRoutingModule } from './main-routing.module';
 import { MainComponent } from './main.component';
@@ -25,7 +27,17 @@ import { LegalComponent } from './components/legal/legal.component';
     SideMenuComponent,
     LegalComponent,
   ],
-  imports: [CommonModule, MainRoutingModule, ToolbarModule, ButtonModule, ConfirmDialogModule, MenuModule, PanelModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MainRoutingModule,
+    ToolbarModule,
+    ButtonModule,
+    ConfirmDialogModule,
+    MenuModule,
+    PanelModule,
+    DropdownModule,
+  ],
   bootstrap: [MainComponent],
   providers: [ConfirmationService],
 })

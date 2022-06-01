@@ -1,1 +1,15 @@
 <p>new-character works!</p>
+
+<div>
+  <span class="p-float-label">
+    <p-dropdown
+      inputId="dropdown"
+      [autoDisplayFirst]="false"
+      [options]="characterTypes2"
+      [(ngModel)]="value"
+      optionLabel="name"
+      [style]="{ width: '300px' }"
+    ></p-dropdown>
+    <label for="dropdown">Character Type</label>
+  </span>
+</div>
