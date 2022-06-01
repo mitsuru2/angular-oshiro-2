@@ -22,7 +22,7 @@ export class FirestoreCollectionWrapper<T> {
   ) {
     this.logger.trace(`new FirestoreCollectionWrapper(${name})`);
     this.name = name;
-    this.data$ = this.firestore.collection<T>(this.name, query).valueChanges();
+    this.data$ = this.firestore.collection<T>(this.name, query).valueChanges({ idField: 'id' });
     this.data = [];
     this.subscription = new Subscription();
     this.isLoaded = false;
