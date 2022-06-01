@@ -6,8 +6,8 @@ import { NGXLogger } from 'ngx-logger';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { AngularFirestore, QueryFn } from '@angular/fire/compat/firestore';
 import { FirestoreCollectionName } from './firestore-collection-name.enum';
-import { GeographType } from './geograph-type.interface';
-import { Region } from './region.interface';
+import { AbilityType, FacilityType, GeographType, Region } from './firestore-document.interface';
+import { FirestoreCollectionWrapper } from './firestore-collection-wrapper.class';
 
 //==============================================================================
 // Type definitions.
@@ -51,24 +51,33 @@ export type SubscribeFn = (x: any) => void;
   providedIn: 'root',
 })
 export class FirestoreDataService {
-  private observables: { [key in FirestoreCollectionName]: Observable<GeographType[]> | Observable<Region[]> } = {
-    GeographTypes: new Observable<GeographType[]>(),
-    Regions: new Observable<Region[]>(),
-  };
-
-  private subscriptions: { [key in FirestoreCollectionName]: Subscription } = {
-    GeographTypes: new Subscription(),
-    Regions: new Subscription(),
-  };
-
-  private dataBodies: { [key in FirestoreCollectionName]: GeographType[] | Region[] } = {
-    GeographTypes: [],
-    Regions: [],
-  };
-
-  private loadFlags: { [key in FirestoreCollectionName]: boolean } = {
-    GeographTypes: false,
-    Regions: false,
+  private collections: {
+    [key in FirestoreCollectionName]:
+      | FirestoreCollectionWrapper<AbilityType>
+      | FirestoreCollectionWrapper<FacilityType>
+      | FirestoreCollectionWrapper<GeographType>
+      | FirestoreCollectionWrapper<Region>;
+  } = {
+    AbilityTypes: new FirestoreCollectionWrapper<AbilityType>(
+      this.firestore,
+      this.logger,
+      FirestoreCollectionName.AbilityTypes
+    ),
+    FacilityTypes: new FirestoreCollectionWrapper<FacilityType>(
+      this.firestore,
+      this.logger,
+      FirestoreCollectionName.FacilityTypes
+    ),
+    GeographTypes: new FirestoreCollectionWrapper<GeographType>(
+      this.firestore,
+      this.logger,
+      FirestoreCollectionName.GeographTypes
+    ),
+    Regions: new FirestoreCollectionWrapper<Region>( // eslint-disable-line
+      this.firestore, 
+      this.logger, 
+      FirestoreCollectionName.Regions
+    ),
   };
 
   private loadingEvent$: Subject<FirestoreLoadingEvent> = new Subject<FirestoreLoadingEvent>();
@@ -83,8 +92,13 @@ export class FirestoreDataService {
     this.logger.trace('new FirestoreDataService()');
 
     for (let key in FirestoreCollectionName) {
-      this.initObservable(key as FirestoreCollectionName);
-      this.subsucribe(key as FirestoreCollectionName);
+      this.loadingEvent$.next({ type: FirestoreLoadingEventType.Start, name: key as FirestoreCollectionName });
+      this.collections[key as FirestoreCollectionName].load(() => {
+        this.loadingEvent$.next({ type: FirestoreLoadingEventType.End, name: key as FirestoreCollectionName });
+        if (this.isAllDataLoaded()) {
+          this.loadingEvent$.next({ type: FirestoreLoadingEventType.Completed });
+        }
+      });
     }
   }
 
@@ -105,8 +119,8 @@ export class FirestoreDataService {
    * @returns TRUE if all data collections are loaded.
    */
   isAllDataLoaded(): boolean {
-    for (let key in this.loadFlags) {
-      if (this.loadFlags[key as FirestoreCollectionName] === false) {
+    for (let key in FirestoreCollectionName) {
+      if (this.collections[key as FirestoreCollectionName].isLoaded === false) {
         return false;
       }
     }
@@ -121,7 +135,7 @@ export class FirestoreDataService {
    */
   getData(name: FirestoreCollectionName) {
     this.logger.trace(`FirestoreDataService.getData(${name})`);
-    return this.dataBodies[name];
+    return this.collections[name].data;
   }
 
   /**
@@ -139,38 +153,23 @@ export class FirestoreDataService {
   queryData(name: FirestoreCollectionName, query: QueryFn, next: SubscribeFn): Subscription {
     this.logger.trace(`FirestoreDataService.queryData(${name})`);
 
-    let observable = this.makeObservable(name, query);
-    return observable.subscribe(next);
-  }
-
-  private initObservable(name: FirestoreCollectionName) {
-    this.logger.trace(`FirestoreDataService.initObservable(${name})`);
-
-    this.observables[name] = this.makeObservable(name, (ref) => ref.orderBy('id'));
-    this.loadingEvent$.next({ type: FirestoreLoadingEventType.Start, name: name });
-  }
-
-  private makeObservable(name: FirestoreCollectionName, query: QueryFn) {
-    if (name === FirestoreCollectionName.GeographTypes) {
-      return this.firestore.collection<GeographType>(name, query).valueChanges();
-    } /*if (name === FirestoreCollectionName.Regions)*/ else {
-      return this.firestore.collection<Region>(name, query).valueChanges();
+    if (name === FirestoreCollectionName.AbilityTypes) {
+      let collection = new FirestoreCollectionWrapper<AbilityType>(this.firestore, this.logger, name, query);
+      return collection.data$.subscribe(next);
+    } else if (name === FirestoreCollectionName.FacilityTypes) {
+      let collection = new FirestoreCollectionWrapper<FacilityType>(this.firestore, this.logger, name, query);
+      return collection.data$.subscribe(next);
+    } else if (name === FirestoreCollectionName.GeographTypes) {
+      let collection = new FirestoreCollectionWrapper<GeographType>(this.firestore, this.logger, name, query);
+      return collection.data$.subscribe(next);
+    } else {
+      let collection = new FirestoreCollectionWrapper<Region>(
+        this.firestore,
+        this.logger,
+        FirestoreCollectionName.Regions,
+        query
+      );
+      return collection.data$.subscribe(next);
     }
-  }
-
-  private subsucribe(name: FirestoreCollectionName) {
-    this.logger.trace(`FirestoreDataService.subscribe(${name})`);
-
-    // Do subscribe() and unsubscribe().
-    this.subscriptions[name] = this.observables[name].subscribe((x) => {
-      this.dataBodies[name] = x;
-      this.loadFlags[name] = true;
-      this.subscriptions[name].unsubscribe();
-      this.loadingEvent$.next({ type: FirestoreLoadingEventType.End, name: name });
-      if (this.isAllDataLoaded()) {
-        this.logger.info('All collection data has been loaded.');
-        this.loadingEvent$.next({ type: FirestoreLoadingEventType.Completed });
-      }
-    });
   }
 }
