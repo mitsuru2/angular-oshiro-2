@@ -1,5 +1,4 @@
-<p>new-character works!</p>
-
+<h3>新規キャラクター登録</h3>
 <div>
   <span class="p-float-label">
     <p-dropdown
@@ -12,4 +11,11 @@
     ></p-dropdown>
     <label for="dropdown">Character Type</label>
   </span>
+</div>
+<div *ngIf="value">
+  <h5>Selected Character Type:</h5>
+  <p>ID: {{ value.id }}</p>
+  <p>Index: {{ value.index }}</p>
+  <p>Order: {{ value.order }}</p>
+  <p>Name: {{ value.name }}</p>
 </div>

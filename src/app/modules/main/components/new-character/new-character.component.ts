@@ -4,6 +4,13 @@ import { FsCharacterType } from 'src/app/services/firestore-data/firestore-docum
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
 import { FirestoreCollectionName } from 'src/app/services/firestore-data/firestore-collection-name.enum';
 
+export interface CharacterTypeInNewCharacterForm {
+  id: string;
+  index: number;
+  name: string;
+  order: string;
+}
+
 @Component({
   selector: 'app-new-character',
   templateUrl: './new-character.component.html',
@@ -12,9 +19,9 @@ import { FirestoreCollectionName } from 'src/app/services/firestore-data/firesto
 export class NewCharacterComponent implements OnInit {
   characterTypes!: FsCharacterType[];
 
-  characterTypes2!: { id: string; index: number; name: string; order: string }[];
+  characterTypes2!: CharacterTypeInNewCharacterForm[];
 
-  value: any;
+  value?: CharacterTypeInNewCharacterForm;
 
   characterTypeNames!: string[];
 

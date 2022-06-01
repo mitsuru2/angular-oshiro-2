@@ -11,6 +11,7 @@ $too-bar-height: 5rem;
   height: calc(100vh - $too-bar-height /*- $foooter-height*/);
 
   .content {
+    flex-grow: 1;
     width: 80vw;
     padding-right: 1rem;
     padding-left: 1rem;
