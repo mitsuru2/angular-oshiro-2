@@ -6,7 +6,18 @@ import { NGXLogger } from 'ngx-logger';
 import { Subject, Subscription } from 'rxjs';
 import { AngularFirestore, QueryFn } from '@angular/fire/compat/firestore';
 import { FirestoreCollectionName } from './firestore-collection-name.enum';
-import { AbilityType, FacilityType, GeographType, Region } from './firestore-document.interface';
+import {
+  FsAbility,
+  FsAbilityType,
+  FsCharacter,
+  FsCharacterType,
+  FsFacilityType,
+  FsGeographType,
+  FsIllustrator,
+  FsRegion,
+  FsVoiceActor,
+  FsWeaponType,
+} from './firestore-document.interface';
 import { FirestoreCollectionWrapper } from './firestore-collection-wrapper.class';
 
 //==============================================================================
@@ -53,31 +64,27 @@ export type SubscribeFn = (x: any) => void;
 export class FirestoreDataService {
   private collections: {
     [key in FirestoreCollectionName]:
-      | FirestoreCollectionWrapper<AbilityType>
-      | FirestoreCollectionWrapper<FacilityType>
-      | FirestoreCollectionWrapper<GeographType>
-      | FirestoreCollectionWrapper<Region>;
+      | FirestoreCollectionWrapper<FsAbility>
+      | FirestoreCollectionWrapper<FsAbilityType>
+      | FirestoreCollectionWrapper<FsCharacterType>
+      | FirestoreCollectionWrapper<FsCharacter>
+      | FirestoreCollectionWrapper<FsFacilityType>
+      | FirestoreCollectionWrapper<FsGeographType>
+      | FirestoreCollectionWrapper<FsIllustrator>
+      | FirestoreCollectionWrapper<FsRegion>
+      | FirestoreCollectionWrapper<FsVoiceActor>
+      | FirestoreCollectionWrapper<FsWeaponType>;
   } = {
-    AbilityTypes: new FirestoreCollectionWrapper<AbilityType>(
-      this.firestore,
-      this.logger,
-      FirestoreCollectionName.AbilityTypes
-    ),
-    FacilityTypes: new FirestoreCollectionWrapper<FacilityType>(
-      this.firestore,
-      this.logger,
-      FirestoreCollectionName.FacilityTypes
-    ),
-    GeographTypes: new FirestoreCollectionWrapper<GeographType>(
-      this.firestore,
-      this.logger,
-      FirestoreCollectionName.GeographTypes
-    ),
-    Regions: new FirestoreCollectionWrapper<Region>( // eslint-disable-line
-      this.firestore, 
-      this.logger, 
-      FirestoreCollectionName.Regions
-    ),
+    Abilities:      new FirestoreCollectionWrapper<FsAbility>       (this.firestore, this.logger, FirestoreCollectionName.Abilities), // eslint-disable-line
+    AbilityTypes:   new FirestoreCollectionWrapper<FsAbilityType>   (this.firestore, this.logger, FirestoreCollectionName.AbilityTypes), // eslint-disable-line
+    CharacterTypes: new FirestoreCollectionWrapper<FsCharacterType> (this.firestore, this.logger, FirestoreCollectionName.CharacterTypes), // eslint-disable-line
+    Characters:     new FirestoreCollectionWrapper<FsCharacter>     (this.firestore, this.logger, FirestoreCollectionName.Characters), // eslint-disable-line
+    FacilityTypes:  new FirestoreCollectionWrapper<FsFacilityType>  (this.firestore, this.logger, FirestoreCollectionName.FacilityTypes), // eslint-disable-line
+    GeographTypes:  new FirestoreCollectionWrapper<FsGeographType>  (this.firestore, this.logger, FirestoreCollectionName.GeographTypes), // eslint-disable-line
+    Illustrators:   new FirestoreCollectionWrapper<FsIllustrator>   (this.firestore, this.logger, FirestoreCollectionName.Illustrators), // eslint-disable-line
+    Regions:        new FirestoreCollectionWrapper<FsRegion>        (this.firestore, this.logger, FirestoreCollectionName.Regions), // eslint-disable-line
+    VoiceActors:    new FirestoreCollectionWrapper<FsVoiceActor>    (this.firestore, this.logger, FirestoreCollectionName.VoiceActors), // eslint-disable-line
+    WeaponTypes:    new FirestoreCollectionWrapper<FsWeaponType>    (this.firestore, this.logger, FirestoreCollectionName.WeaponTypes), // eslint-disable-line
   };
 
   private loadingEvent$: Subject<FirestoreLoadingEvent> = new Subject<FirestoreLoadingEvent>();
@@ -153,22 +160,35 @@ export class FirestoreDataService {
   queryData(name: FirestoreCollectionName, query: QueryFn, next: SubscribeFn): Subscription {
     this.logger.trace(`FirestoreDataService.queryData(${name})`);
 
-    if (name === FirestoreCollectionName.AbilityTypes) {
-      let collection = new FirestoreCollectionWrapper<AbilityType>(this.firestore, this.logger, name, query);
+    if (name === FirestoreCollectionName.Abilities) {
+      let collection = new FirestoreCollectionWrapper<FsAbility>(this.firestore, this.logger, name, query);
+      return collection.data$.subscribe(next);
+    } else if (name === FirestoreCollectionName.AbilityTypes) {
+      let collection = new FirestoreCollectionWrapper<FsAbilityType>(this.firestore, this.logger, name, query);
+      return collection.data$.subscribe(next);
+    } else if (name === FirestoreCollectionName.CharacterTypes) {
+      let collection = new FirestoreCollectionWrapper<FsCharacterType>(this.firestore, this.logger, name, query);
+      return collection.data$.subscribe(next);
+    } else if (name === FirestoreCollectionName.Characters) {
+      let collection = new FirestoreCollectionWrapper<FsCharacter>(this.firestore, this.logger, name, query);
       return collection.data$.subscribe(next);
     } else if (name === FirestoreCollectionName.FacilityTypes) {
-      let collection = new FirestoreCollectionWrapper<FacilityType>(this.firestore, this.logger, name, query);
+      let collection = new FirestoreCollectionWrapper<FsFacilityType>(this.firestore, this.logger, name, query);
       return collection.data$.subscribe(next);
     } else if (name === FirestoreCollectionName.GeographTypes) {
-      let collection = new FirestoreCollectionWrapper<GeographType>(this.firestore, this.logger, name, query);
+      let collection = new FirestoreCollectionWrapper<FsGeographType>(this.firestore, this.logger, name, query);
       return collection.data$.subscribe(next);
-    } else {
-      let collection = new FirestoreCollectionWrapper<Region>(
-        this.firestore,
-        this.logger,
-        FirestoreCollectionName.Regions,
-        query
-      );
+    } else if (name === FirestoreCollectionName.Illustrators) {
+      let collection = new FirestoreCollectionWrapper<FsIllustrator>(this.firestore, this.logger, name, query);
+      return collection.data$.subscribe(next);
+    } else if (name === FirestoreCollectionName.Regions) {
+      let collection = new FirestoreCollectionWrapper<FsRegion>(this.firestore, this.logger, name, query);
+      return collection.data$.subscribe(next);
+    } else if (name === FirestoreCollectionName.VoiceActors) {
+      let collection = new FirestoreCollectionWrapper<FsVoiceActor>(this.firestore, this.logger, name, query);
+      return collection.data$.subscribe(next);
+    } /*if (name === FirestoreCollectionName.WeaponTypes)*/ else {
+      let collection = new FirestoreCollectionWrapper<FsWeaponType>(this.firestore, this.logger, name, query);
       return collection.data$.subscribe(next);
     }
   }
