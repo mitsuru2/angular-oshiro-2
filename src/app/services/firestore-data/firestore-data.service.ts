@@ -3,7 +3,7 @@
 //
 import { Injectable } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { AngularFirestore, QueryFn } from '@angular/fire/compat/firestore';
 import { FirestoreCollectionName } from './firestore-collection-name.enum';
 import { AbilityType, FacilityType, GeographType, Region } from './firestore-document.interface';
