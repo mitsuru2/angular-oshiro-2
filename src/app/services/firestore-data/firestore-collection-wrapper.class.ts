@@ -18,7 +18,7 @@ export class FirestoreCollectionWrapper<T> {
     private firestore: AngularFirestore,
     private logger: NGXLogger,
     name: FirestoreCollectionName,
-    query: QueryFn = (ref) => ref.orderBy('id')
+    query: QueryFn = (ref) => ref.orderBy('index') // By default, it just sorts by 'index'.
   ) {
     this.logger.trace(`new FirestoreCollectionWrapper(${name})`);
     this.name = name;
