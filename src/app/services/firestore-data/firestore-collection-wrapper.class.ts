@@ -18,7 +18,7 @@ export class FirestoreCollectionWrapper<T> {
     private firestore: AngularFirestore,
     private logger: NGXLogger,
     name: FirestoreCollectionName,
-    query?: QueryFn
+    query: QueryFn = (ref) => ref.orderBy('id')
   ) {
     this.logger.trace(`new FirestoreCollectionWrapper(${name})`);
     this.name = name;
