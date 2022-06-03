@@ -1,21 +1,34 @@
 <h3>新規キャラクター登録</h3>
-<div>
-  <span class="p-float-label">
-    <p-dropdown
-      inputId="dropdown"
-      [autoDisplayFirst]="false"
-      [options]="characterTypes2"
-      [(ngModel)]="value"
-      optionLabel="name"
-      [style]="{ width: '300px' }"
-    ></p-dropdown>
-    <label for="dropdown">Character Type</label>
-  </span>
-</div>
-<div *ngIf="value">
-  <h5>Selected Character Type:</h5>
-  <p>ID: {{ value.id }}</p>
-  <p>Index: {{ value.index }}</p>
-  <p>Order: {{ value.order }}</p>
-  <p>Name: {{ value.name }}</p>
-</div>
+<form [formGroup]="newCharacterForm" (ngSubmit)="submit()">
+  <div class="field grid">
+    <label for="characterTypeDD" class="col-fixed" style="width: 200px">Character Type:</label>
+    <div class="col">
+      <p-dropdown
+        id="characterTypeDD"
+        [options]="characterTypeItems"
+        optionLabel="name"
+        formControlName="characterType"
+        placeholder="Select a character type."
+        [style]="{ width: '300px' }"
+        [showClear]="true"
+        [(ngModel)]="selectedCharacterType"
+      ></p-dropdown>
+    </div>
+  </div>
+  <div class="field grid">
+    <label for="rarerityDD" class="col-fixed" style="width: 200px">Rarerity:</label>
+    <div class="col">
+      <p-dropdown
+        id="rarerityDD"
+        [options]="rarerityItems"
+        optionLabel="name"
+        formControlName="rarerity"
+        placeholder="Select a rarerity."
+        [style]="{ width: '300px' }"
+        [showClear]="true"
+        [(ngModel)]="selectedRarerity"
+      ></p-dropdown>
+    </div>
+  </div>
+  <button pButton label="Submit"></button>
+</form>

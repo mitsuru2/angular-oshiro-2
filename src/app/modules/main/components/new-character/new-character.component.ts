@@ -3,12 +3,17 @@ import { NGXLogger } from 'ngx-logger';
 import { FsCharacterType } from 'src/app/services/firestore-data/firestore-document.interface';
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
 import { FirestoreCollectionName } from 'src/app/services/firestore-data/firestore-collection-name.enum';
+import { FormControl, FormGroup } from '@angular/forms';
 
 export interface CharacterTypeInNewCharacterForm {
-  id: string;
   index: number;
   name: string;
   order: string;
+}
+
+export interface RarerityInNewCharacterForm {
+  name: string;
+  value: number;
 }
 
 @Component({
@@ -19,13 +24,18 @@ export interface CharacterTypeInNewCharacterForm {
 export class NewCharacterComponent implements OnInit {
   characterTypes!: FsCharacterType[];
 
-  characterTypes2!: CharacterTypeInNewCharacterForm[];
+  characterTypeItems!: CharacterTypeInNewCharacterForm[];
 
-  value?: CharacterTypeInNewCharacterForm;
+  selectedCharacterType?: CharacterTypeInNewCharacterForm;
 
-  characterTypeNames!: string[];
+  rarerityItems!: RarerityInNewCharacterForm[];
 
-  selectedName: string = '';
+  selectedRarerity?: RarerityInNewCharacterForm;
+
+  newCharacterForm = new FormGroup({
+    characterType: new FormControl('', []),
+    rarerity: new FormControl('', []),
+  });
 
   constructor(private logger: NGXLogger, private firestore: FirestoreDataService) {
     this.logger.trace('new NewCharacterComponent()');
@@ -33,18 +43,40 @@ export class NewCharacterComponent implements OnInit {
 
   ngOnInit(): void {
     this.characterTypes = this.firestore.getData(FirestoreCollectionName.CharacterTypes) as FsCharacterType[];
-    this.characterTypes2 = [];
-    for (let c of this.characterTypes) {
-      let tmp = { id: c.id, index: c.index, name: c.names[0], order: c.order };
+    this.characterTypeItems = this.makeCharacterTypeItems(this.characterTypes);
+    this.rarerityItems = this.makeRarerityItems();
+  }
+
+  private makeCharacterTypeItems(fsData: FsCharacterType[]): CharacterTypeInNewCharacterForm[] {
+    let list = [];
+
+    for (let c of fsData) {
+      let tmp: CharacterTypeInNewCharacterForm = { index: c.index, name: c.names[0], order: c.order };
       if (c.names.length > 1) {
         tmp.name += ' | ' + c.names[1];
       }
-      this.characterTypes2.push(tmp);
+      list.push(tmp);
     }
-    this.logger.debug(`this.characterTypes.length: ${this.characterTypes.length}`);
-    this.logger.debug(`this.characterTypes2.length: ${this.characterTypes2.length}`);
-    this.characterTypes2.sort((a, b) => {
+    list.sort((a, b) => {
       return a.order < b.order ? -1 : 1;
     });
+
+    return list;
+  }
+
+  private makeRarerityItems(): RarerityInNewCharacterForm[] {
+    let list = [];
+
+    for (let i = 0; i < 7; i++) {
+      let tmp: RarerityInNewCharacterForm = { name: '★' + String(i + 1), value: i + 1 };
+      list.push(tmp);
+    }
+    list.sort((a, b) => b.value - a.value);
+
+    return list;
+  }
+
+  submit(): void {
+    alert(JSON.stringify(this.newCharacterForm.value));
   }
 }
