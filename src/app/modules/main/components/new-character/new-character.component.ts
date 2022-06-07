@@ -1,20 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
-import { FsCharacterType } from 'src/app/services/firestore-data/firestore-document.interface';
+import { FsCharacter, FsCharacterType } from 'src/app/services/firestore-data/firestore-document.interface';
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
 import { FirestoreCollectionName } from 'src/app/services/firestore-data/firestore-collection-name.enum';
 import { FormControl, FormGroup } from '@angular/forms';
-
-export interface CharacterTypeInNewCharacterForm {
-  index: number;
-  name: string;
-  order: string;
-}
-
-export interface RarerityInNewCharacterForm {
-  name: string;
-  value: number;
-}
+import {
+  CharacterTypeInNewCharacterForm,
+  NewCharacterForm,
+  RarerityInNewCharacterForm,
+} from './new-character-form.interface';
 
 @Component({
   selector: 'app-new-character',
@@ -22,6 +16,8 @@ export interface RarerityInNewCharacterForm {
   styleUrls: ['./new-character.component.scss'],
 })
 export class NewCharacterComponent implements OnInit {
+  formData!: NewCharacterForm;
+
   characterTypes!: FsCharacterType[];
 
   characterTypeItems!: CharacterTypeInNewCharacterForm[];
@@ -32,10 +28,11 @@ export class NewCharacterComponent implements OnInit {
 
   selectedRarerity?: RarerityInNewCharacterForm;
 
-  newCharacterForm = new FormGroup({
-    characterType: new FormControl('', []),
-    rarerity: new FormControl('', []),
-  });
+  inputName: string = '';
+
+  shiromusumeFiles?: any[];
+
+  character: FsCharacter = <FsCharacter>{};
 
   constructor(private logger: NGXLogger, private firestore: FirestoreDataService) {
     this.logger.trace('new NewCharacterComponent()');
@@ -48,12 +45,21 @@ export class NewCharacterComponent implements OnInit {
   }
 
   private makeCharacterTypeItems(fsData: FsCharacterType[]): CharacterTypeInNewCharacterForm[] {
+    this.logger.trace('NewCharacterComponent.makeCharacterTypeItems()');
+
     let list = [];
 
     for (let c of fsData) {
-      let tmp: CharacterTypeInNewCharacterForm = { index: c.index, name: c.names[0], order: c.order };
+      let tmp: CharacterTypeInNewCharacterForm = {
+        id: c.id,
+        index: c.index,
+        names: { ...c.names },
+        order: c.order,
+        num: c.num,
+        longName: c.names[0],
+      };
       if (c.names.length > 1) {
-        tmp.name += ' | ' + c.names[1];
+        tmp.longName += ' | ' + c.names[1];
       }
       list.push(tmp);
     }
@@ -77,6 +83,30 @@ export class NewCharacterComponent implements OnInit {
   }
 
   submit(): void {
-    alert(JSON.stringify(this.newCharacterForm.value));
+    if (this.selectedCharacterType) {
+      this.character.type = this.selectedCharacterType.index;
+      this.character.name = this.inputName;
+
+      //this.firestore.addData(FirestoreCollectionName.Characters, this.character);
+    }
+  }
+
+  onFileChange(id: string, event: Event) {
+    this.logger.trace('NewCharacterComponent.onFileChange()');
+
+    const input = event.target as HTMLInputElement;
+
+    if (!input.files?.length) {
+      return;
+    }
+
+    if (this.shiromusumeFiles == null) {
+      this.shiromusumeFiles = [];
+    }
+    this.shiromusumeFiles.push(input.files[0]);
+  }
+
+  clearInputName() {
+    this.inputName = '';
   }
 }

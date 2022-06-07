@@ -1,10 +1,13 @@
-import { AngularFirestore, QueryFn } from '@angular/fire/compat/firestore';
+import { AngularFirestore, AngularFirestoreCollection, QueryFn } from '@angular/fire/compat/firestore';
 import { NGXLogger } from 'ngx-logger';
 import { Observable, Subscription } from 'rxjs';
 import { FirestoreCollectionName } from './firestore-collection-name.enum';
+import { increment } from '@angular/fire/firestore';
 
 export class FirestoreCollectionWrapper<T> {
   private name: FirestoreCollectionName;
+
+  collection: AngularFirestoreCollection<T>;
 
   data$: Observable<T[]>;
 
@@ -22,14 +25,16 @@ export class FirestoreCollectionWrapper<T> {
   ) {
     this.logger.trace(`new FirestoreCollectionWrapper(${name})`);
     this.name = name;
-    this.data$ = this.firestore.collection<T>(this.name, query).valueChanges({ idField: 'id' });
+    this.collection = this.firestore.collection<T>(this.name, query);
+    this.data$ = this.collection.valueChanges({ idField: 'id' });
     this.data = [];
     this.subscription = new Subscription();
     this.isLoaded = false;
   }
 
   load(cbFn?: () => void) {
-    this.logger.trace('FirestoreCollectionWrapper.load()');
+    this.logger.trace(`FirestoreCollectionWrapper[${this.name}].load()`);
+
     this.subscription = this.data$.subscribe((x) => {
       this.data = x;
       this.isLoaded = true;
@@ -38,5 +43,10 @@ export class FirestoreCollectionWrapper<T> {
         cbFn();
       }
     });
+  }
+
+  add(data: any) {
+    this.logger.trace(`FirestoreCollectionWrapper[${this.name}].add()`);
+    this.collection.add(data as T);
   }
 }

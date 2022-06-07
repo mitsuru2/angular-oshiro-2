@@ -8,6 +8,8 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { MenuModule } from 'primeng/menu';
 import { PanelModule } from 'primeng/panel';
 import { DropdownModule } from 'primeng/dropdown';
+import { InputTextModule } from 'primeng/inputtext';
+import { FileUploadModule } from 'primeng/fileupload';
 
 import { MainRoutingModule } from './main-routing.module';
 import { MainComponent } from './main.component';
@@ -38,6 +40,8 @@ import { LegalComponent } from './components/legal/legal.component';
     MenuModule,
     PanelModule,
     DropdownModule,
+    InputTextModule,
+    FileUploadModule,
   ],
   bootstrap: [MainComponent],
   providers: [ConfirmationService],

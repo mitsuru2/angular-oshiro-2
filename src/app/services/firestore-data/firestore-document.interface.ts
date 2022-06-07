@@ -1,5 +1,5 @@
 interface FsDocumentBase {
-  id: string;
+  id?: string;
   index: number;
 }
 

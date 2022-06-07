@@ -62,7 +62,7 @@ export type SubscribeFn = (x: any) => void;
   providedIn: 'root',
 })
 export class FirestoreDataService {
-  private collections: {
+  collections: {
     [key in FirestoreCollectionName]:
       | FirestoreCollectionWrapper<FsAbility>
       | FirestoreCollectionWrapper<FsAbilityType>
@@ -95,7 +95,7 @@ export class FirestoreDataService {
    * @param firestore AngularFirestore is used to access database.
    * @param logger Logging utility.
    */
-  constructor(private firestore: AngularFirestore, private logger: NGXLogger) {
+  constructor(public firestore: AngularFirestore, private logger: NGXLogger) {
     this.logger.trace('new FirestoreDataService()');
 
     for (let key in FirestoreCollectionName) {
@@ -191,5 +191,10 @@ export class FirestoreDataService {
       let collection = new FirestoreCollectionWrapper<FsWeaponType>(this.firestore, this.logger, name, query);
       return collection.data$.subscribe(next);
     }
+  }
+
+  addData(name: FirestoreCollectionName, data: any) {
+    this.logger.trace(`FirestoreDataService.addData(${name})`);
+    this.collections[name].add(data);
   }
 }
