@@ -1,17 +1,18 @@
-import { Component, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { NGXLogger } from 'ngx-logger';
 import { AppInfo } from './app-info.enum';
 import { AppNavigateService } from './services/app-navigate/app-navigate.service';
 import { AppStatus } from './services/app-navigate/app-status.enum';
-import { FirestoreDataService, FirestoreLoadingEventType } from './services/firestore-data/firestore-data.service';
+import { FirestoreCollectionName } from './services/firestore-data/firestore-collection-name.enum';
+import { FirestoreDataService } from './services/firestore-data/firestore-data.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   appStatusValues = AppStatus;
 
   statusMessage: string = '';
@@ -22,24 +23,40 @@ export class AppComponent {
   mainComponent!: ViewContainerRef;
 
   constructor(
-    private logger: NGXLogger,
-    private firestore: FirestoreDataService,
     private router: Router,
-    public appNavi: AppNavigateService
+    private firestore: FirestoreDataService,
+    public appNavi: AppNavigateService,
+    private logger: NGXLogger
   ) {
     this.logger.trace('new AppComponent()');
+  }
 
-    this.firestore.subscribeLoadingEvent((e) => {
-      this.logger.debug(e);
-      if (e.type === FirestoreLoadingEventType.Completed) {
-        this.statusMessage = 'Data loading finished.';
-        setTimeout(() => {
-          this.appNavi.status = AppStatus.Loaded;
-        }, 1000);
-      } else if (e.type === FirestoreLoadingEventType.End) {
-        this.statusMessage = `Data ${e.name} has been loaded.`;
-      }
-    });
+  async ngOnInit(): Promise<boolean> {
+    this.logger.trace('AppComponent.ngOnInit()');
+
+    try {
+      this.firestore.startListening(FirestoreCollectionName.Characters);
+    } catch {
+      this.logger.error('CATCH!!!');
+    }
+
+    try {
+      await Promise.all([
+        this.firestore.load(FirestoreCollectionName.CharacterTypes),
+        this.firestore.load(FirestoreCollectionName.Regions),
+      ]);
+      this.logger.info(`AppComponent: All const data has been loaded.`);
+      this.appNavi.status = AppStatus.Loaded;
+    } catch {
+      this.logger.error('error occurred.');
+      this.appNavi.status = AppStatus.Error;
+    }
+    return true;
+  }
+
+  private listenErrorCb(e: Error) {
+    this.logger.trace(`AppComponent.listenErrorCb(${e})`);
+    this.appNavi.status = AppStatus.Error;
   }
 
   goToMain() {
@@ -54,5 +71,27 @@ export class AppComponent {
     const { MainComponent } = await import('./modules/main/main.component');
     this.mainComponent.clear();
     this.mainComponent.createComponent(MainComponent);
+  }
+
+  async asyncProc1() {
+    console.log('asyncProc1() start');
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        console.log('asyncProc1() end.');
+        resolve(1);
+      }, 3000);
+    });
+  }
+
+  async asyncProc2() {
+    console.log('asyncProc2() start');
+    await this.asyncProc1(); // ここから非同期。
+    console.log('asyncProc2() end.');
+  }
+
+  syncProc() {
+    console.log('syncProc() start');
+    this.asyncProc2();
+    console.log('syncProc() end');
   }
 }

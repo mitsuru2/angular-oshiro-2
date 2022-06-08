@@ -14,6 +14,6 @@ export class ListCharacterComponent implements OnInit {
   constructor(private firestore: FirestoreDataService) {}
 
   ngOnInit(): void {
-    this.abilityTypes = this.firestore.getData(FirestoreCollectionName.AbilityTypes) as FsAbilityType[];
+    //    this.abilityTypes = this.firestore.getData(FirestoreCollectionName.AbilityTypes) as FsAbilityType[];
   }
 }

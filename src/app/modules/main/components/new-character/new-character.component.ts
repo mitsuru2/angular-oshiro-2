@@ -86,7 +86,9 @@ export class NewCharacterComponent implements OnInit {
     if (this.selectedCharacterType) {
       this.character.type = this.selectedCharacterType.index;
       this.character.name = this.inputName;
+      this.character.id = '';
 
+      //this.firestore.getNewIndex(FirestoreCollectionName.CharacterTypes, 0);
       //this.firestore.addData(FirestoreCollectionName.Characters, this.character);
     }
   }

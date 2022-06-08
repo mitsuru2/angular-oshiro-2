@@ -1,5 +1,5 @@
 interface FsDocumentBase {
-  id?: string;
+  id: string;
   index: number;
 }
 
@@ -18,6 +18,38 @@ export interface FsCharacterType extends FsDocumentBase {
   order: string;
   num: number;
 }
+
+export interface FsCharacterTypeDoc {
+  names: string[];
+  order: string;
+  num: number;
+  index: number; // to be removed.
+}
+
+export interface FsCharacterTypeCollection {
+  [id: string]: FsCharacterTypeDoc;
+}
+export interface FsCharacterDoc {
+  name: string;
+  index: string;
+  typeId: string;
+  rarerity: number;
+  FsWeaponTypeId: string;
+  FsGeographTypeIds: string[];
+  FsRegionId: string;
+  cost: number;
+  cost_kai?: number;
+  abilitieIds: string[];
+  abilitieIds_kai?: string[];
+  illustratorIds: string[];
+  voiceActorIds: string[];
+  motifWeaponIds?: string[];
+  motifFacilityIds?: string[];
+}
+export interface FsCharacterCollection {
+  [id: string]: FsCharacterDoc;
+}
+
 export interface FsCharacter extends FsDocumentBase {
   name: string;
   order: string;
@@ -40,7 +72,17 @@ export interface FsGeographType extends FsTypeDataBase {}
 export interface FsIllustrator extends FsDocumentBase {
   name: string;
 }
+
 export interface FsRegion extends FsTypeDataBase {}
+export interface FsRegionDoc {
+  name: string;
+  order: number;
+  index: number; // to be removed.
+}
+export interface FsRegionCollection {
+  [id: string]: FsRegionDoc;
+}
+
 export interface FsVoiceActor extends FsDocumentBase {
   name: string;
 }
