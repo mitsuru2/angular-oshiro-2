@@ -54,9 +54,9 @@ export class NewCharacterComponent implements OnInit {
         id: c.id,
         index: c.index,
         names: { ...c.names },
-        order: c.order,
-        num: c.num,
+        count: c.count,
         longName: c.names[0],
+        code: c.code,
       };
       if (c.names.length > 1) {
         tmp.longName += ' | ' + c.names[1];
@@ -64,7 +64,7 @@ export class NewCharacterComponent implements OnInit {
       list.push(tmp);
     }
     list.sort((a, b) => {
-      return a.order < b.order ? -1 : 1;
+      return a.code < b.code ? -1 : 1;
     });
 
     return list;

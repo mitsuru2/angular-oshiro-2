@@ -1,13 +1,22 @@
 import { FirestoreCollectionName } from './firestore-collection-name.enum';
-import { addDoc, collection, CollectionReference, Firestore, getDocs, onSnapshot } from '@angular/fire/firestore';
+import {
+  addDoc,
+  collection,
+  CollectionReference,
+  Firestore,
+  getDocsFromServer,
+  onSnapshot,
+  orderBy,
+  query,
+} from '@angular/fire/firestore';
 import { Unsubscribe } from '@angular/fire/app-check';
-import { getDocsFromServer } from '@firebase/firestore';
 import { NGXLogger } from 'ngx-logger';
+import { FsDocumentBase } from './firestore-document.interface';
 
-export class FirestoreCollectionWrapper<T> {
+export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
   private collection: CollectionReference<T>;
 
-  data: any;
+  data: any[];
 
   isLoaded: boolean;
 
@@ -17,7 +26,7 @@ export class FirestoreCollectionWrapper<T> {
 
   constructor(private fs: Firestore, private logger: NGXLogger, private name: FirestoreCollectionName) {
     this.collection = collection(this.fs, name) as CollectionReference<T>;
-    this.data = {};
+    this.data = [];
     this.isLoaded = false;
     this.isListening = false;
   }
@@ -31,12 +40,15 @@ export class FirestoreCollectionWrapper<T> {
     // Get data from server.
     try {
       // Copy document ID and its data to "this.data" object, if it's not empty.
-      const snapshot = await getDocsFromServer(this.collection);
+      const q = query(this.collection, orderBy('index'));
+      const snapshot = await getDocsFromServer(q);
       if (snapshot.empty) {
         return 0;
       }
       snapshot.forEach((doc) => {
-        this.data = { ...this.data, [doc.id]: doc.data() };
+        const tmp = doc.data();
+        tmp.id = doc.id;
+        this.data.push(tmp);
       });
       this.isLoaded = true;
       this.logger.info(`FirestoreCollectionWrapper: Data loading finished.`, {
@@ -59,15 +71,22 @@ export class FirestoreCollectionWrapper<T> {
   startListening(errorFn?: (e: Error) => void): void {
     this.isListening = true;
 
+    const q = query(this.collection, orderBy('index'));
+
     this.unsubscribe = onSnapshot(
-      this.collection,
+      // Query.
+      q,
 
       // Success handler. (It corresponding next() of Observable.)
       // Copy received data and set 'isLoaded' flag.
       (snapshot) => {
-        this.data = {};
+        while (this.data.length > 0) {
+          this.data.pop();
+        }
         snapshot.forEach((doc) => {
-          this.data = { ...this.data, [doc.id]: doc.data() };
+          const tmp = doc.data();
+          tmp.id = doc.id;
+          this.data.push(tmp);
         });
         this.isLoaded = true;
         this.logger.info(`FirestoreCollectionWrapper: Listen data received.`, {

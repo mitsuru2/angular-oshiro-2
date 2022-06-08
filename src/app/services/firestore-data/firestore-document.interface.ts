@@ -1,91 +1,79 @@
-interface FsDocumentBase {
+export interface FsDocumentBase {
   id: string;
-  index: number;
-}
-
-interface FsTypeDataBase extends FsDocumentBase {
-  name: string;
-  order: number;
+  index: number | string;
 }
 
 export interface FsAbility extends FsDocumentBase {
+  index: number;
   name: string;
+  type: number;
   desc: string[];
 }
-export interface FsAbilityType extends FsTypeDataBase {}
-export interface FsCharacterType extends FsDocumentBase {
-  names: string[];
-  order: string;
-  num: number;
-}
 
-export interface FsCharacterTypeDoc {
-  names: string[];
-  order: string;
-  num: number;
-  index: number; // to be removed.
-}
-
-export interface FsCharacterTypeCollection {
-  [id: string]: FsCharacterTypeDoc;
-}
-export interface FsCharacterDoc {
+export interface FsAbilityType extends FsDocumentBase {
+  index: number;
   name: string;
-  index: string;
-  typeId: string;
-  rarerity: number;
-  FsWeaponTypeId: string;
-  FsGeographTypeIds: string[];
-  FsRegionId: string;
-  cost: number;
-  cost_kai?: number;
-  abilitieIds: string[];
-  abilitieIds_kai?: string[];
-  illustratorIds: string[];
-  voiceActorIds: string[];
-  motifWeaponIds?: string[];
-  motifFacilityIds?: string[];
+  order: number;
 }
-export interface FsCharacterCollection {
-  [id: string]: FsCharacterDoc;
+
+export interface FsCharacterType extends FsDocumentBase {
+  index: number;
+  names: string[];
+  code: string;
+  count: number;
 }
 
 export interface FsCharacter extends FsDocumentBase {
+  index: string;
   name: string;
-  order: string;
   type: number;
   rarerity: number;
-  FsWeaponType: number;
-  FsGeographTypes: number[];
-  FsRegion: number;
+  weaponType: number;
+  geographTypes: number[];
+  region: number;
   cost: number;
   cost_kai?: number;
-  abilities: number[];
+  abilities?: number[];
   abilities_kai?: number[];
-  FsIllustrator: number;
-  FsVoiceActor: number;
-  motifWeapons?: number[];
-  motifFacilities?: number[];
+  illustrators?: number[];
+  voiceActors?: number[];
+  motifWeapons?: string[];
+  motifFacilities?: string[];
 }
-export interface FsFacilityType extends FsTypeDataBase {}
-export interface FsGeographType extends FsTypeDataBase {}
+
+export interface FsFacilityType extends FsDocumentBase {
+  index: number;
+  name: string;
+  code: string;
+  count: number;
+}
+
+export interface FsGeographType extends FsDocumentBase {
+  index: number;
+  name: string;
+  order: number;
+}
+
 export interface FsIllustrator extends FsDocumentBase {
+  index: number;
   name: string;
 }
 
-export interface FsRegion extends FsTypeDataBase {}
-export interface FsRegionDoc {
+export interface FsRegion extends FsDocumentBase {
+  index: number;
   name: string;
   order: number;
-  index: number; // to be removed.
-}
-export interface FsRegionCollection {
-  [id: string]: FsRegionDoc;
 }
 
 export interface FsVoiceActor extends FsDocumentBase {
+  index: number;
   name: string;
 }
-export interface FsWeaponType extends FsTypeDataBase {
+
+export interface FsWeaponType extends FsDocumentBase {
+  index: number;
+  name: string;
   baseCost: number;
+  code: string;
+  count: number;
 }

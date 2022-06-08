@@ -35,14 +35,9 @@ export class AppComponent implements OnInit {
     this.logger.trace('AppComponent.ngOnInit()');
 
     try {
-      this.firestore.startListening(FirestoreCollectionName.Characters);
-    } catch {
-      this.logger.error('CATCH!!!');
-    }
-
-    try {
       await Promise.all([
         this.firestore.load(FirestoreCollectionName.CharacterTypes),
+        this.firestore.load(FirestoreCollectionName.Characters),
         this.firestore.load(FirestoreCollectionName.Regions),
       ]);
       this.logger.info(`AppComponent: All const data has been loaded.`);
@@ -54,10 +49,15 @@ export class AppComponent implements OnInit {
     return true;
   }
 
-  private listenErrorCb(e: Error) {
+  /**
+   * Callback function for data server listening on error event.
+   * It's implemented as arrow function to use 'this' at callback context.
+   * @param e Error object.
+   */
+  private listenErrorCb = (e: Error) => {
     this.logger.trace(`AppComponent.listenErrorCb(${e})`);
     this.appNavi.status = AppStatus.Error;
-  }
+  };
 
   goToMain() {
     this.logger.trace('AppComponent.goToMain()');

@@ -3,21 +3,17 @@
 //
 import { Injectable } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
-import { Subject } from 'rxjs';
 import { Firestore, increment, runTransaction, updateDoc } from '@angular/fire/firestore';
 import { FirestoreCollectionName } from './firestore-collection-name.enum';
 import {
   FsAbility,
   FsAbilityType,
   FsCharacter,
-  FsCharacterDoc,
   FsCharacterType,
-  FsCharacterTypeDoc,
   FsFacilityType,
   FsGeographType,
   FsIllustrator,
   FsRegion,
-  FsRegionDoc,
   FsVoiceActor,
   FsWeaponType,
 } from './firestore-document.interface';
@@ -39,12 +35,12 @@ export class FirestoreDataService {
   collections: { [key in FirestoreCollectionName]: FirestoreCollectionWrapper<any> } = {
     //   Abilities:      new FirestoreCollectionWrapper<FsAbility>       (this.fs, this.logger, FirestoreCollectionName.Abilities), // eslint-disable-line
     //   AbilityTypes:   new FirestoreCollectionWrapper<FsAbilityType>   (this.fs, this.logger, FirestoreCollectionName.AbilityTypes), // eslint-disable-line
-    [FirestoreCollectionName.CharacterTypes]: new FirestoreCollectionWrapper<FsCharacterTypeDoc> (this.fs, this.logger, FirestoreCollectionName.CharacterTypes), // eslint-disable-line
-    [FirestoreCollectionName.Characters]:     new FirestoreCollectionWrapper<FsCharacterDoc>     (this.fs, this.logger,FirestoreCollectionName.Characters), // eslint-disable-line
+    [FirestoreCollectionName.CharacterTypes]: new FirestoreCollectionWrapper<FsCharacterType> (this.fs, this.logger, FirestoreCollectionName.CharacterTypes), // eslint-disable-line
+    [FirestoreCollectionName.Characters]:     new FirestoreCollectionWrapper<FsCharacter>     (this.fs, this.logger,FirestoreCollectionName.Characters), // eslint-disable-line
     //   FacilityTypes:  new FirestoreCollectionWrapper<FsFacilityType>  (this.fs, this.logger, FirestoreCollectionName.FacilityTypes), // eslint-disable-line
     //   GeographTypes:  new FirestoreCollectionWrapper<FsGeographType>  (this.fs, this.logger, FirestoreCollectionName.GeographTypes), // eslint-disable-line
     //   Illustrators:   new FirestoreCollectionWrapper<FsIllustrator>   (this.fs, this.logger, FirestoreCollectionName.Illustrators), // eslint-disable-line
-    [FirestoreCollectionName.Regions]:        new FirestoreCollectionWrapper<FsRegionDoc>        (this.fs, this.logger,FirestoreCollectionName.Regions), // eslint-disable-line
+    [FirestoreCollectionName.Regions]:        new FirestoreCollectionWrapper<FsRegion>        (this.fs, this.logger,FirestoreCollectionName.Regions), // eslint-disable-line
     //   VoiceActors:    new FirestoreCollectionWrapper<FsVoiceActor>    (this.fs, this.logger, FirestoreCollectionName.VoiceActors), // eslint-disable-line
     //   WeaponTypes:    new FirestoreCollectionWrapper<FsWeaponType>    (this.fs, this.logger, FirestoreCollectionName.WeaponTypes), // eslint-disable-line
   };
