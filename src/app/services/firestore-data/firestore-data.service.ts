@@ -38,7 +38,7 @@ export class FirestoreDataService {
     [FirestoreCollectionName.CharacterTypes]: new FirestoreCollectionWrapper<FsCharacterType> (this.fs, this.logger, FirestoreCollectionName.CharacterTypes), // eslint-disable-line
     [FirestoreCollectionName.Characters]:     new FirestoreCollectionWrapper<FsCharacter>     (this.fs, this.logger,FirestoreCollectionName.Characters), // eslint-disable-line
     //   FacilityTypes:  new FirestoreCollectionWrapper<FsFacilityType>  (this.fs, this.logger, FirestoreCollectionName.FacilityTypes), // eslint-disable-line
-    //   GeographTypes:  new FirestoreCollectionWrapper<FsGeographType>  (this.fs, this.logger, FirestoreCollectionName.GeographTypes), // eslint-disable-line
+    [FirestoreCollectionName.GeographTypes]:  new FirestoreCollectionWrapper<FsGeographType>  (this.fs, this.logger, FirestoreCollectionName.GeographTypes), // eslint-disable-line
     //   Illustrators:   new FirestoreCollectionWrapper<FsIllustrator>   (this.fs, this.logger, FirestoreCollectionName.Illustrators), // eslint-disable-line
     [FirestoreCollectionName.Regions]:        new FirestoreCollectionWrapper<FsRegion>        (this.fs, this.logger,FirestoreCollectionName.Regions), // eslint-disable-line
     //   VoiceActors:    new FirestoreCollectionWrapper<FsVoiceActor>    (this.fs, this.logger, FirestoreCollectionName.VoiceActors), // eslint-disable-line

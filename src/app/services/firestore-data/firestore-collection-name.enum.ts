@@ -4,7 +4,7 @@ export enum FirestoreCollectionName {
   CharacterTypes = 'CharacterTypes',
   Characters = 'Characters',
   //FacilityTypes = 'FacilityTypes',
-  //GeographTypes = 'GeographTypes',
+  GeographTypes = 'GeographTypes',
   //Illustrators = 'Illustrators',
   Regions = 'Regions',
   //VoiceActors = 'VoiceActors',

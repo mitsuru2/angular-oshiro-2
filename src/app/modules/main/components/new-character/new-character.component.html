@@ -1,8 +1,9 @@
 <h3>新規キャラクター登録</h3>
 
 {{ selectedCharacterType | json }}
-{{ inputName }} {{ selectedRarerity | json }} {{ selectedWeaponType | json }}
+{{ inputName }} {{ selectedRarerity | json }} {{ selectedWeaponType | json }} {{ selectedGeographTypes | json }}
 
+<br />
 <br />
 
 <form #newCharacterForm="ngForm" (ngSubmit)="submit()">
@@ -45,7 +46,7 @@
 
   <!-- Form group: Rarerity -->
   <div class="field grid">
-    <label for="newCharacterRarerityInput" class="col-fixed" style="width: 200px">Type:</label>
+    <label for="newCharacterRarerityInput" class="col-fixed" style="width: 200px">Rarerity:</label>
     <div class="col">
       <p-dropdown
         id="newCharacterRarerityInput"
@@ -63,7 +64,7 @@
 
   <!-- Form group: WeaponType -->
   <div class="field grid">
-    <label for="newCharacterWeaponTypeInput" class="col-fixed" style="width: 200px">Type:</label>
+    <label for="newCharacterWeaponTypeInput" class="col-fixed" style="width: 200px">Weapon Type:</label>
     <div class="col">
       <p-dropdown
         id="newCharacterWeaponTypeInput"
@@ -76,6 +77,47 @@
         [(ngModel)]="selectedWeaponType"
         [required]="true"
       ></p-dropdown>
+    </div>
+  </div>
+
+  <!-- Form group: Geograph Type -->
+  <div class="field grid">
+    <label for="newCharacterGeographTypeInput" class="col-fixed" style="width: 200px">Geograph Type:</label>
+    <div class="col">
+      <p-dropdown
+        id="newCharacterGeographTypeInput"
+        name="newCharacterGeographTypeInput"
+        placeholder="Select geograph type."
+        [options]="geographTypeItems"
+        optionLabel="name"
+        [showClear]="true"
+        [style]="{ width: '300px' }"
+        [(ngModel)]="selectedGeographTypes[0]"
+        [required]="true"
+        (onClear)="shiftGeographType()"
+      ></p-dropdown>
+      <button
+        *ngIf="!isShowSubGeographTypeInput"
+        pButton
+        type="button"
+        icon="pi pi-plus"
+        (click)="setSubGeographTypeInput(true)"
+      ></button>
+    </div>
+    <div class="col" *ngIf="isShowSubGeographTypeInput">
+      <p-dropdown
+        id="newCharacterGeographTypeInput2"
+        name="newCharacterGeographTypeInput2"
+        placeholder="Select geograph type."
+        [options]="geographTypeItems"
+        optionLabel="name"
+        [showClear]="true"
+        [style]="{ width: '300px' }"
+        [(ngModel)]="selectedGeographTypes[1]"
+        [required]="false"
+        (onClear)="setSubGeographTypeInput(false)"
+      ></p-dropdown>
+      <button pButton type="button" icon="pi pi-minus" (click)="setSubGeographTypeInput(false)"></button>
     </div>
   </div>
 

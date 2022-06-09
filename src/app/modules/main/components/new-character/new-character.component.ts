@@ -3,11 +3,11 @@ import { NGXLogger } from 'ngx-logger';
 import {
   FsCharacter,
   FsCharacterType,
+  FsGeographType,
   FsWeaponType,
 } from 'src/app/services/firestore-data/firestore-document.interface';
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
 import { FirestoreCollectionName } from 'src/app/services/firestore-data/firestore-collection-name.enum';
-import { FormControl, FormGroup } from '@angular/forms';
 import { CharacterTypeInNewCharacterForm, RarerityInNewCharacterForm } from './new-character-form.interface';
 
 @Component({
@@ -28,6 +28,12 @@ export class NewCharacterComponent implements OnInit {
 
   selectedRarerity?: RarerityInNewCharacterForm;
 
+  geographTypeItems!: FsGeographType[];
+
+  selectedGeographTypes: FsGeographType[] = [];
+
+  isShowSubGeographTypeInput = false;
+
   weaponTypeItems!: FsWeaponType[];
 
   selectedWeaponType?: FsWeaponType;
@@ -42,6 +48,7 @@ export class NewCharacterComponent implements OnInit {
     this.characterTypes = this.firestore.getData(FirestoreCollectionName.CharacterTypes) as FsCharacterType[];
     this.characterTypeItems = this.makeCharacterTypeItems(this.characterTypes);
     this.rarerityItems = this.makeRarerityItems();
+    this.geographTypeItems = this.firestore.getData(FirestoreCollectionName.GeographTypes) as FsGeographType[];
     this.weaponTypeItems = this.firestore.getData(FirestoreCollectionName.WeaponTypes) as FsWeaponType[];
   }
 
@@ -98,7 +105,7 @@ export class NewCharacterComponent implements OnInit {
         type: this.selectedCharacterType.index,
         rarerity: this.selectedRarerity?.value,
         weaponType: this.selectedWeaponType.index,
-        geographTypes: [0],
+        geographTypes: [this.selectedGeographTypes[0].index],
         region: 0,
         cost: 99,
       };
@@ -125,5 +132,27 @@ export class NewCharacterComponent implements OnInit {
 
   clearInputName() {
     this.inputName = '';
+  }
+
+  setSubGeographTypeInput(isShow: boolean) {
+    this.isShowSubGeographTypeInput = isShow;
+
+    if (isShow === false) {
+      if (this.selectedGeographTypes.length > 1) {
+        this.selectedGeographTypes.pop();
+        this.logger.info('NewCharacterCoponent.setSubGeographTypeInput() | 2nd geograph type info has been removed.');
+      }
+    }
+  }
+
+  shiftGeographType() {
+    this.logger.trace('NewCharacterComponent.shiftGeographType()');
+
+    if (this.selectedGeographTypes.length > 1) {
+      if (this.selectedGeographTypes[1] != undefined) {
+        this.selectedGeographTypes.shift();
+        this.isShowSubGeographTypeInput = false;
+      }
+    }
   }
 }
