@@ -42,7 +42,7 @@ export class FirestoreDataService {
     //   Illustrators:   new FirestoreCollectionWrapper<FsIllustrator>   (this.fs, this.logger, FirestoreCollectionName.Illustrators), // eslint-disable-line
     [FirestoreCollectionName.Regions]:        new FirestoreCollectionWrapper<FsRegion>        (this.fs, this.logger,FirestoreCollectionName.Regions), // eslint-disable-line
     //   VoiceActors:    new FirestoreCollectionWrapper<FsVoiceActor>    (this.fs, this.logger, FirestoreCollectionName.VoiceActors), // eslint-disable-line
-    //   WeaponTypes:    new FirestoreCollectionWrapper<FsWeaponType>    (this.fs, this.logger, FirestoreCollectionName.WeaponTypes), // eslint-disable-line
+    [FirestoreCollectionName.WeaponTypes]:    new FirestoreCollectionWrapper<FsWeaponType>    (this.fs, this.logger, FirestoreCollectionName.WeaponTypes), // eslint-disable-line
   };
 
   /**

@@ -8,5 +8,5 @@ export enum FirestoreCollectionName {
   //Illustrators = 'Illustrators',
   Regions = 'Regions',
   //VoiceActors = 'VoiceActors',
-  //WeaponTypes = 'WeaponTypes',
+  WeaponTypes = 'WeaponTypes',
 }

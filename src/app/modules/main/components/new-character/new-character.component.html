@@ -1,7 +1,9 @@
 <h3>新規キャラクター登録</h3>
 
 {{ selectedCharacterType | json }}
-{{ inputName }} {{ selectedRarerity | json }}
+{{ inputName }} {{ selectedRarerity | json }} {{ selectedWeaponType | json }}
+
+<br />
 
 <form #newCharacterForm="ngForm" (ngSubmit)="submit()">
   <!-- Form group: Character Type -->
@@ -11,7 +13,7 @@
       <p-dropdown
         id="newCharacterTypeInput"
         name="newCharacterTypeInput"
-        placeholder="Choose character type."
+        placeholder="Select character type."
         [options]="characterTypeItems"
         optionLabel="longName"
         [showClear]="true"
@@ -48,12 +50,30 @@
       <p-dropdown
         id="newCharacterRarerityInput"
         name="newCharacterRarerityInput"
-        placeholder="Choose rarerity."
+        placeholder="Select rarerity."
         [options]="rarerityItems"
         optionLabel="name"
         [showClear]="true"
         [style]="{ width: '300px' }"
         [(ngModel)]="selectedRarerity"
+        [required]="true"
+      ></p-dropdown>
+    </div>
+  </div>
+
+  <!-- Form group: WeaponType -->
+  <div class="field grid">
+    <label for="newCharacterWeaponTypeInput" class="col-fixed" style="width: 200px">Type:</label>
+    <div class="col">
+      <p-dropdown
+        id="newCharacterWeaponTypeInput"
+        name="newCharacterWeaponTypeInput"
+        placeholder="Select weapon type."
+        [options]="weaponTypeItems"
+        optionLabel="name"
+        [showClear]="true"
+        [style]="{ width: '300px' }"
+        [(ngModel)]="selectedWeaponType"
         [required]="true"
       ></p-dropdown>
     </div>

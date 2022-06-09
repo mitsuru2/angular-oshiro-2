@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
-import { FsCharacter, FsCharacterType } from 'src/app/services/firestore-data/firestore-document.interface';
+import {
+  FsCharacter,
+  FsCharacterType,
+  FsWeaponType,
+} from 'src/app/services/firestore-data/firestore-document.interface';
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
 import { FirestoreCollectionName } from 'src/app/services/firestore-data/firestore-collection-name.enum';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -18,11 +22,15 @@ export class NewCharacterComponent implements OnInit {
 
   selectedCharacterType?: CharacterTypeInNewCharacterForm;
 
+  inputName: string = '';
+
   rarerityItems!: RarerityInNewCharacterForm[];
 
   selectedRarerity?: RarerityInNewCharacterForm;
 
-  inputName: string = '';
+  weaponTypeItems!: FsWeaponType[];
+
+  selectedWeaponType?: FsWeaponType;
 
   shiromusumeFiles?: any[];
 
@@ -34,6 +42,7 @@ export class NewCharacterComponent implements OnInit {
     this.characterTypes = this.firestore.getData(FirestoreCollectionName.CharacterTypes) as FsCharacterType[];
     this.characterTypeItems = this.makeCharacterTypeItems(this.characterTypes);
     this.rarerityItems = this.makeRarerityItems();
+    this.weaponTypeItems = this.firestore.getData(FirestoreCollectionName.WeaponTypes) as FsWeaponType[];
   }
 
   private makeCharacterTypeItems(fsData: FsCharacterType[]): CharacterTypeInNewCharacterForm[] {
@@ -79,7 +88,7 @@ export class NewCharacterComponent implements OnInit {
 
     this.selectedRarerity = { name: '★1', value: 1 };
 
-    if (this.selectedCharacterType != undefined && this.selectedRarerity != undefined) {
+    if (this.selectedCharacterType && this.selectedRarerity && this.selectedWeaponType) {
       const count = await this.firestore.incrementCounter(FirestoreCollectionName.CharacterTypes, 0);
 
       const character: FsCharacter = {
@@ -88,12 +97,13 @@ export class NewCharacterComponent implements OnInit {
         name: this.inputName,
         type: this.selectedCharacterType.index,
         rarerity: this.selectedRarerity?.value,
-        weaponType: 0,
+        weaponType: this.selectedWeaponType.index,
         geographTypes: [0],
         region: 0,
         cost: 99,
       };
 
+      this.logger.debug(character);
       //this.firestore.addData(FirestoreCollectionName.Characters, character);
     }
   }
