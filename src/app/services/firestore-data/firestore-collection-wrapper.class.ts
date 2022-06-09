@@ -14,6 +14,8 @@ import { NGXLogger } from 'ngx-logger';
 import { FsDocumentBase } from './firestore-document.interface';
 
 export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
+  private className: string;
+
   private collection: CollectionReference<T>;
 
   data: any[];
@@ -25,7 +27,8 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
   private unsubscribe?: Unsubscribe;
 
   constructor(private fs: Firestore, private logger: NGXLogger, private name: FirestoreCollectionName) {
-    this.logger.trace(`new FirestoreCollectionWrapper(${name})`);
+    this.className = `FirestoreCollectionWrapper`;
+    this.logger.trace(`new ${this.className}()`, { name: name });
 
     this.collection = collection(this.fs, name) as CollectionReference<T>;
     this.data = [];
@@ -39,7 +42,8 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
    * @returns Promise<number>. Data length.
    */
   async load(): Promise<number> {
-    this.logger.trace('FirestoreCollectionWrapper.load()', { name: this.name });
+    const location = `${this.className}.load()`;
+    this.logger.trace(`${location}`, { name: this.name });
 
     // Get data from server.
     try {
@@ -55,12 +59,12 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
         this.data.push(tmp);
       });
       this.isLoaded = true;
-      this.logger.info(`FirestoreCollectionWrapper.load() | Data loading finished.`, {
+      this.logger.info(`${location} | Data loading finished.`, {
         name: this.name,
         length: Object.keys(this.data).length,
       });
     } catch (error) {
-      this.logger.error(`FirestoreCollectionWrapper.load() | Data loading failed.`, { name: this.name }, error);
+      this.logger.error(`${location} | Data loading failed.`, { name: this.name }, error);
       throw error;
     }
 
@@ -73,7 +77,8 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
    * ATTENTION: Don't forget to do stop listening by stopListening().
    */
   startListening(errorFn?: (e: Error) => void): void {
-    this.logger.trace('FirestoreCollectionWrapper.startListening()', { name: this.name });
+    const location = `${this.className}.startListening()`;
+    this.logger.trace(`${location}`, { name: this.name });
 
     this.isListening = true;
 
@@ -95,7 +100,7 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
           this.data.push(tmp);
         });
         this.isLoaded = true;
-        this.logger.info(`FirestoreCollectionWrapper.startListening() | Listen data received.`, {
+        this.logger.info(`${location} | Listen data received.`, {
           name: this.name,
           length: Object.keys(this.data).length,
         });
@@ -104,11 +109,7 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
       // Error handler.
       // 'isListening' flag is cleared because it will stop listening automatically by error.
       (error) => {
-        this.logger.error(
-          'FirestoreCollectionWrapper.startListening() | Data listening failed.',
-          { name: this.name },
-          error
-        );
+        this.logger.error('${location} | Data listening failed.', { name: this.name }, error);
         this.isListening = false;
         if (errorFn != null) {
           errorFn(error);
@@ -121,7 +122,8 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
    * It stops listening.
    */
   stopListening(): void {
-    this.logger.trace('FirestoreCollectionWrapper.stopListening()', { name: this.name });
+    const location = `${this.className}.stopListening()`;
+    this.logger.trace(`${location}`, { name: this.name });
 
     if (this.unsubscribe != null && this.isListening === true) {
       this.unsubscribe();
@@ -136,7 +138,8 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
    * @returns Promise<boolean>. Return true if it succeeded.
    */
   async add(data: any): Promise<boolean> {
-    this.logger.trace('FirestoreCollectionWrapper.add()', { name: this.name });
+    const location = `${this.className}.add()`;
+    this.logger.trace(`${location}`, { name: this.name });
 
     try {
       await addDoc(this.collection, data);

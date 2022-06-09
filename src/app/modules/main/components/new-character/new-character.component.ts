@@ -16,6 +16,8 @@ import { CharacterTypeInNewCharacterForm, RarerityInNewCharacterForm } from './n
   styleUrls: ['./new-character.component.scss'],
 })
 export class NewCharacterComponent implements OnInit {
+  className: string = 'NewCharacterComponent';
+
   characterTypes!: FsCharacterType[];
 
   characterTypeItems!: CharacterTypeInNewCharacterForm[];
@@ -41,7 +43,7 @@ export class NewCharacterComponent implements OnInit {
   shiromusumeFiles?: any[];
 
   constructor(private logger: NGXLogger, private firestore: FirestoreDataService) {
-    this.logger.trace('new NewCharacterComponent()');
+    this.logger.trace(`new ${this.className}()`);
   }
 
   ngOnInit(): void {
@@ -53,7 +55,7 @@ export class NewCharacterComponent implements OnInit {
   }
 
   private makeCharacterTypeItems(fsData: FsCharacterType[]): CharacterTypeInNewCharacterForm[] {
-    this.logger.trace('NewCharacterComponent.makeCharacterTypeItems()');
+    this.logger.trace('${this.className}.makeCharacterTypeItems()');
 
     let list = [];
 
