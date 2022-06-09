@@ -3,7 +3,7 @@
 //
 import { Injectable } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
-import { Firestore, increment, runTransaction, updateDoc } from '@angular/fire/firestore';
+import { Firestore, doc, increment, runTransaction, updateDoc } from '@angular/fire/firestore';
 import { FirestoreCollectionName } from './firestore-collection-name.enum';
 import {
   FsAbility,
@@ -100,30 +100,40 @@ export class FirestoreDataService {
     this.collections[name].add(data);
   }
 
-  /*
-  getNewIndex(name: FirestoreCollectionName, index: number): number {
-    this.logger.trace(`FirestoreDataService.getNewIndex(${name})`);
+  /**
+   * Increment 'count' field of the specified document.
+   * @param name Data collection name.
+   * @param index Document index.
+   * @returns Promise with number. The number represents the counter value before increment.
+   */
+  async incrementCounter(name: FirestoreCollectionName, index: number): Promise<number> {
+    this.logger.trace(`FirestoreDataService.incrementCounter(${name}, ${index})`);
 
     if (name === FirestoreCollectionName.CharacterTypes) {
       const docId = this.collections[name].data[index].id;
       const docRef = doc(this.fs, `${name}/${docId}`);
-      const retVal = updateDoc(docRef, { num: increment(1) });
+      let count = 0;
 
-      this.logger.debug(`retVal: ${retVal}`);
+      await runTransaction(this.fs, async (transaction) => {
+        const docBody = await transaction.get(docRef);
 
-      runTransaction(this.fs, async (transaction) => {
-        const docRef2 = doc(this.fs, `${name}/${docId}`);
-        const docBody = await transaction.get(docRef2);
-        const num = (docBody.data() as FsCharacterType).num;
-        this.logger.debug(`index: ${num}`);
-        transaction.update(docRef2, { num: num + 1 });
+        if (!docBody.exists()) {
+          this.logger.error(
+            `FirestoreDataService.incrementCounter() | Document was not found. { path: ${name}/${docId} }`
+          );
+          throw Error(`FirestoreDataService.incrementCounter() | Document was not found. { path: ${name}/${docId} }`);
+        }
+
+        count = (docBody.data() as FsCharacterType).count;
+        transaction.update(docRef, { count: count + 1 });
       });
 
-      return 1;
+      this.logger.debug(`count: ${count}`);
+
+      return count;
     } else {
-      this.logger.error('Not supported collection name.');
-      return 0;
+      this.logger.error(`FirestoreDataService.incrementCounter() | Unsupported collection. { name: ${name} }`);
+      throw Error(`FirestoreDataService.incrementCounter() | Unsupported collection. { name: ${name} }`);
     }
   }
-  */
 }

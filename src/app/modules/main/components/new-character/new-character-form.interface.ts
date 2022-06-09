@@ -8,9 +8,3 @@ export interface RarerityInNewCharacterForm {
   name: string;
   value: number;
 }
-
-export interface NewCharacterForm {
-  type: CharacterTypeInNewCharacterForm;
-  rarerity: RarerityInNewCharacterForm;
-  name: string;
-}

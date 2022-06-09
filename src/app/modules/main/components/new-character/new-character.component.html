@@ -1,16 +1,16 @@
 <h3>新規キャラクター登録</h3>
 
 {{ selectedCharacterType | json }}
-{{ inputName }}
+{{ inputName }} {{ selectedRarerity | json }}
 
 <form #newCharacterForm="ngForm" (ngSubmit)="submit()">
   <!-- Form group: Character Type -->
   <div class="field grid">
-    <label for="characterTypeInput" class="col-fixed" style="width: 200px">Type:</label>
+    <label for="newCharacterTypeInput" class="col-fixed" style="width: 200px">Type:</label>
     <div class="col">
       <p-dropdown
-        id="characterTypeInput"
-        name="characterTypeInput"
+        id="newCharacterTypeInput"
+        name="newCharacterTypeInput"
         placeholder="Choose character type."
         [options]="characterTypeItems"
         optionLabel="longName"
@@ -24,20 +24,38 @@
 
   <!-- Form group: Character Name -->
   <div class="field grid">
-    <label for="characterNameInput" class="col-fixed" style="width: 200px">Name:</label>
+    <label for="newCharacterNameInput" class="col-fixed" style="width: 200px">Name:</label>
     <div class="col">
       <span class="p-input-icon-right">
         <i *ngIf="inputName !== ''" class="pi pi-times" (click)="clearInputName()"></i>
         <input
           type="text"
           pInputText
-          id="characterNameInput"
-          name="characterNameInput"
+          id="newCharacterNameInput"
+          name="newCharacterNameInput"
           placeholder="Input character name."
           [style]="{ width: '300px' }"
           [(ngModel)]="inputName"
         />
       </span>
+    </div>
+  </div>
+
+  <!-- Form group: Rarerity -->
+  <div class="field grid">
+    <label for="newCharacterRarerityInput" class="col-fixed" style="width: 200px">Type:</label>
+    <div class="col">
+      <p-dropdown
+        id="newCharacterRarerityInput"
+        name="newCharacterRarerityInput"
+        placeholder="Choose rarerity."
+        [options]="rarerityItems"
+        optionLabel="name"
+        [showClear]="true"
+        [style]="{ width: '300px' }"
+        [(ngModel)]="selectedRarerity"
+        [required]="true"
+      ></p-dropdown>
     </div>
   </div>
 

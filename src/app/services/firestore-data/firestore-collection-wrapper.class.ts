@@ -25,6 +25,8 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
   private unsubscribe?: Unsubscribe;
 
   constructor(private fs: Firestore, private logger: NGXLogger, private name: FirestoreCollectionName) {
+    this.logger.trace(`new FirestoreCollectionWrapper(${name})`);
+
     this.collection = collection(this.fs, name) as CollectionReference<T>;
     this.data = [];
     this.isLoaded = false;
@@ -37,6 +39,8 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
    * @returns Promise<number>. Data length.
    */
   async load(): Promise<number> {
+    this.logger.trace('FirestoreCollectionWrapper.load()', { name: this.name });
+
     // Get data from server.
     try {
       // Copy document ID and its data to "this.data" object, if it's not empty.
@@ -51,12 +55,12 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
         this.data.push(tmp);
       });
       this.isLoaded = true;
-      this.logger.info(`FirestoreCollectionWrapper: Data loading finished.`, {
+      this.logger.info(`FirestoreCollectionWrapper.load() | Data loading finished.`, {
         name: this.name,
         length: Object.keys(this.data).length,
       });
     } catch (error) {
-      this.logger.error(`FirestoreCollectionWrapper: Data loading failed.`, { name: this.name }, error);
+      this.logger.error(`FirestoreCollectionWrapper.load() | Data loading failed.`, { name: this.name }, error);
       throw error;
     }
 
@@ -69,6 +73,8 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
    * ATTENTION: Don't forget to do stop listening by stopListening().
    */
   startListening(errorFn?: (e: Error) => void): void {
+    this.logger.trace('FirestoreCollectionWrapper.startListening()', { name: this.name });
+
     this.isListening = true;
 
     const q = query(this.collection, orderBy('index'));
@@ -89,7 +95,7 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
           this.data.push(tmp);
         });
         this.isLoaded = true;
-        this.logger.info(`FirestoreCollectionWrapper: Listen data received.`, {
+        this.logger.info(`FirestoreCollectionWrapper.startListening() | Listen data received.`, {
           name: this.name,
           length: Object.keys(this.data).length,
         });
@@ -98,7 +104,11 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
       // Error handler.
       // 'isListening' flag is cleared because it will stop listening automatically by error.
       (error) => {
-        this.logger.error('FirestoreCollectionWrapper: Data listening failed.', { name: this.name }, error);
+        this.logger.error(
+          'FirestoreCollectionWrapper.startListening() | Data listening failed.',
+          { name: this.name },
+          error
+        );
         this.isListening = false;
         if (errorFn != null) {
           errorFn(error);
@@ -111,6 +121,8 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
    * It stops listening.
    */
   stopListening(): void {
+    this.logger.trace('FirestoreCollectionWrapper.stopListening()', { name: this.name });
+
     if (this.unsubscribe != null && this.isListening === true) {
       this.unsubscribe();
       this.isListening = false;
@@ -124,6 +136,8 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
    * @returns Promise<boolean>. Return true if it succeeded.
    */
   async add(data: any): Promise<boolean> {
+    this.logger.trace('FirestoreCollectionWrapper.add()', { name: this.name });
+
     try {
       await addDoc(this.collection, data);
     } catch (error) {

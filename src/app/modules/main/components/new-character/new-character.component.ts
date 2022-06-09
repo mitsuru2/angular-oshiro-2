@@ -4,11 +4,7 @@ import { FsCharacter, FsCharacterType } from 'src/app/services/firestore-data/fi
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
 import { FirestoreCollectionName } from 'src/app/services/firestore-data/firestore-collection-name.enum';
 import { FormControl, FormGroup } from '@angular/forms';
-import {
-  CharacterTypeInNewCharacterForm,
-  NewCharacterForm,
-  RarerityInNewCharacterForm,
-} from './new-character-form.interface';
+import { CharacterTypeInNewCharacterForm, RarerityInNewCharacterForm } from './new-character-form.interface';
 
 @Component({
   selector: 'app-new-character',
@@ -16,8 +12,6 @@ import {
   styleUrls: ['./new-character.component.scss'],
 })
 export class NewCharacterComponent implements OnInit {
-  formData!: NewCharacterForm;
-
   characterTypes!: FsCharacterType[];
 
   characterTypeItems!: CharacterTypeInNewCharacterForm[];
@@ -31,8 +25,6 @@ export class NewCharacterComponent implements OnInit {
   inputName: string = '';
 
   shiromusumeFiles?: any[];
-
-  character: FsCharacter = <FsCharacter>{};
 
   constructor(private logger: NGXLogger, private firestore: FirestoreDataService) {
     this.logger.trace('new NewCharacterComponent()');
@@ -82,14 +74,27 @@ export class NewCharacterComponent implements OnInit {
     return list;
   }
 
-  submit(): void {
-    if (this.selectedCharacterType) {
-      this.character.type = this.selectedCharacterType.index;
-      this.character.name = this.inputName;
-      this.character.id = '';
+  async submit() {
+    this.logger.trace(`NewCharacterComponent.submit()`);
 
-      //this.firestore.getNewIndex(FirestoreCollectionName.CharacterTypes, 0);
-      //this.firestore.addData(FirestoreCollectionName.Characters, this.character);
+    this.selectedRarerity = { name: '★1', value: 1 };
+
+    if (this.selectedCharacterType != undefined && this.selectedRarerity != undefined) {
+      const count = await this.firestore.incrementCounter(FirestoreCollectionName.CharacterTypes, 0);
+
+      const character: FsCharacter = {
+        id: '', // Auto ID.
+        index: `${this.selectedCharacterType.code}-${('0000' + count).slice(-4)}`,
+        name: this.inputName,
+        type: this.selectedCharacterType.index,
+        rarerity: this.selectedRarerity?.value,
+        weaponType: 0,
+        geographTypes: [0],
+        region: 0,
+        cost: 99,
+      };
+
+      //this.firestore.addData(FirestoreCollectionName.Characters, character);
     }
   }
 
