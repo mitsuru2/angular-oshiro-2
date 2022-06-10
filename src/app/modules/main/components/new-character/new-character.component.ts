@@ -106,7 +106,7 @@ export class NewCharacterComponent implements OnInit {
 
       const character: FsCharacter = {
         id: '', // Auto ID.
-        index: `${this.selectedCharacterType.code}-${('0000' + count).slice(-4)}`,
+        index: `${this.selectedCharacterType.code}-${('0000' + count.toString(16).toUpperCase()).slice(-4)}`,
         name: this.inputName,
         type: this.selectedCharacterType.index,
         rarerity: this.selectedRarerity?.value,
