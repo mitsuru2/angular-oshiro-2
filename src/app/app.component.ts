@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { FirebaseStorage } from '@angular/fire/storage';
 import { Router } from '@angular/router';
 import { NGXLogger } from 'ngx-logger';
 import { AppInfo } from './app-info.enum';

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
 import {
   FsCharacter,
@@ -9,6 +9,7 @@ import {
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
 import { FirestoreCollectionName } from 'src/app/services/firestore-data/firestore-collection-name.enum';
 import { CharacterTypeInNewCharacterForm, RarerityInNewCharacterForm } from './new-character-form.interface';
+import { ref, Storage, uploadBytes } from '@angular/fire/storage';
 
 @Component({
   selector: 'app-new-character',
@@ -16,6 +17,8 @@ import { CharacterTypeInNewCharacterForm, RarerityInNewCharacterForm } from './n
   styleUrls: ['./new-character.component.scss'],
 })
 export class NewCharacterComponent implements OnInit {
+  @ViewChild('shiromusumePreview') shiromusumePreview!: ElementRef<HTMLCanvasElement>;
+
   className: string = 'NewCharacterComponent';
 
   characterTypes!: FsCharacterType[];
@@ -40,9 +43,9 @@ export class NewCharacterComponent implements OnInit {
 
   selectedWeaponType?: FsWeaponType;
 
-  shiromusumeFiles?: any[];
+  shiromusumeFile?: any;
 
-  constructor(private logger: NGXLogger, private firestore: FirestoreDataService) {
+  constructor(private logger: NGXLogger, private firestore: FirestoreDataService, private storage: Storage) {
     this.logger.trace(`new ${this.className}()`);
   }
 
@@ -55,7 +58,7 @@ export class NewCharacterComponent implements OnInit {
   }
 
   private makeCharacterTypeItems(fsData: FsCharacterType[]): CharacterTypeInNewCharacterForm[] {
-    this.logger.trace('${this.className}.makeCharacterTypeItems()');
+    this.logger.trace(`${this.className}.makeCharacterTypeItems()`);
 
     let list = [];
 
@@ -98,7 +101,8 @@ export class NewCharacterComponent implements OnInit {
     this.selectedRarerity = { name: '★1', value: 1 };
 
     if (this.selectedCharacterType && this.selectedRarerity && this.selectedWeaponType) {
-      const count = await this.firestore.incrementCounter(FirestoreCollectionName.CharacterTypes, 0);
+      //const count = await this.firestore.incrementCounter(FirestoreCollectionName.CharacterTypes, 0);
+      const count = 1;
 
       const character: FsCharacter = {
         id: '', // Auto ID.
@@ -111,25 +115,50 @@ export class NewCharacterComponent implements OnInit {
         region: 0,
         cost: 99,
       };
-
       this.logger.debug(character);
+
+      const shiromusumeImageRef = ref(
+        this.storage,
+        `images/characters/${character.index}/${character.index}_shiromusume.png`
+      );
+      //uploadBytes(shiromusumeImageRef, this.shiromusumeFile).then((snp) => {
+      //  this.logger.debug('uploaded', snp);
+      //});
+
       //this.firestore.addData(FirestoreCollectionName.Characters, character);
     }
   }
 
   onFileChange(id: string, event: Event) {
-    this.logger.trace('NewCharacterComponent.onFileChange()');
+    this.logger.trace(`${this.className}.onFileChange()`);
 
     const input = event.target as HTMLInputElement;
 
-    if (!input.files?.length) {
+    if (!input.files) {
       return;
     }
 
-    if (this.shiromusumeFiles == null) {
-      this.shiromusumeFiles = [];
-    }
-    this.shiromusumeFiles.push(input.files[0]);
+    this.shiromusumeFile = input.files[0];
+
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+      const canvas = this.shiromusumePreview.nativeElement as HTMLCanvasElement;
+      const context = canvas.getContext('2d');
+      const image = new Image();
+      image.src = fileReader.result as string;
+      image.onload = () => {
+        canvas.width = image.width;
+        canvas.height = image.height;
+        context?.drawImage(image, 0, 0);
+      };
+    };
+    fileReader.readAsDataURL(input.files[0]);
+  }
+
+  clearFile(id: string) {
+    this.logger.trace(`${this.className}.clearFile()`);
+
+    this.shiromusumeFile = null;
   }
 
   clearInputName() {

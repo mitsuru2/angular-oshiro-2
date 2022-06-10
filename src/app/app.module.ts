@@ -7,6 +7,7 @@ import { AppComponent } from './app.component';
 import { environment } from '../environments/environment';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import { provideStorage, getStorage } from '@angular/fire/storage';
 import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
 import { HttpClientModule } from '@angular/common/http'; // for NGX Logger.
 
@@ -25,6 +26,7 @@ import { EnterComponent } from './views/enter/enter.component';
     AppRoutingModule,
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideFirestore(() => getFirestore()),
+    provideStorage(() => getStorage()),
     HttpClientModule,
     LoggerModule.forRoot({
       //serverLoggingUrl: 'http://localhost:8080/',

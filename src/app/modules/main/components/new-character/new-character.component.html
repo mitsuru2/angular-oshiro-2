@@ -96,13 +96,7 @@
         [required]="true"
         (onClear)="shiftGeographType()"
       ></p-dropdown>
-      <button
-        *ngIf="!isShowSubGeographTypeInput"
-        pButton
-        type="button"
-        icon="pi pi-plus"
-        (click)="setSubGeographTypeInput(true)"
-      ></button>
+      <button *ngIf="!isShowSubGeographTypeInput" pButton type="button" icon="pi pi-plus" (click)="setSubGeographTypeInput(true)"></button>
     </div>
     <div class="col" *ngIf="isShowSubGeographTypeInput">
       <p-dropdown
@@ -121,65 +115,25 @@
     </div>
   </div>
 
+  <!-- Shiromusume Image File. -->
+  <div class="field grid">
+    <label class="col-fixed" style="width: 200px">Images:</label>
+    <div class="col">
+      <label for="shiromusumeImage" pButton label="Shiromusume">
+        <input type="file" id="shiromusumeImage" [style]="{ display: 'none' }" (change)="onFileChange('shiromusumeImage', $event)" />
+      </label>
+      <p-button icon="pi pi-times" (click)="clearFile('shiromusumeImage')"></p-button>
+      <div *ngIf="shiromusumeFile">
+        <canvas #shiromusumePreview style="max-width: 300px"></canvas>
+      </div>
+    </div>
+  </div>
+
   <!-- Submit Button -->
   <button pButton label="Submit"></button>
 </form>
 
-<!--
-<form #form="ngForm" (ngSubmit)="submit()">
---><!-- Character Type --><!--
-  <div class="field grid">
-    <label for="characterTypeDD" class="col-fixed" style="width: 200px">Character Type:</label>
-    <div class="col">
-      <p-dropdown
-        id="characterTypeDD"
-        name="type"
-        [options]="characterTypeItems"
-        optionLabel="name"
-        placeholder="Select a character type."
-        [style]="{ width: '300px' }"
-        [showClear]="true"
-        [(ngModel)]="selectedCharacterType"
-        #type="ngModel"
-      ></p-dropdown>
-    </div>
-  </div>
-
---><!-- Rarerity --><!--
-  <div class="field grid">
-    <label for="rarerityDD" class="col-fixed" style="width: 200px">Rarerity:</label>
-    <div class="col">
-      <p-dropdown
-        id="rarerityDD"
-        name="rarerity"
-        [options]="rarerityItems"
-        optionLabel="name"
-        placeholder="Select a rarerity."
-        [style]="{ width: '300px' }"
-        [showClear]="true"
-        [(ngModel)]="selectedRarerity"
-        #rarerity="ngModel"
-      ></p-dropdown>
-    </div>
-  </div>
-
---><!-- Character Name --><!--
-  <div class="field grid">
-    <label for="nameInput" class="col-fixed" style="width: 200px">Name:</label>
-    <div class="col">
-      <input
-        type="text"
-        pInputText
-        id="nameInput"
-        placeholder="Input character name."
-        [style]="{ width: '300px' }"
-        [(ngModel)]="inputName"
-        #name="ngModel"
-      />
-    </div>
-  </div>
-
---><!-- Shiromusume Image File. --><!--
+<!-- Shiromusume Image File. --><!--
   <div class="field grid">
     <label for="shirmusumeImageInput" class="col-fixed" style="width: 200px">Images:</label>
     <div class="col">
