@@ -20,7 +20,7 @@ export interface NewCharacterFormOutput {
   rarerity: number;
   weaponType: FsWeaponType;
   geographTypes: FsGeographType[];
-  region: FsRegion;
+  region?: FsRegion;
   cost: number;
   cost_kai?: number;
 }

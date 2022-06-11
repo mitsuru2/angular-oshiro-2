@@ -82,23 +82,21 @@ export class NewCharacterFormComponent implements OnInit {
   onCharacterTypeChanged() {
     this.logger.trace(`${this.className}.onCharacterTypeChanged()`);
 
-    // Update weapon type item list.
-    this.weaponTypeItems = this.makeWeaponTypeItems(this.selectedCharacterType, this.weaponTypes);
-    this.selectedWeaponType = undefined;
-
     // Clear form except character type.
     this.clearForm(['characterType']);
+
+    // Update weapon type item list.
+    this.weaponTypeItems = this.makeWeaponTypeItems(this.selectedCharacterType, this.weaponTypes);
+    if (this.weaponTypeItems.length === 1) {
+      this.selectedWeaponType = this.weaponTypeItems[0];
+    }
   }
 
   onConfirmButtonClick() {
     const location = `${this.className}.onConfirmButtonClick()`;
     this.logger.trace(location);
 
-    if (
-      this.selectedRarerity == undefined ||
-      this.selectedWeaponType == undefined ||
-      this.selectedRegion == undefined
-    ) {
+    if (this.selectedRarerity == undefined || this.selectedWeaponType == undefined) {
       return;
     }
 
@@ -118,9 +116,12 @@ export class NewCharacterFormComponent implements OnInit {
       rarerity: this.selectedRarerity.value,
       weaponType: this.selectedWeaponType,
       geographTypes: this.selectedGeographTypes,
-      region: this.selectedRegion,
       cost: 0,
     };
+
+    if (this.selectedRegion != undefined) {
+      character.region = this.selectedRegion;
+    }
 
     this.updateCharacterCost(character);
 
@@ -209,7 +210,9 @@ export class NewCharacterFormComponent implements OnInit {
   private updateCharacterCost(character: NewCharacterFormOutput) {
     if (character.characterType.isCostCalcEnable) {
       character.cost = character.weaponType.baseCost;
-      character.cost_kai = character.cost - 1;
+      if (character.characterType.isKaichikuEnable) {
+        character.cost_kai = character.cost - 1;
+      }
     } else {
       character.cost = this.characterCost;
       if (character.characterType.isKaichikuEnable) {
