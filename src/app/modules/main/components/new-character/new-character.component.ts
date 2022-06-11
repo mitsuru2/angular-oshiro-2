@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, Directive, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
 import {
   FsCharacter,
@@ -10,6 +10,7 @@ import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-
 import { FirestoreCollectionName } from 'src/app/services/firestore-data/firestore-collection-name.enum';
 import { CharacterTypeInNewCharacterForm, RarerityInNewCharacterForm } from './new-character-form.interface';
 import { ref, Storage, uploadBytes } from '@angular/fire/storage';
+import { AbstractControl, NG_VALIDATORS, ValidationErrors, Validator, ValidatorFn } from '@angular/forms';
 
 @Component({
   selector: 'app-new-character',
@@ -35,6 +36,8 @@ export class NewCharacterComponent implements OnInit {
 
   geographTypeItems!: FsGeographType[];
 
+  geographTypeItems2!: FsGeographType[];
+
   selectedGeographTypes: FsGeographType[] = [];
 
   isShowSubGeographTypeInput = false;
@@ -45,6 +48,8 @@ export class NewCharacterComponent implements OnInit {
 
   shiromusumeFile?: any;
 
+  isPlusGeographTypeButtonActive = false;
+
   constructor(private logger: NGXLogger, private firestore: FirestoreDataService, private storage: Storage) {
     this.logger.trace(`new ${this.className}()`);
   }
@@ -54,6 +59,7 @@ export class NewCharacterComponent implements OnInit {
     this.characterTypeItems = this.makeCharacterTypeItems(this.characterTypes);
     this.rarerityItems = this.makeRarerityItems();
     this.geographTypeItems = this.firestore.getData(FirestoreCollectionName.GeographTypes) as FsGeographType[];
+    this.geographTypeItems2 = this.firestore.getData(FirestoreCollectionName.GeographTypes) as FsGeographType[];
     this.weaponTypeItems = this.firestore.getData(FirestoreCollectionName.WeaponTypes) as FsWeaponType[];
   }
 
@@ -184,6 +190,29 @@ export class NewCharacterComponent implements OnInit {
         this.selectedGeographTypes.shift();
         this.isShowSubGeographTypeInput = false;
       }
+    }
+  }
+
+  checkGeographTypeInput(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      this.logger.trace(`${this.className}.checkGeographTypeInput()`);
+      let result = true;
+      result = this.selectedGeographTypes[0].index == this.selectedGeographTypes[1].index;
+      return result ? control.value : null;
+    };
+  }
+
+  filterGeographType2() {
+    if (this.selectedGeographTypes[0] != undefined) {
+      this.isPlusGeographTypeButtonActive = true;
+      this.geographTypeItems2 = [];
+      for (let i = 0; i < this.geographTypeItems.length; ++i) {
+        if (this.geographTypeItems[i].index !== this.selectedGeographTypes[0].index) {
+          this.geographTypeItems2.push(this.geographTypeItems[i]);
+        }
+      }
+    } else {
+      this.isPlusGeographTypeButtonActive = false;
     }
   }
 }

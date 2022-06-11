@@ -39,6 +39,7 @@
           placeholder="Input character name."
           [style]="{ width: '300px' }"
           [(ngModel)]="inputName"
+          appForbiddenName="松前城"
         />
       </span>
     </div>
@@ -94,21 +95,31 @@
         [style]="{ width: '300px' }"
         [(ngModel)]="selectedGeographTypes[0]"
         [required]="true"
+        [disabled]="isShowSubGeographTypeInput"
         (onClear)="shiftGeographType()"
+        (onChange)="filterGeographType2()"
       ></p-dropdown>
-      <button *ngIf="!isShowSubGeographTypeInput" pButton type="button" icon="pi pi-plus" (click)="setSubGeographTypeInput(true)"></button>
+      <button
+        *ngIf="!isShowSubGeographTypeInput"
+        pButton
+        type="button"
+        icon="pi pi-plus"
+        (click)="setSubGeographTypeInput(true)"
+        [disabled]="!isPlusGeographTypeButtonActive"
+      ></button>
     </div>
     <div class="col" *ngIf="isShowSubGeographTypeInput">
       <p-dropdown
         id="newCharacterGeographTypeInput2"
         name="newCharacterGeographTypeInput2"
         placeholder="Select geograph type."
-        [options]="geographTypeItems"
+        [options]="geographTypeItems2"
         optionLabel="name"
         [showClear]="true"
         [style]="{ width: '300px' }"
         [(ngModel)]="selectedGeographTypes[1]"
         [required]="false"
+        checkGeographTypeInput
         (onClear)="setSubGeographTypeInput(false)"
       ></p-dropdown>
       <button pButton type="button" icon="pi pi-minus" (click)="setSubGeographTypeInput(false)"></button>
@@ -130,7 +141,7 @@
   </div>
 
   <!-- Submit Button -->
-  <button pButton label="Submit"></button>
+  <button pButton label="Submit" [disabled]="!newCharacterForm.form.valid"></button>
 </form>
 
 <!-- Shiromusume Image File. --><!--
