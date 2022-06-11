@@ -4,11 +4,15 @@ import {
   FsCharacter,
   FsCharacterType,
   FsGeographType,
+  FsRegion,
   FsWeaponType,
 } from 'src/app/services/firestore-data/firestore-document.interface';
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
 import { FirestoreCollectionName } from 'src/app/services/firestore-data/firestore-collection-name.enum';
-import { CharacterTypeInNewCharacterForm, RarerityInNewCharacterForm } from './new-character-form.interface';
+import {
+  CharacterTypeInNewCharacterForm,
+  RarerityInNewCharacterForm,
+} from '../../views/new-character-form/new-character-form.interface';
 import { ref, Storage, uploadBytes } from '@angular/fire/storage';
 import { AbstractControl, NG_VALIDATORS, ValidationErrors, Validator, ValidatorFn } from '@angular/forms';
 
@@ -24,8 +28,6 @@ export class NewCharacterComponent implements OnInit {
 
   characterTypes!: FsCharacterType[];
 
-  characterTypeItems!: CharacterTypeInNewCharacterForm[];
-
   selectedCharacterType?: CharacterTypeInNewCharacterForm;
 
   inputName: string = '';
@@ -34,17 +36,17 @@ export class NewCharacterComponent implements OnInit {
 
   selectedRarerity?: RarerityInNewCharacterForm;
 
-  geographTypeItems!: FsGeographType[];
-
-  geographTypeItems2!: FsGeographType[];
+  geographTypes!: FsGeographType[];
 
   selectedGeographTypes: FsGeographType[] = [];
 
   isShowSubGeographTypeInput = false;
 
-  weaponTypeItems!: FsWeaponType[];
+  weaponTypes!: FsWeaponType[];
 
   selectedWeaponType?: FsWeaponType;
+
+  regions!: FsRegion[];
 
   shiromusumeFile?: File | null;
 
@@ -58,49 +60,9 @@ export class NewCharacterComponent implements OnInit {
 
   ngOnInit(): void {
     this.characterTypes = this.firestore.getData(FirestoreCollectionName.CharacterTypes) as FsCharacterType[];
-    this.characterTypeItems = this.makeCharacterTypeItems(this.characterTypes);
-    this.rarerityItems = this.makeRarerityItems();
-    this.geographTypeItems = this.firestore.getData(FirestoreCollectionName.GeographTypes) as FsGeographType[];
-    this.geographTypeItems2 = this.firestore.getData(FirestoreCollectionName.GeographTypes) as FsGeographType[];
-    this.weaponTypeItems = this.firestore.getData(FirestoreCollectionName.WeaponTypes) as FsWeaponType[];
-  }
-
-  private makeCharacterTypeItems(fsData: FsCharacterType[]): CharacterTypeInNewCharacterForm[] {
-    this.logger.trace(`${this.className}.makeCharacterTypeItems()`);
-
-    let list = [];
-
-    for (let c of fsData) {
-      let tmp: CharacterTypeInNewCharacterForm = {
-        id: c.id,
-        index: c.index,
-        names: { ...c.names },
-        count: c.count,
-        longName: c.names[0],
-        code: c.code,
-      };
-      if (c.names.length > 1) {
-        tmp.longName += ' | ' + c.names[1];
-      }
-      list.push(tmp);
-    }
-    list.sort((a, b) => {
-      return a.code < b.code ? -1 : 1;
-    });
-
-    return list;
-  }
-
-  private makeRarerityItems(): RarerityInNewCharacterForm[] {
-    let list = [];
-
-    for (let i = 0; i < 7; i++) {
-      let tmp: RarerityInNewCharacterForm = { name: '★' + String(i + 1), value: i + 1 };
-      list.push(tmp);
-    }
-    list.sort((a, b) => b.value - a.value);
-
-    return list;
+    this.geographTypes = this.firestore.getData(FirestoreCollectionName.GeographTypes) as FsGeographType[];
+    this.weaponTypes = this.firestore.getData(FirestoreCollectionName.WeaponTypes) as FsWeaponType[];
+    this.regions = this.firestore.getData(FirestoreCollectionName.Regions) as FsRegion[];
   }
 
   async submit() {
@@ -192,29 +154,6 @@ export class NewCharacterComponent implements OnInit {
         this.selectedGeographTypes.shift();
         this.isShowSubGeographTypeInput = false;
       }
-    }
-  }
-
-  checkGeographTypeInput(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      this.logger.trace(`${this.className}.checkGeographTypeInput()`);
-      let result = true;
-      result = this.selectedGeographTypes[0].index == this.selectedGeographTypes[1].index;
-      return result ? control.value : null;
-    };
-  }
-
-  filterGeographType2() {
-    if (this.selectedGeographTypes[0] != undefined) {
-      this.isPlusGeographTypeButtonActive = true;
-      this.geographTypeItems2 = [];
-      for (let i = 0; i < this.geographTypeItems.length; ++i) {
-        if (this.geographTypeItems[i].index !== this.selectedGeographTypes[0].index) {
-          this.geographTypeItems2.push(this.geographTypeItems[i]);
-        }
-      }
-    } else {
-      this.isPlusGeographTypeButtonActive = false;
     }
   }
 

@@ -11,6 +11,10 @@ import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { FileUploadModule } from 'primeng/fileupload';
 import { DialogModule } from 'primeng/dialog';
+import { CardModule } from 'primeng/card';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { CheckboxModule } from 'primeng/checkbox';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 import { MainRoutingModule } from './main-routing.module';
 import { MainComponent } from './main.component';
@@ -20,6 +24,7 @@ import { TopMenuComponent } from './views/top-menu/top-menu.component';
 import { ConfirmationService } from 'primeng/api';
 import { SideMenuComponent } from './views/side-menu/side-menu.component';
 import { LegalComponent } from './components/legal/legal.component';
+import { NewCharacterFormComponent } from './views/new-character-form/new-character-form.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +34,7 @@ import { LegalComponent } from './components/legal/legal.component';
     TopMenuComponent,
     SideMenuComponent,
     LegalComponent,
+    NewCharacterFormComponent,
   ],
   imports: [
     CommonModule,
@@ -44,6 +50,10 @@ import { LegalComponent } from './components/legal/legal.component';
     InputTextModule,
     FileUploadModule,
     DialogModule,
+    CardModule,
+    RadioButtonModule,
+    CheckboxModule,
+    InputNumberModule,
   ],
   bootstrap: [MainComponent],
   providers: [ConfirmationService],

@@ -20,6 +20,10 @@ export interface FsCharacterType extends FsDocumentBase {
   index: number;
   names: string[];
   code: string;
+  weaponTypes: number[];
+  hasRegion: boolean;
+  isCostCalcEnable: boolean;
+  isKaichikuEnable: boolean;
   count: number;
 }
 
@@ -30,7 +34,7 @@ export interface FsCharacter extends FsDocumentBase {
   rarerity: number;
   weaponType: number;
   geographTypes: number[];
-  region: number;
+  region?: number;
   cost: number;
   cost_kai?: number;
   abilities?: number[];
