@@ -46,9 +46,11 @@ export class NewCharacterComponent implements OnInit {
 
   selectedWeaponType?: FsWeaponType;
 
-  shiromusumeFile?: any;
+  shiromusumeFile?: File | null;
 
   isPlusGeographTypeButtonActive = false;
+
+  isDialogShow = false;
 
   constructor(private logger: NGXLogger, private firestore: FirestoreDataService, private storage: Storage) {
     this.logger.trace(`new ${this.className}()`);
@@ -214,5 +216,9 @@ export class NewCharacterComponent implements OnInit {
     } else {
       this.isPlusGeographTypeButtonActive = false;
     }
+  }
+
+  showDialog() {
+    this.isDialogShow = true;
   }
 }

@@ -141,24 +141,21 @@
   </div>
 
   <!-- Submit Button -->
-  <button pButton label="Submit" [disabled]="!newCharacterForm.form.valid"></button>
+  <button pButton type="button" label="Confirm" [disabled]="!newCharacterForm.form.valid" (click)="showDialog()"></button>
 </form>
+<br />
 
-<!-- Shiromusume Image File. --><!--
-  <div class="field grid">
-    <label for="shirmusumeImageInput" class="col-fixed" style="width: 200px">Images:</label>
-    <div class="col">
-      <label for="shiromusumeImage" pButton label="Shiromusume">
-        <input
-          type="file"
-          id="shiromusumeImage"
-          formControlName="shiromusumeImage"
-          [style]="{ display: 'none' }"
-          (change)="onFileChange('shiromusumeImage', $event)"
-        />
-      </label>
-    </div>
-  </div>
-  <button pButton label="Submit"></button>
-</form>
--->
+<p-dialog header="Please confirm input values." [(visible)]="isDialogShow" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+  <p class="m-0">
+    Caracter Type: {{ selectedCharacterType?.longName }}<br />
+    Character Name: {{ inputName }} <br />
+    Rarerity: {{ selectedRarerity?.name }}<br />
+    Weapon Type: {{ selectedWeaponType?.name }} <br />
+    Geograph Type: {{ selectedGeographTypes[0]?.name }} <span *ngIf="selectedGeographTypes[1]">, {{ selectedGeographTypes[1].name }}</span
+    ><br />
+    <span *ngIf="shiromusumeFile">Shiromusume Image: {{ shiromusumeFile.name }}</span>
+  </p>
+  <ng-template pTemplate="footer">
+    <p-button icon="pi pi-check" (click)="isDialogShow = false" label="Ok" styleClass="p-button-text"></p-button>
+  </ng-template>
+</p-dialog>

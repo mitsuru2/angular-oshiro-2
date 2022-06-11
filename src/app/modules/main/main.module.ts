@@ -10,6 +10,7 @@ import { PanelModule } from 'primeng/panel';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { FileUploadModule } from 'primeng/fileupload';
+import { DialogModule } from 'primeng/dialog';
 
 import { MainRoutingModule } from './main-routing.module';
 import { MainComponent } from './main.component';
@@ -42,6 +43,7 @@ import { LegalComponent } from './components/legal/legal.component';
     DropdownModule,
     InputTextModule,
     FileUploadModule,
+    DialogModule,
   ],
   bootstrap: [MainComponent],
   providers: [ConfirmationService],
