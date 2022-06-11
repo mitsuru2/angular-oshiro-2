@@ -219,6 +219,16 @@ export class NewCharacterComponent implements OnInit {
   }
 
   showDialog() {
+    this.logger.trace('showDialog()');
     this.isDialogShow = true;
+  }
+
+  hideDialog() {
+    this.isDialogShow = false;
+    this.logger.trace('hideDialog()');
+  }
+
+  printStatus() {
+    this.logger.debug(this.isDialogShow);
   }
 }

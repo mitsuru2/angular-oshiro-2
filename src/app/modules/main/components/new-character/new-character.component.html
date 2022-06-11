@@ -145,6 +145,7 @@
 </form>
 <br />
 
+<!-- Confirm Dialog -->
 <p-dialog header="Please confirm input values." [(visible)]="isDialogShow" [modal]="true" [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
   <p class="m-0">
     Caracter Type: {{ selectedCharacterType?.longName }}<br />
@@ -156,6 +157,7 @@
     <span *ngIf="shiromusumeFile">Shiromusume Image: {{ shiromusumeFile.name }}</span>
   </p>
   <ng-template pTemplate="footer">
-    <p-button icon="pi pi-check" (click)="isDialogShow = false" label="Ok" styleClass="p-button-text"></p-button>
+    <p-button icon="pi pi-check" (click)="hideDialog()" label="Ok" styleClass="p-button-text"></p-button>
+    <p-button icon="pi pi-times" (click)="hideDialog()" label="Cancel" styleClass="p-button-text"></p-button>
   </ng-template>
 </p-dialog>
