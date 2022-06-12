@@ -1,8 +1,13 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
+import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
 import {
   FsCharacterType,
+  FsDocumentBaseWithCode,
+  FsDocumentBase,
   FsGeographType,
+  FsDocumentBaseWithNumberIndex,
+  FsDocumentBaseWithOrder,
   FsRegion,
   FsWeaponType,
 } from 'src/app/services/firestore-data/firestore-document.interface';
@@ -45,10 +50,14 @@ export class NewCharacterFormComponent implements OnInit {
   /** Geograph type. */
   @Input() geographTypes!: FsGeographType[];
 
-  selectedGeographTypes!: FsGeographType[];
+  geographTypeItems!: FsGeographType[];
+
+  selectedGeographTypes: FsGeographType[] = [];
 
   /** Region. */
   @Input() regions!: FsRegion[];
+
+  regionItems!: FsRegion[];
 
   selectedRegion?: FsRegion;
 
@@ -60,7 +69,7 @@ export class NewCharacterFormComponent implements OnInit {
   /** Output character data. */
   @Output() confirmEvent = new EventEmitter<NewCharacterFormOutput>();
 
-  constructor(private logger: NGXLogger) {
+  constructor(private logger: NGXLogger, private firestore: FirestoreDataService) {
     this.logger.trace(`new ${this.className}()`);
   }
 
@@ -74,9 +83,16 @@ export class NewCharacterFormComponent implements OnInit {
       this.rarerityItems.push({ name: '★' + (i + 1).toString(), value: i + 1 });
     }
 
-    this.weaponTypeItems = this.makeWeaponTypeItems(this.selectedCharacterType, this.weaponTypes);
+    this.weaponTypeItems = this.makeFilteredFormItems(this.selectedCharacterType.weaponTypes, this.weaponTypes);
+    this.firestore.sortByCode(this.weaponTypeItems);
 
-    this.selectedGeographTypes = [];
+    this.geographTypeItems = this.makeFilteredFormItems(this.selectedCharacterType.geographTypes, this.geographTypes);
+    this.firestore.sortByOrder(this.geographTypeItems);
+
+    if (this.selectedCharacterType.regions) {
+      this.regionItems = this.makeFilteredFormItems(this.selectedCharacterType.regions, this.regions);
+      this.firestore.sortByOrder(this.regionItems);
+    }
   }
 
   onCharacterTypeChanged() {
@@ -86,9 +102,26 @@ export class NewCharacterFormComponent implements OnInit {
     this.clearForm(['characterType']);
 
     // Update weapon type item list.
-    this.weaponTypeItems = this.makeWeaponTypeItems(this.selectedCharacterType, this.weaponTypes);
+    this.weaponTypeItems = this.makeFilteredFormItems(this.selectedCharacterType.weaponTypes, this.weaponTypes);
+    this.firestore.sortByCode(this.weaponTypeItems);
     if (this.weaponTypeItems.length === 1) {
       this.selectedWeaponType = this.weaponTypeItems[0];
+    }
+
+    // Update geograph type item list.
+    this.geographTypeItems = this.makeFilteredFormItems(this.selectedCharacterType.geographTypes, this.geographTypes);
+    this.firestore.sortByOrder(this.geographTypeItems);
+    if (this.geographTypeItems.length === 1) {
+      this.selectedGeographTypes = [this.geographTypeItems[0]];
+    }
+
+    // Update region item list.
+    if (this.selectedCharacterType.regions) {
+      this.regionItems = this.makeFilteredFormItems(this.selectedCharacterType.regions, this.regions);
+      this.firestore.sortByOrder(this.regionItems);
+      if (this.regionItems.length === 1) {
+        this.selectedRegion = this.regionItems[0];
+      }
     }
   }
 
@@ -101,17 +134,7 @@ export class NewCharacterFormComponent implements OnInit {
     }
 
     const character: NewCharacterFormOutput = {
-      characterType: {
-        id: this.selectedCharacterType.id,
-        index: this.selectedCharacterType.index,
-        code: this.selectedCharacterType.code,
-        names: this.selectedCharacterType.names.slice(),
-        weaponTypes: this.selectedCharacterType.weaponTypes.slice(),
-        hasRegion: this.selectedCharacterType.hasRegion,
-        isCostCalcEnable: this.selectedCharacterType.isCostCalcEnable,
-        isKaichikuEnable: this.selectedCharacterType.isKaichikuEnable,
-        count: this.selectedCharacterType.count,
-      },
+      characterType: this.selectedCharacterType,
       characterName: this.characterName,
       rarerity: this.selectedRarerity.value,
       weaponType: this.selectedWeaponType,
@@ -139,18 +162,8 @@ export class NewCharacterFormComponent implements OnInit {
     let list = [];
 
     for (let d of fsData) {
-      let tmp: CharacterTypeInNewCharacterForm = {
-        id: d.id,
-        index: d.index,
-        names: d.names.slice(),
-        count: d.count,
-        longName: d.names[0],
-        weaponTypes: d.weaponTypes.slice(),
-        hasRegion: d.hasRegion,
-        isCostCalcEnable: d.isCostCalcEnable,
-        isKaichikuEnable: d.isKaichikuEnable,
-        code: d.code,
-      };
+      let tmp: CharacterTypeInNewCharacterForm = d as CharacterTypeInNewCharacterForm;
+      tmp.longName = d.names[0];
       if (d.names.length > 1) {
         tmp.longName += ' | ' + d.names[1];
       }
@@ -181,6 +194,22 @@ export class NewCharacterFormComponent implements OnInit {
     this.logger.debug(location, weaponTypes);
 
     return weaponTypes;
+  }
+
+  private makeFilteredFormItems<T extends FsDocumentBaseWithNumberIndex>(filter: number[], fsData: T[]): T[] {
+    const location = `${this.className}.makeFilteredFormItems()`;
+    this.logger.trace(location);
+
+    const items: T[] = [];
+
+    // Add item if it's included in the filter.
+    for (let d of fsData) {
+      if (filter.includes(d.index)) {
+        items.push(d);
+      }
+    }
+
+    return items;
   }
 
   private clearForm(exceptItems: string[] = []) {

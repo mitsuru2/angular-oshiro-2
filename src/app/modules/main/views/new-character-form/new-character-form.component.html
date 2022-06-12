@@ -57,9 +57,9 @@
     <!---->
     <label>武器種</label>
     <div class="formgroup-inline">
-      <div *ngFor="let weaponTypeItem of weaponTypeItems" class="field-checkbox">
-        <p-radioButton [inputId]="weaponTypeItem.name" name="weaponType" [value]="weaponTypeItem" [(ngModel)]="selectedWeaponType"></p-radioButton>
-        <label [for]="weaponTypeItem.id">{{ weaponTypeItem.name }}</label>
+      <div *ngFor="let item of weaponTypeItems" class="field-checkbox">
+        <p-radioButton [inputId]="item.name" name="weaponType" [value]="item" [(ngModel)]="selectedWeaponType"></p-radioButton>
+        <label [for]="item.id">{{ item.name }}</label>
       </div>
     </div>
 
@@ -68,7 +68,7 @@
     <!---->
     <label>地形属性</label>
     <div class="formgroup-inline">
-      <div *ngFor="let item of geographTypes" class="field-checkbox">
+      <div *ngFor="let item of geographTypeItems" class="field-checkbox">
         <p-checkbox name="geographType" value="geographType" [value]="item" [(ngModel)]="selectedGeographTypes" [inputId]="item.id"></p-checkbox>
         <label [for]="item.id">{{ item.name }}</label>
       </div>
@@ -77,12 +77,12 @@
     <!---->
     <!-- Form group: Reagion -->
     <!---->
-    <div *ngIf="selectedCharacterType.hasRegion">
+    <div *ngIf="selectedCharacterType.regions">
       <label>地域</label>
       <div class="formgroup-inline">
-        <div *ngFor="let region of regions" class="field-checkbox">
-          <p-radioButton [inputId]="region.name" name="region" [value]="region" [(ngModel)]="selectedRegion"></p-radioButton>
-          <label [for]="region.id">{{ region.name }}</label>
+        <div *ngFor="let item of regionItems" class="field-checkbox">
+          <p-radioButton [inputId]="item.name" name="region" [value]="item" [(ngModel)]="selectedRegion"></p-radioButton>
+          <label [for]="item.id">{{ item.name }}</label>
         </div>
       </div>
     </div>
@@ -119,7 +119,7 @@
         !selectedRarerity ||
         !selectedWeaponType ||
         selectedGeographTypes.length === 0 ||
-        (selectedCharacterType.hasRegion && !selectedRegion)
+        (selectedCharacterType.regions && !selectedRegion)
       "
       (click)="onConfirmButtonClick()"
     ></button>

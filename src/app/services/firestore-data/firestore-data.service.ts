@@ -10,6 +10,8 @@ import {
   FsAbilityType,
   FsCharacter,
   FsCharacterType,
+  FsDocumentBaseWithCode,
+  FsDocumentBaseWithOrder,
   FsFacilityType,
   FsGeographType,
   FsIllustrator,
@@ -25,13 +27,19 @@ import { FirestoreCollectionWrapper } from './firestore-collection-wrapper.class
 /**
  * FirestoreDataService
  *
- * It will load all data from Firestore database at initialization.
- * User can get data directly (after initialization), or subscribe data.
+ * It supports following functionalites:
+ *  - One time data loading.
+ *  - Continuous data listening.
+ *  - New document creation to the specified collection.
+ *  - Increment counter for FsDocumentBaseWidhCode.
+ *  - Data sorting.
  */
 @Injectable({
   providedIn: 'root',
 })
 export class FirestoreDataService {
+  private className = 'FirestoreDataService';
+
   collections: { [key in FirestoreCollectionName]: FirestoreCollectionWrapper<any> } = {
     //   Abilities:      new FirestoreCollectionWrapper<FsAbility>       (this.fs, this.logger, FirestoreCollectionName.Abilities), // eslint-disable-line
     //   AbilityTypes:   new FirestoreCollectionWrapper<FsAbilityType>   (this.fs, this.logger, FirestoreCollectionName.AbilityTypes), // eslint-disable-line
@@ -134,6 +142,38 @@ export class FirestoreDataService {
     } else {
       this.logger.error(`FirestoreDataService.incrementCounter() | Unsupported collection. { name: ${name} }`);
       throw Error(`FirestoreDataService.incrementCounter() | Unsupported collection. { name: ${name} }`);
+    }
+  }
+
+  sortByOrder(items: FsDocumentBaseWithOrder[], isDesc: boolean = false) {
+    const location = `${this.className}.FsDocumentBaseWithOrder()`;
+    this.logger.trace(location);
+
+    // Ascending order.
+    if (isDesc === false) {
+      items.sort((a, b) => a.order - b.order);
+    }
+    // Descending order.
+    else {
+      items.sort((a, b) => b.order - a.order);
+    }
+  }
+
+  sortByCode(items: FsDocumentBaseWithCode[], isDesc: boolean = false) {
+    const location = `${this.className}.FsDocumentBaseWithOrder()`;
+    this.logger.trace(location);
+
+    // Ascending order.
+    if (isDesc === false) {
+      items.sort((a, b) => {
+        return a.code < b.code ? -1 : 1;
+      });
+    }
+    // Descending order.
+    else {
+      items.sort((a, b) => {
+        return b.code < a.code ? -1 : 1;
+      });
     }
   }
 }
