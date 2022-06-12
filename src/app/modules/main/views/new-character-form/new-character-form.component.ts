@@ -10,6 +10,8 @@ import {
   FsDocumentBaseWithOrder,
   FsRegion,
   FsWeaponType,
+  FsAbilityType,
+  FsAbility,
 } from 'src/app/services/firestore-data/firestore-document.interface';
 import {
   CharacterTypeInNewCharacterForm,
@@ -65,6 +67,30 @@ export class NewCharacterFormComponent implements OnInit {
   characterCost = 0;
 
   characterCost_kai = 0;
+
+  /** Ability Type */
+  @Input() abilityTypes!: FsAbilityType[];
+
+  selectedAbilityTypes: FsAbilityType[] = [];
+
+  abilityCount = 1;
+
+  /** Ability */
+  @Input() abilities!: FsAbility[];
+
+  filteredAbilities: FsAbility[] = [];
+
+  inputAbilityName = '';
+
+  inputAbilityDesc = ['', '', ''];
+
+  keiryakuCost = 0;
+
+  keiryakuInterval = 0;
+
+  tokenLayoutRed = false;
+
+  tokenLayoutBlue = false;
 
   /** Output character data. */
   @Output() confirmEvent = new EventEmitter<NewCharacterFormOutput>();
@@ -123,6 +149,22 @@ export class NewCharacterFormComponent implements OnInit {
         this.selectedRegion = this.regionItems[0];
       }
     }
+  }
+
+  onAutofillInputChange(event: any) {
+    const location = `${this.className}.onAutofillInputChange()`;
+    this.logger.trace(location);
+
+    let query = event.query;
+
+    this.filteredAbilities = [];
+    for (let i = 0; i < this.abilities.length; ++i) {
+      if (this.abilities[i].name.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
+        this.filteredAbilities.push(this.abilities[i]);
+      }
+    }
+
+    this.logger.debug(location, { query: query, items: this.filteredAbilities });
   }
 
   onConfirmButtonClick() {

@@ -1,3 +1,264 @@
+<form style="min-width: 400px">
+  <p-card>
+    <p-divider align="center"><span>基本情報</span></p-divider>
+    <div class="formGrid grid p-fluid">
+      <div class="col" style="min-width: 300px">
+        <label>キャラクタータイプ</label>
+      </div>
+      <div class="col" style="min-width: 300px">
+        <label>名前</label>
+      </div>
+    </div>
+    <div class="formGrid grid p-fluid">
+      <div class="col" style="min-width: 300px">
+        <label>レアリティ</label>
+      </div>
+    </div>
+    <div class="formGrid grid p-fluid">
+      <div class="col" style="min-width: 300px">
+        <label>武器種</label>
+      </div>
+    </div>
+    <div class="formGrid grid p-fluid">
+      <div class="col" style="min-width: 300px">
+        <label>地形属性</label>
+      </div>
+    </div>
+    <div class="formGrid grid p-fluid">
+      <div class="col" style="min-width: 300px">
+        <label>地域</label>
+      </div>
+    </div>
+    <div class="formGrid grid p-fluid">
+      <div class="col" style="min-width: 300px">
+        <label>基本消費気</label>
+      </div>
+      <div class="col" style="min-width: 300px">
+        <label>基本消費気 (改壱)</label>
+      </div>
+    </div>
+    <div class="formGrid grid p-fluid">
+      <div class="col" style="min-width: 300px">
+        <label>キャラクターボイス</label>
+      </div>
+      <div class="col" style="min-width: 300px">
+        <label>イラストレーター</label>
+      </div>
+    </div>
+    <div class="formGrid grid p-fluid">
+      <div class="col" style="min-width: 300px">
+        <label>モチーフ武器</label>
+      </div>
+    </div>
+    <div class="formGrid grid p-fluid">
+      <div class="col" style="min-width: 300px">
+        <label>モチーフ施設</label>
+      </div>
+    </div>
+    <div class="formGrid grid p-fluid">
+      <div class="col" style="min-width: 300px">
+        <label>タグ</label>
+      </div>
+    </div>
+
+    <p-divider align="center"><span>特技 / 計略</span></p-divider>
+
+    <div>
+      <div class="formGrid grid p-fluid">
+        <div class="col">
+          <p-card>
+            <div class="formGrid grid p-fluid">
+              <div class="col" style="min-width: 300px">
+                <label>特技/計略タイプ</label>
+              </div>
+              <div class="col" style="min-width: 300px">
+                <label>名前</label>
+              </div>
+            </div>
+            <div class="formGrid grid p-fluid">
+              <div class="col" style="min-width: 300px">
+                <label>使用間隔</label>
+              </div>
+              <div class="col" style="min-width: 300px">
+                <label>消費気</label>
+              </div>
+            </div>
+            <div class="formGrid grid p-fluid">
+              <div class="col" style="min-width: 300px">
+                <label>トークン配置マス</label>
+              </div>
+            </div>
+            <div class="formGrid grid p-fluid">
+              <div class="col" style="min-width: 300px">
+                <label>効果</label>
+              </div>
+            </div>
+          </p-card>
+        </div>
+        <div class="col-fix" [style]="{ width: '50px', 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
+          <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined"></button>
+        </div>
+      </div>
+      <button pButton pRipple type="button" icon="pi pi-plus" label="追加" class="p-button-outlined p-button-rounded"></button>
+    </div>
+
+    <!---->
+    <!-- 特技/計略カード (改壱) -->
+    <!---->
+    <p-divider align="center"><span>特技 / 計略 (改壱)</span></p-divider>
+    <div>
+      <div class="formGrid grid p-fluid">
+        <div class="col">
+          <p-card>
+            <div class="formGrid grid p-fluid">
+              <div class="col" style="min-width: 300px">
+                <label>特技/計略タイプ</label>
+              </div>
+              <div class="col" style="min-width: 300px">
+                <label>名前</label>
+              </div>
+            </div>
+            <div class="formGrid grid p-fluid">
+              <div class="col" style="min-width: 300px">
+                <label>使用間隔</label>
+              </div>
+              <div class="col" style="min-width: 300px">
+                <label>消費気</label>
+              </div>
+            </div>
+            <div class="formGrid grid p-fluid">
+              <div class="col" style="min-width: 300px">
+                <label>トークン配置マス</label>
+              </div>
+            </div>
+            <div class="formGrid grid p-fluid">
+              <div class="col" style="min-width: 300px">
+                <label>効果</label>
+              </div>
+            </div>
+          </p-card>
+        </div>
+        <div class="col-fix" [style]="{ width: '50px', 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
+          <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined"></button>
+        </div>
+      </div>
+      <button pButton pRipple type="button" icon="pi pi-plus" label="追加" class="p-button-outlined p-button-rounded"></button>
+    </div>
+
+    <!-- Shiromusume Image File. -->
+    <p-divider align="center"><span>画像登録</span></p-divider>
+    <div class="formGrid grid p-fluid">
+      <div class="col" style="min-width: 300px">
+        <label for="shiromusumeImage" pButton label="城娘" class="p-button-rounded p-button-outlined">
+          <input type="file" id="shiromusumeImage" [style]="{ display: 'none' }" />
+        </label>
+        <div>
+          <canvas #shiromusumePreview style="max-width: 300px"></canvas>
+        </div>
+        <div [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
+          <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined"></button>
+        </div>
+      </div>
+      <div class="col" style="min-width: 300px">
+        <label for="shiromusumeImage" pButton label="御嬢" class="p-button-rounded p-button-outlined">
+          <input type="file" id="shiromusumeImage" [style]="{ display: 'none' }" />
+        </label>
+        <div>
+          <canvas #shiromusumePreview style="max-width: 300px"></canvas>
+        </div>
+        <div [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
+          <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined"></button>
+        </div>
+      </div>
+    </div>
+    <div class="formGrid grid p-fluid">
+      <div class="col" style="min-width: 300px">
+        <label for="shiromusumeImage" pButton label="特技" class="p-button-rounded p-button-outlined">
+          <input type="file" id="shiromusumeImage" [style]="{ display: 'none' }" />
+        </label>
+        <div>
+          <canvas #shiromusumePreview style="max-width: 300px"></canvas>
+        </div>
+        <div [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
+          <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined"></button>
+        </div>
+      </div>
+      <div class="col" style="min-width: 300px">
+        <label for="shiromusumeImage" pButton label="大破" class="p-button-rounded p-button-outlined">
+          <input type="file" id="shiromusumeImage" [style]="{ display: 'none' }" />
+        </label>
+        <div>
+          <canvas #shiromusumePreview style="max-width: 300px"></canvas>
+        </div>
+        <div [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
+          <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined"></button>
+        </div>
+      </div>
+    </div>
+    <button pButton pRipple type="button" icon="pi pi-image" label="サムネイル作成" class="p-button-outlined p-button-rounded"></button>
+
+    <!-- Shiromusume Image File. -->
+    <p-divider align="center"><span>画像登録 (改壱)</span></p-divider>
+    <div class="formGrid grid p-fluid">
+      <div class="col" style="min-width: 300px">
+        <label for="shiromusumeImage" pButton label="城娘" class="p-button-rounded p-button-outlined">
+          <input type="file" id="shiromusumeImage" [style]="{ display: 'none' }" />
+        </label>
+        <div>
+          <canvas #shiromusumePreview style="max-width: 300px"></canvas>
+        </div>
+        <div [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
+          <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined"></button>
+        </div>
+      </div>
+      <div class="col" style="min-width: 300px">
+        <button type="button" pButton label="御嬢" class="p-button-rounded p-button-outlined" [disabled]="true"></button>
+        <div>
+          <canvas #shiromusumePreview style="max-width: 300px"></canvas>
+        </div>
+        <div [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
+          <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined" [disabled]="true"></button>
+        </div>
+      </div>
+    </div>
+    <div class="formGrid grid p-fluid">
+      <div class="col" style="min-width: 300px">
+        <label for="shiromusumeImage" pButton label="特技" class="p-button-rounded p-button-outlined">
+          <input type="file" id="shiromusumeImage" [style]="{ display: 'none' }" />
+        </label>
+        <div>
+          <canvas #shiromusumePreview style="max-width: 300px"></canvas>
+        </div>
+        <div [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
+          <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined"></button>
+        </div>
+      </div>
+      <div class="col" style="min-width: 300px">
+        <label for="shiromusumeImage" pButton label="大破" class="p-button-rounded p-button-outlined">
+          <input type="file" id="shiromusumeImage" [style]="{ display: 'none' }" />
+        </label>
+        <div>
+          <canvas #shiromusumePreview style="max-width: 300px"></canvas>
+        </div>
+        <div [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
+          <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined"></button>
+        </div>
+      </div>
+    </div>
+
+    <!---->
+    <!-- Footer -->
+    <!---->
+    <p-divider></p-divider>
+    <ng-template pTemplate="footer">
+      <p-button label="入力内容確認" icon="pi pi-check"></p-button>
+      <p-button label="キャンセル" icon="pi pi-times" styleClass="p-button-secondary" [style]="{ 'margin-left': '.5rem' }"></p-button>
+    </ng-template>
+  </p-card>
+</form>
+
+<br />
+
 <!-- Form -->
 <form #newCharacterForm="ngForm">
   <!---->
@@ -103,6 +364,104 @@
         <div>
           <p-inputNumber [(ngModel)]="characterCost_kai" mode="decimal" [showButtons]="true" inputId="costInput_kai" name="costInput_kai" [min]="0" [max]="99">
           </p-inputNumber>
+        </div>
+      </div>
+    </div>
+
+    <!---->
+    <!-- Form group: Abilities. -->
+    <!---->
+    <p-divider align="center"><span>特技 / 計略</span></p-divider>
+    <div class="formgrid grid">
+      <div class="field col">
+        <label for="abilityTypeInput">タイプ</label>
+        <p-dropdown
+          id="abilityTypeInput"
+          name="abilityTypeInput"
+          [options]="abilityTypes"
+          optionLabel="name"
+          [(ngModel)]="selectedAbilityTypes[0]"
+          [style]="{ width: '100%' }"
+        ></p-dropdown>
+        <label class="mt-2" for="abilityNameInput">名前</label>
+        <p-autoComplete
+          id="abilityNameInput"
+          name="abilityNameInput"
+          [(ngModel)]="inputAbilityName"
+          [suggestions]="filteredAbilities"
+          (completeMethod)="onAutofillInputChange($event)"
+          field="name"
+          [minLength]="1"
+          [style]="{ width: '100%' }"
+          [inputStyle]="{ width: '100%' }"
+        ></p-autoComplete>
+      </div>
+      <div class="field col">
+        <label for="abilityDescInput_0_0">説明テキスト</label>
+        <input
+          class="mb-1"
+          type="text"
+          pInputText
+          id="abilityDescInput_0_0"
+          name="abilityDescInput_0_0"
+          [(ngModel)]="inputAbilityDesc[0]"
+          [required]="true"
+          [style]="{ width: '100%' }"
+        />
+        <input
+          class="mb-1"
+          type="text"
+          pInputText
+          id="abilityDescInput_0_1"
+          name="abilityDescInput_0_1"
+          [(ngModel)]="inputAbilityDesc[1]"
+          [required]="false"
+          [style]="{ width: '100%' }"
+        />
+        <input
+          class="mb-1"
+          type="text"
+          pInputText
+          id="abilityDescInput_0_2"
+          name="abilityDescInput_0_2"
+          [(ngModel)]="inputAbilityDesc[2]"
+          [required]="false"
+          [style]="{ width: '100%' }"
+        />
+      </div>
+    </div>
+    <div class="formgrid grid p-fluid" *ngIf="selectedAbilityTypes[0].name === '計略'">
+      <div class="field col-3">
+        <label for="keiryakuIntervalInput">使用間隔(s)</label>
+        <p-inputNumber [(ngModel)]="keiryakuInterval" mode="decimal" [showButtons]="true" inputId="keiryakuIntervalInput" name="keiryakuIntervalInput">
+        </p-inputNumber>
+      </div>
+      <div class="field col-3">
+        <label for="keiryakuCostInput">消費気</label>
+        <div>
+          <p-inputNumber
+            [(ngModel)]="keiryakuCost"
+            mode="decimal"
+            [showButtons]="true"
+            inputId="keiryakuCostInput"
+            name="keiryakuCostInput"
+            [min]="0"
+            [max]="99"
+          >
+          </p-inputNumber>
+        </div>
+      </div>
+      <div class="field co-6">
+        <label>トークン配置マス</label>
+        <div class="formgroup-inline">
+          <div class="field-checkbox">
+            <p-checkbox name="group1" value="New York" [(ngModel)]="tokenLayoutRed" inputId="red"></p-checkbox>
+            <label for="red">赤</label>
+          </div>
+          <div class="field-checkbox">
+            <p-checkbox name="group1" value="New York" [(ngModel)]="tokenLayoutBlue" inputId="blue"></p-checkbox>
+            <label for="blue">青</label>
+          </div>
         </div>
       </div>
     </div>

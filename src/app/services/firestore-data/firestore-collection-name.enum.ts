@@ -1,6 +1,6 @@
 export enum FirestoreCollectionName {
-  //Abilities = 'Abilities',
-  //AbilityTypes = 'AbilityTypes',
+  Abilities = 'Abilities',
+  AbilityTypes = 'AbilityTypes',
   CharacterTypes = 'CharacterTypes',
   Characters = 'Characters',
   //FacilityTypes = 'FacilityTypes',

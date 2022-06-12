@@ -15,6 +15,8 @@ import { CardModule } from 'primeng/card';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { CheckboxModule } from 'primeng/checkbox';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { DividerModule } from 'primeng/divider';
 
 import { MainRoutingModule } from './main-routing.module';
 import { MainComponent } from './main.component';
@@ -54,6 +56,8 @@ import { NewCharacterFormComponent } from './views/new-character-form/new-charac
     RadioButtonModule,
     CheckboxModule,
     InputNumberModule,
+    AutoCompleteModule,
+    DividerModule,
   ],
   bootstrap: [MainComponent],
   providers: [ConfirmationService],

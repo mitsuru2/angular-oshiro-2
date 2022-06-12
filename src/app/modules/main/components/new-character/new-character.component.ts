@@ -1,6 +1,8 @@
 import { Component, Directive, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
 import {
+  FsAbility,
+  FsAbilityType,
   FsCharacter,
   FsCharacterType,
   FsGeographType,
@@ -48,6 +50,10 @@ export class NewCharacterComponent implements OnInit {
 
   regions!: FsRegion[];
 
+  abilityTypes!: FsAbilityType[];
+
+  abilities!: FsAbility[];
+
   shiromusumeFile?: File | null;
 
   isPlusGeographTypeButtonActive = false;
@@ -63,6 +69,8 @@ export class NewCharacterComponent implements OnInit {
     this.geographTypes = this.firestore.getData(FirestoreCollectionName.GeographTypes) as FsGeographType[];
     this.weaponTypes = this.firestore.getData(FirestoreCollectionName.WeaponTypes) as FsWeaponType[];
     this.regions = this.firestore.getData(FirestoreCollectionName.Regions) as FsRegion[];
+    this.abilityTypes = this.firestore.getData(FirestoreCollectionName.AbilityTypes) as FsAbilityType[];
+    this.abilities = this.firestore.getData(FirestoreCollectionName.Abilities) as FsAbility[];
   }
 
   async submit() {
