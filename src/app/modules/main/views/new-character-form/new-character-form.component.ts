@@ -178,24 +178,6 @@ export class NewCharacterFormComponent implements OnInit {
     return list;
   }
 
-  private makeWeaponTypeItems(characterType: CharacterTypeInNewCharacterForm, fsData: FsWeaponType[]): FsWeaponType[] {
-    const location = `${this.className}.makeWeaponTypeItems()`;
-    this.logger.trace(location, { type: characterType.longName });
-
-    const weaponTypes: FsWeaponType[] = [];
-
-    for (let d of fsData) {
-      if (characterType.weaponTypes.includes(d.index)) {
-        weaponTypes.push(d);
-      }
-    }
-    weaponTypes.sort((a, b) => a.index - b.index);
-
-    this.logger.debug(location, weaponTypes);
-
-    return weaponTypes;
-  }
-
   private makeFilteredFormItems<T extends FsDocumentBaseWithNumberIndex>(filter: number[], fsData: T[]): T[] {
     const location = `${this.className}.makeFilteredFormItems()`;
     this.logger.trace(location);
