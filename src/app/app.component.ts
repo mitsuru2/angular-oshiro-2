@@ -41,8 +41,13 @@ export class AppComponent implements OnInit {
         this.firestore.load(FirestoreCollectionName.AbilityTypes),
         this.firestore.load(FirestoreCollectionName.CharacterTypes),
         this.firestore.load(FirestoreCollectionName.Characters),
+        this.firestore.load(FirestoreCollectionName.Facilities),
+        this.firestore.load(FirestoreCollectionName.FacilityTypes),
         this.firestore.load(FirestoreCollectionName.Regions),
         this.firestore.load(FirestoreCollectionName.GeographTypes),
+        this.firestore.load(FirestoreCollectionName.VoiceActors),
+        this.firestore.load(FirestoreCollectionName.Illustrators),
+        this.firestore.load(FirestoreCollectionName.Weapons),
         this.firestore.load(FirestoreCollectionName.WeaponTypes),
       ]);
       this.logger.info(`AppComponent: All const data has been loaded.`);

@@ -17,6 +17,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { DividerModule } from 'primeng/divider';
+import { ChipsModule } from 'primeng/chips';
 
 import { MainRoutingModule } from './main-routing.module';
 import { MainComponent } from './main.component';
@@ -58,6 +59,7 @@ import { NewCharacterFormComponent } from './views/new-character-form/new-charac
     InputNumberModule,
     AutoCompleteModule,
     DividerModule,
+    ChipsModule,
   ],
   bootstrap: [MainComponent],
   providers: [ConfirmationService],

@@ -12,11 +12,13 @@ import {
   FsCharacterType,
   FsDocumentBaseWithCode,
   FsDocumentBaseWithOrder,
+  FsFacility,
   FsFacilityType,
   FsGeographType,
   FsIllustrator,
   FsRegion,
   FsVoiceActor,
+  FsWeapon,
   FsWeaponType,
 } from './firestore-document.interface';
 import { FirestoreCollectionWrapper } from './firestore-collection-wrapper.class';
@@ -45,11 +47,13 @@ export class FirestoreDataService {
     [FirestoreCollectionName.AbilityTypes]:   new FirestoreCollectionWrapper<FsAbilityType>   (this.fs, this.logger, FirestoreCollectionName.AbilityTypes), // eslint-disable-line
     [FirestoreCollectionName.CharacterTypes]: new FirestoreCollectionWrapper<FsCharacterType> (this.fs, this.logger, FirestoreCollectionName.CharacterTypes), // eslint-disable-line
     [FirestoreCollectionName.Characters]:     new FirestoreCollectionWrapper<FsCharacter>     (this.fs, this.logger,FirestoreCollectionName.Characters), // eslint-disable-line
-    //   FacilityTypes:  new FirestoreCollectionWrapper<FsFacilityType>  (this.fs, this.logger, FirestoreCollectionName.FacilityTypes), // eslint-disable-line
+    [FirestoreCollectionName.Facilities]:     new FirestoreCollectionWrapper<FsFacility>      (this.fs, this.logger, FirestoreCollectionName.Facilities), // eslint-disable-line
+    [FirestoreCollectionName.FacilityTypes]:  new FirestoreCollectionWrapper<FsFacilityType>  (this.fs, this.logger, FirestoreCollectionName.FacilityTypes), // eslint-disable-line
     [FirestoreCollectionName.GeographTypes]:  new FirestoreCollectionWrapper<FsGeographType>  (this.fs, this.logger, FirestoreCollectionName.GeographTypes), // eslint-disable-line
-    //   Illustrators:   new FirestoreCollectionWrapper<FsIllustrator>   (this.fs, this.logger, FirestoreCollectionName.Illustrators), // eslint-disable-line
+    [FirestoreCollectionName.Illustrators]:   new FirestoreCollectionWrapper<FsIllustrator>   (this.fs, this.logger, FirestoreCollectionName.Illustrators), // eslint-disable-line
     [FirestoreCollectionName.Regions]:        new FirestoreCollectionWrapper<FsRegion>        (this.fs, this.logger,FirestoreCollectionName.Regions), // eslint-disable-line
-    //   VoiceActors:    new FirestoreCollectionWrapper<FsVoiceActor>    (this.fs, this.logger, FirestoreCollectionName.VoiceActors), // eslint-disable-line
+    [FirestoreCollectionName.VoiceActors]:    new FirestoreCollectionWrapper<FsVoiceActor>    (this.fs, this.logger, FirestoreCollectionName.VoiceActors), // eslint-disable-line
+    [FirestoreCollectionName.Weapons]:        new FirestoreCollectionWrapper<FsWeapon>        (this.fs, this.logger, FirestoreCollectionName.Weapons), // eslint-disable-line
     [FirestoreCollectionName.WeaponTypes]:    new FirestoreCollectionWrapper<FsWeaponType>    (this.fs, this.logger, FirestoreCollectionName.WeaponTypes), // eslint-disable-line
   };
 
@@ -69,7 +73,8 @@ export class FirestoreDataService {
    * @returns Promise<number>. Return true if it succeeded.
    */
   async load(name: FirestoreCollectionName): Promise<number> {
-    this.logger.trace(`FirestoreDataService.load(${name})`);
+    const location = `${this.className}.load()`;
+    this.logger.trace(location, { name: name });
 
     let result: number = 0;
 

@@ -3,15 +3,17 @@ import { NGXLogger } from 'ngx-logger';
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
 import {
   FsCharacterType,
-  FsDocumentBaseWithCode,
   FsDocumentBase,
   FsGeographType,
-  FsDocumentBaseWithNumberIndex,
-  FsDocumentBaseWithOrder,
   FsRegion,
   FsWeaponType,
   FsAbilityType,
   FsAbility,
+  FsVoiceActor,
+  FsIllustrator,
+  FsWeapon,
+  FsFacility,
+  FsFacilityType,
 } from 'src/app/services/firestore-data/firestore-document.interface';
 import {
   CharacterTypeInNewCharacterForm,
@@ -68,6 +70,43 @@ export class NewCharacterFormComponent implements OnInit {
 
   characterCost_kai = 0;
 
+  /** Voice actor. */
+  @Input() voiceActors!: FsVoiceActor[];
+
+  filteredVoiceActors: FsVoiceActor[] = [];
+
+  inputVoiceActor!: FsVoiceActor;
+
+  /** Illustrator. */
+  @Input() illustrators!: FsIllustrator[];
+
+  filteredIllustrators: FsIllustrator[] = [];
+
+  inputIllustrator!: FsIllustrator;
+
+  /** Motif weapons */
+  @Input() weapons!: FsWeapon[];
+
+  inputMotifWeapons: string[] = [];
+
+  inputWeaponOnDialog: FsWeapon = <FsWeapon>{};
+
+  inputWeaponTypeOnDialog?: FsWeaponType;
+
+  inputWeaponRarerityOnDialog?: number;
+
+  isNewWeaponDialogOn = false;
+
+  /** Motif facilities. */
+  @Input() facilities!: FsFacility[];
+
+  @Input() facilityTypes!: FsFacilityType[];
+
+  inputMotifFacilities: string[] = [];
+
+  /** Tags. */
+  inputTags: string[] = [];
+
   /** Ability Type */
   @Input() abilityTypes!: FsAbilityType[];
 
@@ -119,6 +158,12 @@ export class NewCharacterFormComponent implements OnInit {
       this.regionItems = this.makeFilteredFormItems(this.selectedCharacterType.regions, this.regions);
       this.firestore.sortByOrder(this.regionItems);
     }
+
+    this.inputVoiceActor = <FsVoiceActor>{};
+    this.inputVoiceActor.name = '';
+
+    this.inputIllustrator = <FsIllustrator>{};
+    this.inputIllustrator.name = '';
   }
 
   onCharacterTypeChanged() {
@@ -155,16 +200,63 @@ export class NewCharacterFormComponent implements OnInit {
     const location = `${this.className}.onAutofillInputChange()`;
     this.logger.trace(location);
 
-    let query = event.query;
+    const inputId = event.originalEvent.target.id;
+    const query = event.query;
+    let items: any;
 
-    this.filteredAbilities = [];
-    for (let i = 0; i < this.abilities.length; ++i) {
-      if (this.abilities[i].name.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
-        this.filteredAbilities.push(this.abilities[i]);
+    if (inputId === 'voiceActorInput') {
+      this.filteredVoiceActors = [];
+      for (let i = 0; i < this.voiceActors.length; ++i) {
+        if (this.voiceActors[i].name.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
+          this.filteredVoiceActors.push(this.voiceActors[i]);
+        }
       }
+      items = this.filteredVoiceActors;
+    } else if (inputId === 'illustratorInput') {
+      this.filteredIllustrators = [];
+      for (let i = 0; i < this.illustrators.length; ++i) {
+        if (this.illustrators[i].name.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
+          this.filteredIllustrators.push(this.illustrators[i]);
+        }
+      }
+      items = this.filteredIllustrators;
+    } else if (inputId === 'abilityNameInput') {
+      this.filteredAbilities = [];
+      for (let i = 0; i < this.abilities.length; ++i) {
+        if (this.abilities[i].name.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
+          this.filteredAbilities.push(this.abilities[i]);
+        }
+      }
+      items = this.filteredAbilities;
     }
 
-    this.logger.debug(location, { query: query, items: this.filteredAbilities });
+    this.logger.debug(location, { inputId: inputId, query: query, items: items });
+  }
+
+  onChipInputAdd(event: any) {
+    const location = `${this.className}.onChipInputAdd()`;
+    this.logger.trace(location);
+
+    const inputId = event.originalEvent.target.id;
+    const value = event.value;
+    this.logger.debug(location, { inputId: inputId, value: value });
+
+    if (inputId === 'motifWeaponInput') {
+      this.logger.debug(location, { values: this.inputMotifWeapons });
+      if (this.weapons.findIndex((item) => item.name === value) < 0) {
+        const index = this.inputMotifWeapons.findIndex((item) => item === value);
+        this.inputMotifWeapons.splice(index);
+        this.inputWeaponOnDialog.name = value;
+        this.isNewWeaponDialogOn = true;
+      }
+    }
+  }
+
+  onNewWeaponDialogOk() {
+    const location = `${this.className}.onNewWeaponDialogOk()`;
+    this.logger.trace(location);
+
+    this.isNewWeaponDialogOn = false;
   }
 
   onConfirmButtonClick() {
@@ -220,15 +312,15 @@ export class NewCharacterFormComponent implements OnInit {
     return list;
   }
 
-  private makeFilteredFormItems<T extends FsDocumentBaseWithNumberIndex>(filter: number[], fsData: T[]): T[] {
-    const location = `${this.className}.makeFilteredFormItems()`;
+  private makeFilteredFormItems<T extends FsDocumentBase>(filter: string[], fsData: T[]): T[] {
+    const location = `${this.className}.makeFilteredFormItems2()`;
     this.logger.trace(location);
 
     const items: T[] = [];
 
     // Add item if it's included in the filter.
     for (let d of fsData) {
-      if (filter.includes(d.index)) {
+      if (filter.includes(d.id)) {
         items.push(d);
       }
     }

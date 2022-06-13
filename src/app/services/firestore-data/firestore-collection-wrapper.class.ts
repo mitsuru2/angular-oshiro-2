@@ -48,8 +48,7 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
     // Get data from server.
     try {
       // Copy document ID and its data to "this.data" object, if it's not empty.
-      const q = query(this.collection, orderBy('index'));
-      const snapshot = await getDocsFromServer(q);
+      const snapshot = await getDocsFromServer(this.collection);
       if (snapshot.empty) {
         return 0;
       }
@@ -67,6 +66,8 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
       this.logger.error(`${location} | Data loading failed.`, { name: this.name }, error);
       throw error;
     }
+
+    //this.logger.debug(location, { data: this.data });
 
     // Return data length.
     return Object.keys(this.data).length;

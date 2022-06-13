@@ -5,8 +5,13 @@ import {
   FsAbilityType,
   FsCharacter,
   FsCharacterType,
+  FsFacility,
+  FsFacilityType,
   FsGeographType,
+  FsIllustrator,
   FsRegion,
+  FsVoiceActor,
+  FsWeapon,
   FsWeaponType,
 } from 'src/app/services/firestore-data/firestore-document.interface';
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
@@ -50,6 +55,16 @@ export class NewCharacterComponent implements OnInit {
 
   regions!: FsRegion[];
 
+  voiceActors!: FsVoiceActor[];
+
+  illustrators!: FsIllustrator[];
+
+  weapons!: FsWeapon[];
+
+  facilityTypes!: FsFacilityType[];
+
+  facilities!: FsFacility[];
+
   abilityTypes!: FsAbilityType[];
 
   abilities!: FsAbility[];
@@ -68,7 +83,12 @@ export class NewCharacterComponent implements OnInit {
     this.characterTypes = this.firestore.getData(FirestoreCollectionName.CharacterTypes) as FsCharacterType[];
     this.geographTypes = this.firestore.getData(FirestoreCollectionName.GeographTypes) as FsGeographType[];
     this.weaponTypes = this.firestore.getData(FirestoreCollectionName.WeaponTypes) as FsWeaponType[];
+    this.weapons = this.firestore.getData(FirestoreCollectionName.Weapons) as FsWeapon[];
+    this.facilities = this.firestore.getData(FirestoreCollectionName.Facilities) as FsFacility[];
+    this.facilityTypes = this.firestore.getData(FirestoreCollectionName.Facilities) as FsFacilityType[];
     this.regions = this.firestore.getData(FirestoreCollectionName.Regions) as FsRegion[];
+    this.voiceActors = this.firestore.getData(FirestoreCollectionName.VoiceActors) as FsVoiceActor[];
+    this.illustrators = this.firestore.getData(FirestoreCollectionName.Illustrators) as FsIllustrator[];
     this.abilityTypes = this.firestore.getData(FirestoreCollectionName.AbilityTypes) as FsAbilityType[];
     this.abilities = this.firestore.getData(FirestoreCollectionName.Abilities) as FsAbility[];
   }
@@ -86,11 +106,11 @@ export class NewCharacterComponent implements OnInit {
         id: '', // Auto ID.
         index: `${this.selectedCharacterType.code}-${('0000' + count.toString(16).toUpperCase()).slice(-4)}`,
         name: this.inputName,
-        type: this.selectedCharacterType.index,
+        type: this.selectedCharacterType.id,
         rarerity: this.selectedRarerity?.value,
-        weaponType: this.selectedWeaponType.index,
-        geographTypes: [this.selectedGeographTypes[0].index],
-        region: 0,
+        weaponType: this.selectedWeaponType.id,
+        geographTypes: [this.selectedGeographTypes[0].id],
+        region: '',
         cost: 99,
       };
       this.logger.debug(character);

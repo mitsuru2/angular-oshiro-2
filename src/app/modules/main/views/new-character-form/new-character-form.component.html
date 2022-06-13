@@ -1,66 +1,176 @@
 <form style="min-width: 400px">
   <p-card>
+    <!------------------------------------------------------------------------->
+    <!-- 基本情報 -------------------------------------------------------------->
+    <!------------------------------------------------------------------------->
     <p-divider align="center"><span>基本情報</span></p-divider>
+
     <div class="formGrid grid p-fluid">
       <div class="col" style="min-width: 300px">
-        <label>キャラクタータイプ</label>
+        <label for="characterTypeInput">キャラクタータイプ</label>
+        <p-dropdown
+          id="characterTypeInput"
+          name="characterTypeInput"
+          [(ngModel)]="selectedCharacterType"
+          [options]="characterTypeItems"
+          optionLabel="longName"
+          [style]="{ width: '100%' }"
+          (onChange)="onCharacterTypeChanged()"
+        ></p-dropdown>
       </div>
       <div class="col" style="min-width: 300px">
-        <label>名前</label>
-      </div>
-    </div>
-    <div class="formGrid grid p-fluid">
-      <div class="col" style="min-width: 300px">
-        <label>レアリティ</label>
-      </div>
-    </div>
-    <div class="formGrid grid p-fluid">
-      <div class="col" style="min-width: 300px">
-        <label>武器種</label>
-      </div>
-    </div>
-    <div class="formGrid grid p-fluid">
-      <div class="col" style="min-width: 300px">
-        <label>地形属性</label>
-      </div>
-    </div>
-    <div class="formGrid grid p-fluid">
-      <div class="col" style="min-width: 300px">
-        <label>地域</label>
-      </div>
-    </div>
-    <div class="formGrid grid p-fluid">
-      <div class="col" style="min-width: 300px">
-        <label>基本消費気</label>
-      </div>
-      <div class="col" style="min-width: 300px">
-        <label>基本消費気 (改壱)</label>
-      </div>
-    </div>
-    <div class="formGrid grid p-fluid">
-      <div class="col" style="min-width: 300px">
-        <label>キャラクターボイス</label>
-      </div>
-      <div class="col" style="min-width: 300px">
-        <label>イラストレーター</label>
-      </div>
-    </div>
-    <div class="formGrid grid p-fluid">
-      <div class="col" style="min-width: 300px">
-        <label>モチーフ武器</label>
-      </div>
-    </div>
-    <div class="formGrid grid p-fluid">
-      <div class="col" style="min-width: 300px">
-        <label>モチーフ施設</label>
-      </div>
-    </div>
-    <div class="formGrid grid p-fluid">
-      <div class="col" style="min-width: 300px">
-        <label>タグ</label>
+        <label for="characterNameInput">名前</label>
+        <span class="p-input-icon-right" [style]="{ width: '100%', 'margin-top': '2px' }">
+          <i *ngIf="characterName !== ''" class="pi pi-times" (click)="characterName = ''"></i>
+          <input
+            type="text"
+            id="characterNameInput"
+            name="characterNameInput"
+            [(ngModel)]="characterName"
+            pInputText
+            [required]="true"
+            [style]="{ width: '100%' }"
+          />
+        </span>
       </div>
     </div>
 
+    <div class="formGrid grid p-fluid">
+      <div class="col" style="min-width: 300px">
+        <label>レアリティ</label>
+        <div class="formgroup-inline">
+          <div *ngFor="let item of [1, 2, 3, 4, 5, 6, 7]" class="field-checkbox">
+            <p-radioButton [inputId]="item.toString()" name="rarerity" [value]="item" [(ngModel)]="selectedRarerity"></p-radioButton>
+            <label [for]="item">★{{ item }}</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="formGrid grid p-fluid">
+      <div class="col" style="min-width: 300px">
+        <label>武器種</label>
+        <div class="formgroup-inline">
+          <div *ngFor="let item of weaponTypeItems" class="field-checkbox">
+            <p-radioButton [inputId]="item.name" name="weaponType" [value]="item" [(ngModel)]="selectedWeaponType"></p-radioButton>
+            <label [for]="item.id">{{ item.name }}</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="formGrid grid p-fluid">
+      <div class="col" style="min-width: 300px">
+        <label>地形属性</label>
+        <div class="formgroup-inline">
+          <div *ngFor="let item of geographTypeItems" class="field-checkbox">
+            <p-checkbox name="geographType" value="geographType" [value]="item" [(ngModel)]="selectedGeographTypes" [inputId]="item.id"></p-checkbox>
+            <label [for]="item.id">{{ item.name }}</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="formGrid grid p-fluid" *ngIf="selectedCharacterType.regions">
+      <div class="col" style="min-width: 300px">
+        <label>地域</label>
+        <div class="formgroup-inline">
+          <div *ngFor="let item of regionItems" class="field-checkbox">
+            <p-radioButton [inputId]="item.name" name="region" [value]="item" [(ngModel)]="selectedRegion"></p-radioButton>
+            <label [for]="item.id">{{ item.name }}</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="formGrid grid p-fluid" *ngIf="!selectedCharacterType.isCostCalcEnable">
+      <div class="col" style="min-width: 300px">
+        <label for="characterCostInput">基本消費気</label>
+        <div>
+          <p-inputNumber
+            inputId="characterCostInput"
+            name="characterCostInput"
+            [(ngModel)]="characterCost"
+            mode="decimal"
+            [showButtons]="true"
+            [min]="0"
+            [max]="99"
+          >
+          </p-inputNumber>
+        </div>
+      </div>
+      <div class="col" style="min-width: 300px">
+        <label for="characterCostInput" *ngIf="selectedCharacterType.isKaichikuEnable">基本消費気 (改壱)</label>
+        <div *ngIf="selectedCharacterType.isKaichikuEnable">
+          <p-inputNumber
+            inputId="characterCostInput_kai"
+            name="characterCostInput_kai"
+            [(ngModel)]="characterCost_kai"
+            mode="decimal"
+            [showButtons]="true"
+            [min]="0"
+            [max]="99"
+          >
+          </p-inputNumber>
+        </div>
+      </div>
+    </div>
+
+    <div class="formGrid grid p-fluid">
+      <div class="col" style="min-width: 300px">
+        <label for="voiceActorInput">キャラクターボイス</label>
+        <p-autoComplete
+          inputId="voiceActorInput"
+          name="voiceActorInput"
+          [(ngModel)]="inputVoiceActor.name"
+          [suggestions]="filteredVoiceActors"
+          (completeMethod)="onAutofillInputChange($event)"
+          field="name"
+          [minLength]="1"
+          [style]="{ width: '100%' }"
+          [inputStyle]="{ width: '100%' }"
+        ></p-autoComplete>
+      </div>
+      <div class="col" style="min-width: 300px">
+        <label for="illustratorInput">イラストレーター</label>
+        <p-autoComplete
+          inputId="illustratorInput"
+          name="illustratorInput"
+          [(ngModel)]="inputIllustrator.name"
+          [suggestions]="filteredIllustrators"
+          (completeMethod)="onAutofillInputChange($event)"
+          field="name"
+          [minLength]="1"
+          [style]="{ width: '100%' }"
+          [inputStyle]="{ width: '100%' }"
+        ></p-autoComplete>
+      </div>
+    </div>
+
+    <div class="formGrid grid p-fluid">
+      <div class="col" style="min-width: 300px">
+        <label for="motifWeaponInput">モチーフ武器</label>
+        <p-chips inputId="motifWeaponInput" name="motifWeaponInput" [(ngModel)]="inputMotifWeapons" (onAdd)="onChipInputAdd($event)"></p-chips>
+      </div>
+    </div>
+
+    <div class="formGrid grid p-fluid">
+      <div class="col" style="min-width: 300px">
+        <label for="motifFacilityInput">モチーフ施設</label>
+        <p-chips inputId="motifFacilityInput" name="motifFacilityInput" [(ngModel)]="inputMotifFacilities"></p-chips>
+      </div>
+    </div>
+
+    <div class="formGrid grid p-fluid">
+      <div class="col" style="min-width: 300px">
+        <label for="characterTagInput">タグ</label>
+        <p-chips inputId="characterTagInput" name="characterTagInput" [(ngModel)]="inputTags"></p-chips>
+      </div>
+    </div>
+
+    <!------------------------------------------------------------------------->
+    <!-- 特技/計略 ------------------------------------------------------------->
+    <!------------------------------------------------------------------------->
     <p-divider align="center"><span>特技 / 計略</span></p-divider>
 
     <div>
@@ -257,6 +367,49 @@
   </p-card>
 </form>
 
+<p-dialog header="新規武器登録" [(visible)]="isNewWeaponDialogOn" [modal]="true" [style]="{ width: '50%' }" [draggable]="false" [resizable]="false">
+  <p class="m-0">未登録の武器です。必須情報を入力してください。</p>
+  <br />
+  <div class="field grid">
+    <label for="weaponNameInput" class="col-fixed" style="width: 120px; padding-top: 6px">武器名</label>
+    <div class="col">
+      <span class="p-input-icon-right" [style]="{ width: '100%', 'margin-top': '2px' }">
+        <i *ngIf="inputWeaponOnDialog.name !== ''" class="pi pi-times" (click)="inputWeaponOnDialog.name = ''"></i>
+        <input
+          type="text"
+          id="weaponNameInput"
+          name="weaponNameInput"
+          [(ngModel)]="inputWeaponOnDialog.name"
+          pInputText
+          [required]="true"
+          [style]="{ width: '100%' }"
+        />
+      </span>
+    </div>
+  </div>
+  <div class="field grid">
+    <label for="weaponTypeInput" class="col-fixed" style="width: 120px">武器種</label>
+    <div class="formgroup-inline col">
+      <div *ngFor="let item of weaponTypes" class="field-checkbox">
+        <p-radioButton [inputId]="'dialog_' + item.name" name="weaponType" [value]="item" [(ngModel)]="inputWeaponTypeOnDialog"></p-radioButton>
+        <label [for]="item.id">{{ item.name }}</label>
+      </div>
+    </div>
+  </div>
+  <div class="field grid">
+    <label for="weaponRarerityInput" class="col-fixed" style="width: 120px">レアリティ</label>
+    <div class="formgroup-inline col">
+      <div *ngFor="let item of [1, 2, 3, 4, 5]" class="field-checkbox">
+        <p-radioButton [inputId]="'dialog_' + item.toString()" name="rarerity" [value]="item" [(ngModel)]="inputWeaponRarerityOnDialog"></p-radioButton>
+        <label [for]="item">★{{ item }}</label>
+      </div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button icon="pi pi-check" (click)="onNewWeaponDialogOk()" label="Ok" styleClass="p-button-text"></p-button>
+  </ng-template>
+</p-dialog>
+
 <br />
 
 <!-- Form -->
@@ -385,7 +538,7 @@
         ></p-dropdown>
         <label class="mt-2" for="abilityNameInput">名前</label>
         <p-autoComplete
-          id="abilityNameInput"
+          inputId="abilityNameInput"
           name="abilityNameInput"
           [(ngModel)]="inputAbilityName"
           [suggestions]="filteredAbilities"
