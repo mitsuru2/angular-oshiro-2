@@ -16,7 +16,7 @@
     </div>
   </div>
 
-  <div class="formGrid grid p-fluid">
+  <div class="formGrid grid p-fluid" style="margin-bottom: 1rem">
     <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
       <label for="NewWeaponForm_WeaponNameInput">名前</label>
       <span class="p-input-icon-right" [style]="{ width: '100%' }">
@@ -52,7 +52,7 @@
     </div>
   </div>
 
-  <div class="formGrid grid p-fluid" *ngIf="mode === normalMode">
+  <div class="formGrid grid p-fluid" *ngIf="mode === normalMode" style="margin-bottom: 1rem">
     <div class="col" [style]="{ 'min-width': minWidth / 2 + 'px', 'max-width': maxWidth / 2 + 'px' }">
       <label for="NewWeaponForm_AttackInput">攻撃</label>
       <div>
@@ -85,7 +85,7 @@
     </div>
   </div>
 
-  <div class="formGrid grid p-fluid" *ngIf="mode === normalMode">
+  <div class="formGrid grid p-fluid" *ngIf="mode === normalMode" style="margin-bottom: 1rem">
     <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
       <label>説明テキスト</label>
       <div *ngFor="let desc of inputDescriptions; trackBy: trackByItem; let i = index">
@@ -104,7 +104,7 @@
     </div>
   </div>
 
-  <div class="formGrid grid p-fluid" *ngIf="mode === normalMode">
+  <div class="formGrid grid p-fluid" *ngIf="mode === normalMode" style="margin-bottom: 1rem">
     <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
       <label>効果</label>
       <div *ngFor="let desc of inputEffects; trackBy: trackByItem; let i = index">
@@ -123,7 +123,7 @@
     </div>
   </div>
 
-  <div class="formGrid grid p-fluid" *ngIf="mode === normalMode">
+  <div class="formGrid grid p-fluid" *ngIf="mode === normalMode" style="margin-bottom: 1rem">
     <div class="col" *ngIf="selectedRarerity === 4" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
       <label>効果［改］</label>
       <div *ngFor="let desc of inputEffects_kai; trackBy: trackByItem; let i = index">
