@@ -34,7 +34,7 @@ export class NewWeaponFormComponent implements OnInit {
 
   @Input() cancelLabel = 'Cancel';
 
-  @Input() buttonStyleClass = 'p-button-text';
+  @Input() buttonStyleClass = '';
 
   /** Weapon type */
   @Input() weaponTypes!: FsWeaponType[];
