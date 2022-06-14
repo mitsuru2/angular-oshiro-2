@@ -29,10 +29,12 @@ export class NewWeaponFormComponent implements OnInit {
 
   @Input() maxWidth = 800; // pixel
 
-  /** Button label. */
+  /** Button label and style. */
   @Input() okLabel = 'Ok';
 
   @Input() cancelLabel = 'Cancel';
+
+  @Input() buttonStyleClass = 'p-button-text';
 
   /** Weapon type */
   @Input() weaponTypes!: FsWeaponType[];
@@ -131,7 +133,7 @@ export class NewWeaponFormComponent implements OnInit {
     this.selectedRarerity = undefined;
     this.inputAttack = 0;
     this.inputAttack_kai = 0;
-    this.inputDescriptions = ['', '', ''];
+    this.inputDescriptions = [''];
     this.inputEffects = ['', '', ''];
     this.inputEffects_kai = ['', '', ''];
   }

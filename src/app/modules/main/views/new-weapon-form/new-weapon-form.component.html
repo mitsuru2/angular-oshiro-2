@@ -151,6 +151,13 @@
     icon="pi pi-check"
     [disabled]="!selectedType || inputName === '' || errorMessage !== '' || !selectedRarerity"
     (click)="onOkClick()"
+    [styleClass]="buttonStyleClass"
   ></p-button>
-  <p-button [label]="cancelLabel" icon="pi pi-times" styleClass="p-button-secondary" [style]="{ 'margin-left': '.5rem' }" (click)="onCancelClick()"></p-button>
+  <p-button
+    [label]="cancelLabel"
+    icon="pi pi-times"
+    [style]="{ 'margin-left': '.5rem' }"
+    (click)="onCancelClick()"
+    [styleClass]="'p-button-secondary ' + buttonStyleClass"
+  ></p-button>
 </form>
