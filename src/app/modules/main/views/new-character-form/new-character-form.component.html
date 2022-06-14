@@ -367,47 +367,24 @@
   </p-card>
 </form>
 
-<p-dialog header="新規武器登録" [(visible)]="isNewWeaponDialogOn" [modal]="true" [style]="{ width: '50%' }" [draggable]="false" [resizable]="false">
-  <p class="m-0">未登録の武器です。必須情報を入力してください。</p>
-  <br />
-  <div class="field grid">
-    <label for="weaponNameInput" class="col-fixed" style="width: 120px; padding-top: 6px">武器名</label>
-    <div class="col">
-      <span class="p-input-icon-right" [style]="{ width: '100%', 'margin-top': '2px' }">
-        <i *ngIf="inputWeaponOnDialog.name !== ''" class="pi pi-times" (click)="inputWeaponOnDialog.name = ''"></i>
-        <input
-          type="text"
-          id="weaponNameInput"
-          name="weaponNameInput"
-          [(ngModel)]="inputWeaponOnDialog.name"
-          pInputText
-          [required]="true"
-          [style]="{ width: '100%' }"
-        />
-      </span>
-    </div>
-  </div>
-  <div class="field grid">
-    <label for="weaponTypeInput" class="col-fixed" style="width: 120px">武器種</label>
-    <div class="formgroup-inline col">
-      <div *ngFor="let item of weaponTypes" class="field-checkbox">
-        <p-radioButton [inputId]="'dialog_' + item.name" name="weaponType" [value]="item" [(ngModel)]="inputWeaponTypeOnDialog"></p-radioButton>
-        <label [for]="item.id">{{ item.name }}</label>
-      </div>
-    </div>
-  </div>
-  <div class="field grid">
-    <label for="weaponRarerityInput" class="col-fixed" style="width: 120px">レアリティ</label>
-    <div class="formgroup-inline col">
-      <div *ngFor="let item of [1, 2, 3, 4, 5]" class="field-checkbox">
-        <p-radioButton [inputId]="'dialog_' + item.toString()" name="rarerity" [value]="item" [(ngModel)]="inputWeaponRarerityOnDialog"></p-radioButton>
-        <label [for]="item">★{{ item }}</label>
-      </div>
-    </div>
-  </div>
-  <ng-template pTemplate="footer">
-    <p-button icon="pi pi-check" (click)="onNewWeaponDialogOk()" label="Ok" styleClass="p-button-text"></p-button>
-  </ng-template>
+<p-dialog
+  header="未登録の武器です。必須情報を入力してください。"
+  [(visible)]="isNewWeaponDialogOn"
+  [modal]="true"
+  [style]="{ width: '50%' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <app-new-weapon-form
+    [mode]="weaponFormMode"
+    [weapons]="weapons"
+    [weaponTypes]="weaponTypes"
+    [initialWeaponName]="initialWeaponNameForNewWeaponForm"
+    [okLabel]="'ＯＫ'"
+    [cancelLabel]="'キャンセル'"
+    [buttonStyleClass]="'p-button-text'"
+    (formResult)="onNewWeaponDialogResult($event)"
+  ></app-new-weapon-form>
 </p-dialog>
 
 <br />

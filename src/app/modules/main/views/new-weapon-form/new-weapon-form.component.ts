@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
 import {
   FsWeapon,
@@ -12,7 +12,7 @@ import { NewWeaponFormMode, NewWeaponFormResult } from './new-weapon-form.interf
   templateUrl: './new-weapon-form.component.html',
   styleUrls: ['./new-weapon-form.component.scss'],
 })
-export class NewWeaponFormComponent implements OnInit {
+export class NewWeaponFormComponent implements OnChanges {
   //============================================================================
   // Class members.
   //
@@ -42,6 +42,8 @@ export class NewWeaponFormComponent implements OnInit {
   selectedType?: FsWeaponType;
 
   /** Weapon name */
+  @Input() initialWeaponName = '';
+
   inputName = '';
 
   @Input() weapons!: FsWeapon[];
@@ -81,7 +83,10 @@ export class NewWeaponFormComponent implements OnInit {
     }
   }
 
-  ngOnInit(): void {
+  ngOnChanges(): void {
+    // Set input weapon name if initial value is set by parent component.
+    this.inputName = this.initialWeaponName;
+
     // Sort input weapon types.
     this.weaponTypes.sort((a, b) => {
       return a.code < b.code ? -1 : 1;

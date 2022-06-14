@@ -15,6 +15,7 @@ import {
   FsFacility,
   FsFacilityType,
 } from 'src/app/services/firestore-data/firestore-document.interface';
+import { NewWeaponFormMode, NewWeaponFormResult } from '../new-weapon-form/new-weapon-form.interface';
 import {
   CharacterTypeInNewCharacterForm,
   NewCharacterFormOutput,
@@ -96,6 +97,11 @@ export class NewCharacterFormComponent implements OnInit {
   inputWeaponRarerityOnDialog?: number;
 
   isNewWeaponDialogOn = false;
+
+  /** New weapon form. */
+  weaponFormMode = NewWeaponFormMode.minimum;
+
+  initialWeaponNameForNewWeaponForm = '';
 
   /** Motif facilities. */
   @Input() facilities!: FsFacility[];
@@ -239,7 +245,6 @@ export class NewCharacterFormComponent implements OnInit {
 
     const inputId = event.originalEvent.target.id;
     const value = event.value;
-    this.logger.debug(location, { inputId: inputId, value: value });
 
     if (inputId === 'motifWeaponInput') {
       this.logger.debug(location, { values: this.inputMotifWeapons });
@@ -248,13 +253,19 @@ export class NewCharacterFormComponent implements OnInit {
         this.inputMotifWeapons.splice(index);
         this.inputWeaponOnDialog.name = value;
         this.isNewWeaponDialogOn = true;
+        this.initialWeaponNameForNewWeaponForm = value;
       }
     }
   }
 
-  onNewWeaponDialogOk() {
-    const location = `${this.className}.onNewWeaponDialogOk()`;
+  onNewWeaponDialogResult(formResult: NewWeaponFormResult) {
+    const location = `${this.className}.onNewWeaponDialogResult()`;
     this.logger.trace(location);
+
+    this.logger.debug(location, formResult);
+
+    if (!formResult.canceled) {
+    }
 
     this.isNewWeaponDialogOn = false;
   }
