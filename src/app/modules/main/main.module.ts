@@ -28,6 +28,7 @@ import { ConfirmationService } from 'primeng/api';
 import { SideMenuComponent } from './views/side-menu/side-menu.component';
 import { LegalComponent } from './components/legal/legal.component';
 import { NewCharacterFormComponent } from './views/new-character-form/new-character-form.component';
+import { NewWeaponFormComponent } from './views/new-weapon-form/new-weapon-form.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { NewCharacterFormComponent } from './views/new-character-form/new-charac
     SideMenuComponent,
     LegalComponent,
     NewCharacterFormComponent,
+    NewWeaponFormComponent,
   ],
   imports: [
     CommonModule,

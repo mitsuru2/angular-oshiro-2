@@ -89,9 +89,15 @@ export interface FsWeaponType extends FsDocumentBaseWithCode {
   baseCost: number;
 }
 
+export const FsWeaponRarerityMax = 5;
+
 export interface FsWeapon extends FsDocumentBase {
   type: string;
   name: string;
   rarerity: number;
-  desc?: string[];
+  desc: string[];
+  attack: number;
+  attack_kai?: number;
+  effects: string[];
+  effects_kai?: string[];
 }
