@@ -86,7 +86,15 @@ export class NewWeaponFormComponent implements OnInit {
     });
   }
 
-  trackByItem(index: number, obj: any): any {
+  /**
+   * Track function which is used by *ngFor directive.
+   * *ngFor cannot calculate index number when it's used with [(ngModel)].
+   * So, this function help *ngFor to calculate index.
+   * @param index Item index.
+   * @param obj List object. Not used.
+   * @returns Item index.
+   */
+  trackByItem(index: number, obj: any): any { // eslint-disable-line
     return index;
   }
 
@@ -132,9 +140,15 @@ export class NewWeaponFormComponent implements OnInit {
     const location = `${this.className}.makeWeaponInfo()`;
     const result: NewWeaponFormResult = <NewWeaponFormResult>{};
 
+    // When the form is canceled, it returns canceled flag only.
     if (canceled) {
       result.canceled = true;
-    } else {
+    }
+
+    // When the form is input, it returns input weapon data.
+    else {
+      // The mandatory input fields must not be null or undefined.
+      // Input value validation shall be implemented at template.
       if (!this.selectedType || this.inputName === '' || !this.selectedRarerity) {
         this.logger.error(location, 'Necessary field is not input.', {
           type: this.selectedType,
@@ -143,6 +157,8 @@ export class NewWeaponFormComponent implements OnInit {
         });
         throw Error(`${location} Necessary field is not input.`);
       }
+
+      // Make weapon data to be returned.
       result.canceled = false;
       result.type = this.selectedType;
       result.name = this.inputName;
@@ -153,6 +169,7 @@ export class NewWeaponFormComponent implements OnInit {
       result.effects = this.inputEffects.filter((text) => text.length > 0);
       result.effects_kai = this.inputEffects_kai.filter((text) => text.length > 0);
     }
+
     return result;
   }
 }
