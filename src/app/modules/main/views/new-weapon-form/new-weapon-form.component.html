@@ -1,7 +1,7 @@
 <form style="min-width: 400px; margin-bottom: 1rem">
   <div class="formGrid grid p-fluid">
     <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
-      <label for="characterTypeInput">武器タイプ</label>
+      <label>武器タイプ</label>
       <div class="formgroup-inline">
         <div *ngFor="let item of weaponTypes" class="field-checkbox">
           <p-radioButton
@@ -10,7 +10,7 @@
             [value]="item"
             [(ngModel)]="selectedType"
           ></p-radioButton>
-          <label [for]="'NewWeaponForm_WeaponTypeInput_' + item.id">{{ item.name }}</label>
+          <label [for]="'NewWeaponForm_WeaponTypeInput_' + item.name">{{ item.name }}</label>
         </div>
       </div>
     </div>
@@ -46,7 +46,7 @@
             [value]="item"
             [(ngModel)]="selectedRarerity"
           ></p-radioButton>
-          <label [for]="item">★{{ item }}</label>
+          <label [for]="'NewWeaponForm_RarerityInput_' + item.toString()">★{{ item }}</label>
         </div>
       </div>
     </div>
@@ -87,7 +87,7 @@
 
   <div class="formGrid grid p-fluid" *ngIf="mode === normalMode" style="margin-bottom: 1rem">
     <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
-      <label>説明テキスト</label>
+      <label>説明</label>
       <div *ngFor="let desc of inputDescriptions; trackBy: trackByItem; let i = index">
         <span class="p-input-icon-right" [style]="{ width: '100%' }">
           <i *ngIf="inputDescriptions[i] !== ''" class="pi pi-times" (click)="inputDescriptions[i] = ''"></i>

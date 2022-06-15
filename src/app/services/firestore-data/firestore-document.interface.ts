@@ -61,6 +61,8 @@ export interface FsFacilityType extends FsDocumentBaseWithCode {
   name: string;
 }
 
+export const FsFacilityRarerityMax = 5;
+
 export interface FsFacility extends FsDocumentBase {
   type: string;
   name: string;

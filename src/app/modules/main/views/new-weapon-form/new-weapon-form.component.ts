@@ -107,11 +107,9 @@ export class NewWeaponFormComponent implements OnChanges {
 
   onNameInputChange() {
     const location = `${this.className}.onNameInputChange()`;
-
-    this.logger.debug(location, this.inputName);
+    this.logger.trace(location);
 
     for (let weapon of this.weapons) {
-      this.logger.debug(location, weapon.name);
       if (weapon.name === this.inputName) {
         this.logger.warn(location, 'Existing weapon name.', { name: this.inputName });
         this.errorMessage = '既に登録済の名前です。';
@@ -119,6 +117,14 @@ export class NewWeaponFormComponent implements OnChanges {
       }
     }
 
+    this.errorMessage = '';
+  }
+
+  clearNameInput() {
+    const location = `${this.className}.clearNameInput()`;
+    this.logger.trace(location);
+
+    this.inputName = '';
     this.errorMessage = '';
   }
 
@@ -135,6 +141,7 @@ export class NewWeaponFormComponent implements OnChanges {
   private clearInputs() {
     this.selectedType = undefined;
     this.inputName = '';
+    this.errorMessage = '';
     this.selectedRarerity = undefined;
     this.inputAttack = 0;
     this.inputAttack_kai = 0;

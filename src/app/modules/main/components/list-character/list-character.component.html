@@ -1,3 +1,3 @@
 <p>list-character works!</p>
 
-<app-new-facility-form></app-new-facility-form>
+<app-new-facility-form [facilityTypes]="facilityTypes" [facilities]="facilities" (formResult)="printResult($event)"></app-new-facility-form>
