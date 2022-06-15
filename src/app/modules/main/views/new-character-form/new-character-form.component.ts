@@ -244,16 +244,30 @@ export class NewCharacterFormComponent implements OnInit {
     this.logger.trace(location);
 
     const inputId = event.originalEvent.target.id;
-    const value = event.value;
+    let value = event.value;
 
+    // Switch process by target input element.
+    // Case: Motif weapon.
     if (inputId === 'motifWeaponInput') {
-      this.logger.debug(location, { values: this.inputMotifWeapons });
+      // Get index.
+      const index = this.inputMotifWeapons.findIndex((item) => item === value);
+      if (index < 0) {
+        this.logger.error(location, 'Input text is not included in the binded variable.', { inputId: inputId });
+        throw Error(`Input text is not included in the binded variable. { inputId: ${inputId} }`);
+      }
+
+      // Remove forbidden character if it includes one.
+      if (value.includes('|')) {
+        this.logger.warn(location, 'Forbidden character is found.', { value: value });
+        value = value.replace(/\|/g, '');
+        this.inputMotifWeapons[index] = value;
+      }
+
+      // Open new weapon form if input motif weapon name is new.
       if (this.weapons.findIndex((item) => item.name === value) < 0) {
-        const index = this.inputMotifWeapons.findIndex((item) => item === value);
         this.inputMotifWeapons.splice(index);
-        this.inputWeaponOnDialog.name = value;
-        this.isNewWeaponDialogOn = true;
         this.initialWeaponNameForNewWeaponForm = value;
+        this.isNewWeaponDialogOn = true;
       }
     }
   }
@@ -265,9 +279,16 @@ export class NewCharacterFormComponent implements OnInit {
     this.logger.debug(location, formResult);
 
     if (!formResult.canceled) {
+      const weaponText = `${formResult.rarerity.toString()}|${formResult.type.name}|${formResult.name}`;
+      this.inputMotifWeapons.push(weaponText);
     }
 
     this.isNewWeaponDialogOn = false;
+
+    const element = document.getElementById('motifWeaponInput');
+    if (element != undefined) {
+      element.focus();
+    }
   }
 
   onConfirmButtonClick() {
