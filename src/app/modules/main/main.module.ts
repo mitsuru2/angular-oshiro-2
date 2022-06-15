@@ -29,6 +29,7 @@ import { SideMenuComponent } from './views/side-menu/side-menu.component';
 import { LegalComponent } from './components/legal/legal.component';
 import { NewCharacterFormComponent } from './views/new-character-form/new-character-form.component';
 import { NewWeaponFormComponent } from './views/new-weapon-form/new-weapon-form.component';
+import { NewFacilityFormComponent } from './views/new-facility-form/new-facility-form.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { NewWeaponFormComponent } from './views/new-weapon-form/new-weapon-form.
     LegalComponent,
     NewCharacterFormComponent,
     NewWeaponFormComponent,
+    NewFacilityFormComponent,
   ],
   imports: [
     CommonModule,

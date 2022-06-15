@@ -1,0 +1,51 @@
+<form style="min-width: 400px">
+  <div class="formGrid grid p-fluid">
+    <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
+      <label for="characterTypeInput">施設タイプ</label>
+    </div>
+  </div>
+
+  <div class="formGrid grid p-fluid">
+    <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
+      <label for="NewWeaponForm_WeaponNameInput">名前</label>
+    </div>
+  </div>
+
+  <div class="formGrid grid p-fluid">
+    <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
+      <label>レアリティ</label>
+    </div>
+  </div>
+
+  <div class="formGrid grid p-fluid">
+    <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
+      <label>説明</label>
+    </div>
+  </div>
+
+  <div class="formGrid grid p-fluid">
+    <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
+      <label>装備条件</label>
+    </div>
+  </div>
+
+  <div class="formGrid grid p-fluid">
+    <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
+      <label>効果</label>
+      <!-- parameter type | value -->
+    </div>
+  </div>
+
+  <!---->
+  <!-- Footer -->
+  <!---->
+  <p-divider></p-divider>
+  <p-button [label]="okLabel" icon="pi pi-check" (click)="onOkClick()" [styleClass]="buttonStyleClass"></p-button>
+  <p-button
+    [label]="cancelLabel"
+    icon="pi pi-times"
+    [style]="{ 'margin-left': '.5rem' }"
+    (click)="onCancelClick()"
+    [styleClass]="'p-button-secondary ' + buttonStyleClass"
+  ></p-button>
+</form>
