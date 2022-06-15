@@ -65,7 +65,9 @@ export interface FsFacility extends FsDocumentBase {
   type: string;
   name: string;
   rarerity: number;
-  desc?: string[];
+  descriptions?: string[];
+  effects?: string[];
+  details?: string[];
 }
 
 export interface FsGeographType extends FsDocumentBaseWithOrder {
@@ -95,7 +97,7 @@ export interface FsWeapon extends FsDocumentBase {
   type: string;
   name: string;
   rarerity: number;
-  desc: string[];
+  descriptions: string[];
   attack: number;
   attack_kai?: number;
   effects: string[];
