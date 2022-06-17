@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
 import {
   FsWeapon,
@@ -25,9 +25,7 @@ export class NewWeaponFormComponent implements OnChanges {
 
   normalMode = NewWeaponFormMode.normal;
 
-  @Input() minWidth = 300; // pixel
-
-  @Input() maxWidth = 800; // pixel
+  @Input() maxWidth = 'auto'; // pixel
 
   /** Button label and style. */
   @Input() okLabel = 'Ok';
@@ -83,9 +81,12 @@ export class NewWeaponFormComponent implements OnChanges {
     }
   }
 
-  ngOnChanges(): void {
+  ngOnChanges(changes: SimpleChanges): void {
     // Set input weapon name if initial value is set by parent component.
-    this.inputName = this.initialWeaponName;
+    // Set input weapon name if initial value is set by parent component.
+    if (!changes['initialWeaponName'] || changes['initialWeaponName'].previousValue !== this.initialWeaponName) {
+      this.inputName = this.initialWeaponName;
+    }
 
     // Sort input weapon types.
     this.weaponTypes.sort((a, b) => {

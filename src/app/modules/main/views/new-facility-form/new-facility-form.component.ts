@@ -25,9 +25,7 @@ export class NewFacilityFormComponent implements OnChanges {
 
   normalMode = facilityFormMode.normal;
 
-  @Input() minWidth = 300; // pixel
-
-  @Input() maxWidth = 800; // pixel
+  @Input() maxWidth = 'auto';
 
   /** Button label and style. */
   @Input() okLabel = 'Ok';
@@ -81,7 +79,7 @@ export class NewFacilityFormComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     // Set input weapon name if initial value is set by parent component.
-    if (changes['initialFacilityName'].previousValue !== this.initialFacilityName) {
+    if (!changes['initialFacilityName'] || changes['initialFacilityName'].previousValue !== this.initialFacilityName) {
       this.inputName = this.initialFacilityName;
     }
 
