@@ -37,12 +37,18 @@ export interface FsCharacterTag extends FsDocumentBase {
 }
 
 export interface FsCharacterType extends FsDocumentBaseWithCode {
-  names: string[];
+  name: string;
   weaponTypes: string[];
   geographTypes: string[];
   regions?: string[];
   isCostCalcEnable: boolean;
   isKaichikuEnable: boolean;
+  hasSubTypes: boolean;
+  subTypes?: FsSubCharacterType[];
+}
+
+export interface FsSubCharacterType extends FsDocumentBaseWithCode {
+  name: string;
 }
 
 export const FsCharacterRarerityMax = 7;

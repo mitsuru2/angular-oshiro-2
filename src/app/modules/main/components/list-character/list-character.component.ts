@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
-import { FirestoreCollectionName } from 'src/app/services/firestore-data/firestore-collection-name.enum';
+import { FsCollectionName } from 'src/app/services/firestore-data/firestore-collection-name.enum';
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
 import {
   FsAbilityType,
@@ -31,11 +31,11 @@ export class ListCharacterComponent implements OnInit {
   constructor(private logger: NGXLogger, private firestore: FirestoreDataService) {}
 
   ngOnInit(): void {
-    //    this.abilityTypes = this.firestore.getData(FirestoreCollectionName.AbilityTypes) as FsAbilityType[];
-    this.weaponTypes = this.firestore.getData(FirestoreCollectionName.WeaponTypes) as FsWeaponType[];
-    this.weapons = this.firestore.getData(FirestoreCollectionName.Weapons) as FsWeapon[];
-    this.facilityTypes = this.firestore.getData(FirestoreCollectionName.FacilityTypes) as FsFacilityType[];
-    this.facilities = this.firestore.getData(FirestoreCollectionName.Facilities) as FsFacility[];
+    //    this.abilityTypes = this.firestore.getData(FsCollectionName.AbilityTypes) as FsAbilityType[];
+    this.weaponTypes = this.firestore.getData(FsCollectionName.WeaponTypes) as FsWeaponType[];
+    this.weapons = this.firestore.getData(FsCollectionName.Weapons) as FsWeapon[];
+    this.facilityTypes = this.firestore.getData(FsCollectionName.FacilityTypes) as FsFacilityType[];
+    this.facilities = this.firestore.getData(FsCollectionName.Facilities) as FsFacility[];
   }
 
   printResult(result: NewFacilityFormResult) {

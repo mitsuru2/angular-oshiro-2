@@ -1,4 +1,4 @@
-export enum FirestoreCollectionName {
+export enum FsCollectionName {
   Abilities = 'Abilities',
   AbilityTypes = 'AbilityTypes',
   CharacterTags = 'CharacterTags',

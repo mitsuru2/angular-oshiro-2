@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
 import {
@@ -16,6 +16,7 @@ import {
   FsFacilityType,
   FsCharacterRarerityMax,
   FsCharacterTag,
+  FsSubCharacterType,
 } from 'src/app/services/firestore-data/firestore-document.interface';
 import { facilityFormMode, NewFacilityFormResult } from '../new-facility-form/new-facility-form.interafce';
 import { NewWeaponFormMode, NewWeaponFormResult } from '../new-weapon-form/new-weapon-form.interface';
@@ -26,20 +27,20 @@ import { CharacterTypeInNewCharacterForm, NewCharacterFormOutput } from './new-c
   templateUrl: './new-character-form.component.html',
   styleUrls: ['./new-character-form.component.scss'],
 })
-export class NewCharacterFormComponent implements OnInit {
+export class NewCharacterFormComponent implements OnChanges {
   private className = 'NewCharacterFormComponent';
 
   /** Appearance. */
-  @Input() minWidth = 300; // pixel
+  @Input() maxWidth = '1000px';
 
-  @Input() maxWidth = 800; // pixel
+  iconButtonWidth = 50; // px
 
   /** Character Type */
   @Input() characterTypes!: FsCharacterType[];
 
-  characterTypeItems!: CharacterTypeInNewCharacterForm[];
+  selectedCharacterType!: FsCharacterType;
 
-  selectedCharacterType!: CharacterTypeInNewCharacterForm;
+  selectedSubCharacterType?: FsSubCharacterType;
 
   /** Character Name */
   inputCharacterName = '';
@@ -80,25 +81,19 @@ export class NewCharacterFormComponent implements OnInit {
 
   filteredVoiceActors: FsVoiceActor[] = [];
 
-  inputVoiceActor!: FsVoiceActor;
+  inputVoiceActor: FsVoiceActor = <FsVoiceActor>{ name: '' };
 
   /** Illustrator. */
   @Input() illustrators!: FsIllustrator[];
 
   filteredIllustrators: FsIllustrator[] = [];
 
-  inputIllustrator!: FsIllustrator;
+  inputIllustrator: FsIllustrator = <FsIllustrator>{ name: '' };
 
   /** Motif weapons */
   @Input() weapons!: FsWeapon[];
 
   inputMotifWeapons: string[] = [];
-
-  inputWeaponOnDialog: FsWeapon = <FsWeapon>{};
-
-  inputWeaponTypeOnDialog?: FsWeaponType;
-
-  inputWeaponRarerityOnDialog?: number;
 
   /** New weapon form. */
   weaponFormMode = NewWeaponFormMode.minimum;
@@ -110,11 +105,11 @@ export class NewCharacterFormComponent implements OnInit {
   /** Motif facilities. */
   @Input() facilities!: FsFacility[];
 
-  @Input() facilityTypes!: FsFacilityType[];
-
   inputMotifFacilities: string[] = [];
 
   /** New facility form. */
+  @Input() facilityTypes!: FsFacilityType[];
+
   facilityFormMode = facilityFormMode.minimum;
 
   initialFacilityName = '';
@@ -129,16 +124,14 @@ export class NewCharacterFormComponent implements OnInit {
   /** Ability Type */
   @Input() abilityTypes!: FsAbilityType[];
 
-  selectedAbilityTypes: FsAbilityType[] = [];
-
-  abilityCount = 1;
+  selectedAbilityTypes: FsAbilityType[] = [<FsAbilityType>{}];
 
   /** Ability */
   @Input() abilities!: FsAbility[];
 
   filteredAbilities: FsAbility[] = [];
 
-  inputAbilityName = '';
+  inputAbilityNames: string[] = [];
 
   inputAbilityDesc = ['', '', ''];
 
@@ -165,29 +158,34 @@ export class NewCharacterFormComponent implements OnInit {
     }
   }
 
-  ngOnInit(): void {
-    // Initialize selected values of input controls.
-    this.characterTypeItems = this.makeCharacterTypeItems(this.characterTypes);
-    this.selectedCharacterType = this.characterTypeItems[0];
+  ngOnChanges(): void {
+    // Character type.
+    this.firestore.sortByCode(this.characterTypes);
+    this.selectedCharacterType = this.characterTypes[0];
 
+    // Sub character type.
+    for (let i = 0; i < this.characterTypes.length; ++i) {
+      if (this.characterTypes[i].subTypes) {
+        this.firestore.sortByCode(this.characterTypes[i].subTypes as FsSubCharacterType[]);
+      }
+    }
+
+    // Weapon type.
     this.weaponTypeItems = this.makeFilteredFormItems(this.selectedCharacterType.weaponTypes, this.weaponTypes);
     this.firestore.sortByCode(this.weaponTypeItems);
 
+    // Geograph type.
     this.geographTypeItems = this.makeFilteredFormItems(this.selectedCharacterType.geographTypes, this.geographTypes);
     this.firestore.sortByOrder(this.geographTypeItems);
 
+    // Region.
     if (this.selectedCharacterType.regions) {
       this.regionItems = this.makeFilteredFormItems(this.selectedCharacterType.regions, this.regions);
       this.firestore.sortByOrder(this.regionItems);
     }
 
-    this.inputVoiceActor = <FsVoiceActor>{};
-    this.inputVoiceActor.name = '';
-
-    this.inputIllustrator = <FsIllustrator>{};
-    this.inputIllustrator.name = '';
-
-    this.logger.debug({ facilityTypes: this.facilityTypes });
+    // Ability type.
+    this.firestore.sortByOrder(this.abilityTypes);
   }
 
   onCharacterTypeChanged() {
@@ -422,27 +420,16 @@ export class NewCharacterFormComponent implements OnInit {
     this.clearForm();
   }
 
-  private makeCharacterTypeItems(fsData: FsCharacterType[]): CharacterTypeInNewCharacterForm[] {
-    const location = `${this.className}.makeCharacterTypeItems()`;
-    this.logger.trace(location);
-
-    let list = [];
-
-    for (let d of fsData) {
-      let tmp: CharacterTypeInNewCharacterForm = d as CharacterTypeInNewCharacterForm;
-      tmp.longName = d.names[0];
-      if (d.names.length > 1) {
-        tmp.longName += ' | ' + d.names[1];
-      }
-      list.push(tmp);
-    }
-    list.sort((a, b) => {
-      return a.code < b.code ? -1 : 1;
-    });
-
-    this.logger.debug(location, list);
-
-    return list;
+  /**
+   * Track function which is used by *ngFor directive.
+   * *ngFor cannot calculate index number when it's used with [(ngModel)].
+   * So, this function help *ngFor to calculate index.
+   * @param index Item index.
+   * @param obj List object. Not used.
+   * @returns Item index.
+   */
+  trackByItem(index: number, obj: any): any { // eslint-disable-line
+    return index;
   }
 
   private makeFilteredFormItems<T extends FsDocumentBase>(filter: string[], fsData: T[]): T[] {
@@ -466,7 +453,10 @@ export class NewCharacterFormComponent implements OnInit {
     this.logger.trace(location);
 
     if (exceptItems.includes('characterType') === false) {
-      this.selectedCharacterType = this.characterTypeItems[0];
+      this.selectedCharacterType = this.characterTypes[0];
+    }
+    if (exceptItems.includes('subCharacterType') === false) {
+      this.selectedSubCharacterType = undefined;
     }
     if (exceptItems.includes('characterName') === false) {
       this.inputCharacterName = '';

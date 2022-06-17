@@ -1,9 +1,9 @@
-<form [style]="{ 'min-width': minWidth + 100 + 'px', 'margin-bottom': '1rem' }">
+<form [style]="{ 'max-width': maxWidth, 'margin-bottom': '1rem' }">
   <!------------------------------------------------------------------------->
   <!-- BASIC INFORMATION ---------------------------------------------------->
   <!------------------------------------------------------------------------->
-  <div class="formGrid grid p-fluid">
-    <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
+  <div class="formgrid grid">
+    <div class="col">
       <p-divider align="center"><span>基本情報</span></p-divider>
     </div>
   </div>
@@ -11,22 +11,36 @@
   <!---->
   <!-- Character type & name -->
   <!---->
-  <div class="formGrid grid p-fluid" style="margin-bottom: 1rem">
-    <div class="col" [style]="{ 'min-width': minWidth / 2 + 'px', 'max-width': maxWidth / 2 + 'px' }">
+  <div class="formgrid grid" style="margin-bottom: 1rem">
+    <div class="field col-12 md:col-6">
       <label for="NewCharacterForm_CharacterTypeInput">キャラクタータイプ</label>
       <p-dropdown
         id="NewCharacterForm_CharacterTypeInput"
         name="NewCharacterForm_CharacterTypeInput"
         [(ngModel)]="selectedCharacterType"
-        [options]="characterTypeItems"
-        optionLabel="longName"
+        [options]="characterTypes"
+        optionLabel="name"
         [style]="{ width: '100%' }"
         (onChange)="onCharacterTypeChanged()"
       ></p-dropdown>
     </div>
-    <div class="col" [style]="{ 'min-width': minWidth / 2 + 'px', 'max-width': maxWidth / 2 + 'px' }">
+    <div class="field col-12 md:col-6" *ngIf="selectedCharacterType.subTypes">
+      <label for="NewCharacterForm_SubCharacterTypeInput">サブキャラクタータイプ</label>
+      <p-dropdown
+        id="NewCharacterForm_SubCharacterTypeInput"
+        name="NewCharacterForm_SubCharacterTypeInput"
+        [(ngModel)]="selectedSubCharacterType"
+        [options]="selectedCharacterType.subTypes"
+        optionLabel="name"
+        [style]="{ width: '100%' }"
+      ></p-dropdown>
+    </div>
+  </div>
+
+  <div class="formgrid grid">
+    <div class="field col">
       <label for="NewCharacterForm_CharacterNameInput">名前</label>
-      <span class="p-input-icon-right" [style]="{ width: '100%', 'margin-top': '2px' }">
+      <span class="p-input-icon-right" [style]="{ width: '100%' }">
         <i *ngIf="inputCharacterName !== ''" class="pi pi-times" (click)="inputCharacterName = ''"></i>
         <input
           type="text"
@@ -44,8 +58,8 @@
   <!---->
   <!-- Character rarerity -->
   <!---->
-  <div class="formGrid grid p-fluid">
-    <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
+  <div class="formgrid">
+    <div class="field col">
       <label>レアリティ</label>
       <div class="formgroup-inline">
         <div *ngFor="let item of rarerityItems" class="field-checkbox">
@@ -64,8 +78,8 @@
   <!---->
   <!-- Weapon type -->
   <!---->
-  <div class="formGrid grid p-fluid">
-    <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
+  <div class="formgrid grid">
+    <div class="field col">
       <label>武器タイプ</label>
       <div class="formgroup-inline">
         <div *ngFor="let item of weaponTypeItems" class="field-checkbox">
@@ -84,8 +98,8 @@
   <!---->
   <!-- Geograph type -->
   <!---->
-  <div class="formGrid grid p-fluid">
-    <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
+  <div class="formgrid grid">
+    <div class="field col">
       <label>地形属性</label>
       <div class="formgroup-inline">
         <div *ngFor="let item of geographTypeItems" class="field-checkbox">
@@ -104,8 +118,8 @@
   <!---->
   <!-- Region -->
   <!---->
-  <div class="formGrid grid p-fluid" *ngIf="selectedCharacterType.regions">
-    <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
+  <div class="formgrid grid" *ngIf="selectedCharacterType.regions">
+    <div class="field col">
       <label>地域</label>
       <div class="formgroup-inline">
         <div *ngFor="let item of regionItems" class="field-checkbox">
@@ -124,8 +138,8 @@
   <!---->
   <!-- Character cost & kai -->
   <!---->
-  <div class="formGrid grid p-fluid" *ngIf="!selectedCharacterType.isCostCalcEnable">
-    <div class="col" [style]="{ 'min-width': minWidth / 2 + 'px', 'max-width': maxWidth / 2 + 'px' }">
+  <div class="formgrid grid" *ngIf="!selectedCharacterType.isCostCalcEnable">
+    <div class="field col p-fluid">
       <label for="NewCharacterForm_CharacterCostInput">基本消費気</label>
       <div>
         <p-inputNumber
@@ -140,7 +154,7 @@
         </p-inputNumber>
       </div>
     </div>
-    <div class="col" [style]="{ 'min-width': minWidth / 2 + 'px', 'max-width': maxWidth / 2 + 'px' }">
+    <div class="field col p-fluid">
       <label for="NewCharacterForm_CharacterCostKaiInput" *ngIf="selectedCharacterType.isKaichikuEnable">基本消費気 (改壱)</label>
       <div *ngIf="selectedCharacterType.isKaichikuEnable">
         <p-inputNumber
@@ -160,8 +174,8 @@
   <!---->
   <!-- CV & Illustrator -->
   <!---->
-  <div class="formGrid grid p-fluid">
-    <div class="col" [style]="{ 'min-width': minWidth / 2 + 'px', 'max-width': maxWidth / 2 + 'px' }">
+  <div class="formgrid grid">
+    <div class="field col-12 md:col-6">
       <label for="NewCharacterForm_VoiceActorInput">キャラクターボイス</label>
       <p-autoComplete
         inputId="NewCharacterForm_VoiceActorInput"
@@ -175,7 +189,7 @@
         [inputStyle]="{ width: '100%' }"
       ></p-autoComplete>
     </div>
-    <div class="col" [style]="{ 'min-width': minWidth / 2 + 'px', 'max-width': maxWidth / 2 + 'px' }">
+    <div class="field col-12 md:col-6">
       <label for="NewCharacterForm_IllustratorInput">イラストレーター</label>
       <p-autoComplete
         inputId="NewCharacterForm_IllustratorInput"
@@ -194,8 +208,8 @@
   <!---->
   <!-- Motif weapon -->
   <!---->
-  <div class="formGrid grid p-fluid">
-    <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
+  <div class="formgrid grid p-fluid">
+    <div class="field col">
       <label for="NewCharacterForm_MotifWeaponInput">モチーフ武器</label>
       <p-chips
         inputId="NewCharacterForm_MotifWeaponInput"
@@ -209,8 +223,8 @@
   <!---->
   <!-- Motif facility -->
   <!---->
-  <div class="formGrid grid p-fluid">
-    <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
+  <div class="formgrid grid p-fluid">
+    <div class="field col">
       <label for="NewCharacterForm_MotifFacilityInput">モチーフ施設</label>
       <p-chips
         inputId="NewCharacterForm_MotifFacilityInput"
@@ -224,8 +238,8 @@
   <!---->
   <!-- Character tag -->
   <!---->
-  <div class="formGrid grid p-fluid">
-    <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
+  <div class="formgrid grid">
+    <div class="field col p-fluid">
       <label for="NewCharacterForm_CharacterTagInput">タグ</label>
       <p-chips
         inputId="NewCharacterForm_CharacterTagInput"
@@ -237,27 +251,46 @@
   </div>
 
   <!------------------------------------------------------------------------->
-  <!-- 特技/計略 ------------------------------------------------------------->
+  <!-- Ability -------------------------------------------------------------->
   <!------------------------------------------------------------------------->
-  <div class="formGrid grid p-fluid">
-    <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
+  <div class="p-formgrid grid">
+    <div class="field col">
       <p-divider align="center"><span>特技 / 計略</span></p-divider>
     </div>
   </div>
 
   <div>
-    <div class="formGrid grid p-fluid">
-      <div class="col">
+    <div class="formgrid grid" *ngFor="let item of selectedAbilityTypes; trackBy: trackByItem; let i = index">
+      <div class="col" [style]="{ 'margin-bottom': '1rem' }">
         <p-card>
-          <div class="formGrid grid p-fluid">
-            <div class="col" style="min-width: 300px">
+          <div class="formgrid grid">
+            <div class="field col-12 md:col-6">
               <label>特技/計略タイプ</label>
+              <p-dropdown
+                [id]="'NewCharacterForm_AbilityTypeInput_' + i"
+                [name]="'NewCharacterForm_AbilityTypeInput_' + i"
+                [(ngModel)]="selectedAbilityTypes[i]"
+                [options]="abilityTypes"
+                optionLabel="name"
+                [style]="{ width: '100%' }"
+              ></p-dropdown>
             </div>
-            <div class="col" style="min-width: 300px">
+            <div class="field col-12 md:col-6">
               <label>名前</label>
+              <span class="p-input-icon-right" [style]="{ width: '100%', 'margin-top': '2px' }">
+                <i *ngIf="inputAbilityNames[i] !== ''" class="pi pi-times" (click)="inputAbilityNames[i] = ''"></i>
+                <input
+                  type="text"
+                  [id]="'NewCharacterForm_AbilityNameInput_' + i"
+                  [name]="'NewCharacterForm_AbilityNameInput_' + i"
+                  [(ngModel)]="inputAbilityNames[i]"
+                  pInputText
+                  [style]="{ width: '100%' }"
+                />
+              </span>
             </div>
           </div>
-          <div class="formGrid grid p-fluid">
+          <div class="formGrid p-fluid">
             <div class="col" style="min-width: 300px">
               <label>使用間隔</label>
             </div>
@@ -265,12 +298,12 @@
               <label>消費気</label>
             </div>
           </div>
-          <div class="formGrid grid p-fluid">
+          <div class="formGrid p-fluid">
             <div class="col" style="min-width: 300px">
               <label>トークン配置マス</label>
             </div>
           </div>
-          <div class="formGrid grid p-fluid">
+          <div class="formGrid p-fluid">
             <div class="col" style="min-width: 300px">
               <label>効果</label>
             </div>

@@ -1,9 +1,10 @@
-import { FirestoreCollectionName } from './firestore-collection-name.enum';
+import { FsCollectionName } from './firestore-collection-name.enum';
 import {
   addDoc,
   collection,
   CollectionReference,
   Firestore,
+  getDocs,
   getDocsFromServer,
   onSnapshot,
   orderBy,
@@ -26,7 +27,7 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
 
   private unsubscribe?: Unsubscribe;
 
-  constructor(private fs: Firestore, private logger: NGXLogger, private name: FirestoreCollectionName) {
+  constructor(private fs: Firestore, private logger: NGXLogger, private name: FsCollectionName) {
     this.className = `FirestoreCollectionWrapper`;
     this.logger.trace(`new ${this.className}()`, { name: name });
 
@@ -45,12 +46,12 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
     const location = `${this.className}.load()`;
     this.logger.trace(`${location}`, { name: this.name });
 
-    // Get data from server.
+    // Get data.
     try {
       // Copy document ID and its data to "this.data" object, if it's not empty.
-      const snapshot = await getDocsFromServer(this.collection);
+      const snapshot = await getDocs(this.collection);
       if (snapshot.empty) {
-        return 0;
+        throw Error(`${location} Empty data.`);
       }
       snapshot.forEach((doc) => {
         const tmp = doc.data();
@@ -58,12 +59,12 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
         this.data.push(tmp);
       });
       this.isLoaded = true;
-      this.logger.info(`${location} | Data loading finished.`, {
+      this.logger.info(`${location} Data loading finished.`, {
         name: this.name,
         length: Object.keys(this.data).length,
       });
     } catch (error) {
-      this.logger.error(`${location} | Data loading failed.`, { name: this.name }, error);
+      this.logger.error(`${location} Data loading failed.`, { name: this.name }, error);
       throw error;
     }
 
@@ -71,6 +72,39 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
 
     // Return data length.
     return Object.keys(this.data).length;
+  }
+
+  async loadSub<TSub extends FsDocumentBase>(docId: string, subName: string): Promise<TSub[]> {
+    const location = `${this.className}.loadSub()`;
+    this.logger.trace(location);
+
+    const result: TSub[] = [];
+
+    // Get data.
+    try {
+      // Copy document ID and its data to "this.data" object, if it's not empty.
+      const subCollection = collection(this.fs, this.name, docId, subName) as CollectionReference<TSub>;
+      const snapshot = await getDocsFromServer(subCollection);
+      if (snapshot.empty) {
+        throw Error(`${location} Empty data.`);
+      }
+      snapshot.forEach((doc) => {
+        const tmp = doc.data() as TSub;
+        tmp.id = doc.id;
+        result.push(tmp);
+      });
+      this.logger.info(`${location} Data loading finished.`, {
+        name: this.name,
+        docId: docId,
+        subName: subName,
+        length: Object.keys(this.data).length,
+      });
+    } catch (error) {
+      this.logger.error(`${location} Data loading failed.`, { name: this.name, docId: docId, subName: subName }, error);
+      throw error;
+    }
+
+    return result;
   }
 
   /**

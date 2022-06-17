@@ -5,7 +5,7 @@ import { NGXLogger } from 'ngx-logger';
 import { AppInfo } from './app-info.enum';
 import { AppNavigateService } from './services/app-navigate/app-navigate.service';
 import { AppStatus } from './services/app-navigate/app-status.enum';
-import { FirestoreCollectionName } from './services/firestore-data/firestore-collection-name.enum';
+import { FsCollectionName } from './services/firestore-data/firestore-collection-name.enum';
 import { FirestoreDataService } from './services/firestore-data/firestore-data.service';
 
 @Component({
@@ -37,19 +37,19 @@ export class AppComponent implements OnInit {
 
     try {
       await Promise.all([
-        this.firestore.load(FirestoreCollectionName.Abilities),
-        this.firestore.load(FirestoreCollectionName.AbilityTypes),
-        this.firestore.load(FirestoreCollectionName.CharacterTags),
-        this.firestore.load(FirestoreCollectionName.CharacterTypes),
-        this.firestore.load(FirestoreCollectionName.Characters),
-        this.firestore.load(FirestoreCollectionName.Facilities),
-        this.firestore.load(FirestoreCollectionName.FacilityTypes),
-        this.firestore.load(FirestoreCollectionName.Regions),
-        this.firestore.load(FirestoreCollectionName.GeographTypes),
-        this.firestore.load(FirestoreCollectionName.VoiceActors),
-        this.firestore.load(FirestoreCollectionName.Illustrators),
-        this.firestore.load(FirestoreCollectionName.Weapons),
-        this.firestore.load(FirestoreCollectionName.WeaponTypes),
+        this.firestore.load(FsCollectionName.Abilities),
+        this.firestore.load(FsCollectionName.AbilityTypes),
+        this.firestore.load(FsCollectionName.CharacterTags),
+        this.firestore.load(FsCollectionName.CharacterTypes),
+        this.firestore.load(FsCollectionName.Characters),
+        this.firestore.load(FsCollectionName.Facilities),
+        this.firestore.load(FsCollectionName.FacilityTypes),
+        this.firestore.load(FsCollectionName.Regions),
+        this.firestore.load(FsCollectionName.GeographTypes),
+        this.firestore.load(FsCollectionName.VoiceActors),
+        this.firestore.load(FsCollectionName.Illustrators),
+        this.firestore.load(FsCollectionName.Weapons),
+        this.firestore.load(FsCollectionName.WeaponTypes),
       ]);
       this.logger.info(`AppComponent: All const data has been loaded.`);
       this.appNavi.status = AppStatus.Loaded;
