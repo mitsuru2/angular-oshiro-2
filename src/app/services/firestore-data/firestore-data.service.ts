@@ -9,6 +9,7 @@ import {
   FsAbility,
   FsAbilityType,
   FsCharacter,
+  FsCharacterTag,
   FsCharacterType,
   FsDocumentBaseWithCode,
   FsDocumentBaseWithOrder,
@@ -45,6 +46,7 @@ export class FirestoreDataService {
   collections: { [key in FirestoreCollectionName]: FirestoreCollectionWrapper<any> } = {
     [FirestoreCollectionName.Abilities]:      new FirestoreCollectionWrapper<FsAbility>       (this.fs, this.logger, FirestoreCollectionName.Abilities), // eslint-disable-line
     [FirestoreCollectionName.AbilityTypes]:   new FirestoreCollectionWrapper<FsAbilityType>   (this.fs, this.logger, FirestoreCollectionName.AbilityTypes), // eslint-disable-line
+    [FirestoreCollectionName.CharacterTags]:  new FirestoreCollectionWrapper<FsCharacterTag>  (this.fs, this.logger, FirestoreCollectionName.CharacterTags), // eslint-disable-line
     [FirestoreCollectionName.CharacterTypes]: new FirestoreCollectionWrapper<FsCharacterType> (this.fs, this.logger, FirestoreCollectionName.CharacterTypes), // eslint-disable-line
     [FirestoreCollectionName.Characters]:     new FirestoreCollectionWrapper<FsCharacter>     (this.fs, this.logger,FirestoreCollectionName.Characters), // eslint-disable-line
     [FirestoreCollectionName.Facilities]:     new FirestoreCollectionWrapper<FsFacility>      (this.fs, this.logger, FirestoreCollectionName.Facilities), // eslint-disable-line

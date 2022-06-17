@@ -1,5 +1,5 @@
-<form style="min-width: 400px">
-  <div class="formGrid grid p-fluid">
+<form [style]="{ 'min-width': minWidth + 100 + 'px', 'margin-bottom': '1rem' }">
+  <div class="formGrid p-fluid">
     <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
       <label>施設タイプ</label>
       <div class="formgroup-inline">
@@ -100,11 +100,16 @@
   <!---->
   <!-- Footer -->
   <!---->
-  <p-divider></p-divider>
+  <!--<div class="formGrid grid p-fluid">
+    <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
+      <p-divider></p-divider>
+    </div>
+  </div>-->
+
   <p-button
     [label]="okLabel"
     icon="pi pi-check"
-    (click)="onOkClick()"
+    (onClick)="onOkClick()"
     [disabled]="!selectedType || inputName === '' || errorMessage !== '' || !selectedRarerity"
     [styleClass]="buttonStyleClass"
   ></p-button>
@@ -112,7 +117,7 @@
     [label]="cancelLabel"
     icon="pi pi-times"
     [style]="{ 'margin-left': '.5rem' }"
-    (click)="onCancelClick()"
+    (onClick)="onCancelClick()"
     [styleClass]="'p-button-secondary ' + buttonStyleClass"
   ></p-button>
 </form>

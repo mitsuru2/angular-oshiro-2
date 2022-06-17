@@ -1,5 +1,5 @@
-<form style="min-width: 400px; margin-bottom: 1rem">
-  <div class="formGrid grid p-fluid">
+<form [style]="{ 'min-width': minWidth + 100 + 'px', 'margin-bottom': '1rem' }">
+  <div class="formGrid p-fluid">
     <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
       <label>武器タイプ</label>
       <div class="formgroup-inline">
@@ -16,7 +16,7 @@
     </div>
   </div>
 
-  <div class="formGrid grid p-fluid" style="margin-bottom: 1rem">
+  <div class="formGrid p-fluid" style="margin-bottom: 1rem">
     <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
       <label for="NewWeaponForm_WeaponNameInput">名前</label>
       <span class="p-input-icon-right" [style]="{ width: '100%' }">
@@ -35,7 +35,7 @@
     </div>
   </div>
 
-  <div class="formGrid grid p-fluid">
+  <div class="formGrid p-fluid">
     <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
       <label>レアリティ</label>
       <div class="formgroup-inline">
@@ -52,7 +52,7 @@
     </div>
   </div>
 
-  <div class="formGrid grid p-fluid" *ngIf="mode === normalMode" style="margin-bottom: 1rem">
+  <div class="formGrid p-fluid" *ngIf="mode === normalMode" style="margin-bottom: 1rem">
     <div class="col" [style]="{ 'min-width': minWidth / 2 + 'px', 'max-width': maxWidth / 2 + 'px' }">
       <label for="NewWeaponForm_AttackInput">攻撃</label>
       <div>
@@ -69,11 +69,11 @@
       </div>
     </div>
     <div class="col" *ngIf="selectedRarerity === 4" [style]="{ 'min-width': minWidth / 2 + 'px', 'max-width': maxWidth / 2 + 'px' }">
-      <label for="NewWeaponForm_AttackInputKai">攻撃［改］</label>
+      <label for="NewWeaponForm_AttackKaiInput">攻撃［改］</label>
       <div>
         <p-inputNumber
-          inputId="NewWeaponForm_AttackInputKai"
-          name="NewWeaponForm_AttackInputKai"
+          inputId="NewWeaponForm_AttackKaiInput"
+          name="NewWeaponForm_AttackKaiInput"
           [(ngModel)]="inputAttack_kai"
           mode="decimal"
           [showButtons]="true"
@@ -85,7 +85,7 @@
     </div>
   </div>
 
-  <div class="formGrid grid p-fluid" *ngIf="mode === normalMode" style="margin-bottom: 1rem">
+  <div class="formGrid p-fluid" *ngIf="mode === normalMode" style="margin-bottom: 1rem">
     <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
       <label>説明</label>
       <div *ngFor="let desc of inputDescriptions; trackBy: trackByItem; let i = index">
@@ -104,7 +104,7 @@
     </div>
   </div>
 
-  <div class="formGrid grid p-fluid" *ngIf="mode === normalMode" style="margin-bottom: 1rem">
+  <div class="formGrid p-fluid" *ngIf="mode === normalMode" style="margin-bottom: 1rem">
     <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
       <label>効果</label>
       <div *ngFor="let desc of inputEffects; trackBy: trackByItem; let i = index">
@@ -123,7 +123,7 @@
     </div>
   </div>
 
-  <div class="formGrid grid p-fluid" *ngIf="mode === normalMode" style="margin-bottom: 1rem">
+  <div class="formGrid p-fluid" *ngIf="mode === normalMode" style="margin-bottom: 1rem">
     <div class="col" *ngIf="selectedRarerity === 4" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
       <label>効果［改］</label>
       <div *ngFor="let desc of inputEffects_kai; trackBy: trackByItem; let i = index">
@@ -131,8 +131,8 @@
           <i *ngIf="inputEffects_kai[i] !== ''" class="pi pi-times" (click)="inputEffects_kai[i] = ''"></i>
           <input
             type="text"
-            [id]="'NewWeaponForm_EffectInputKai_' + i"
-            [name]="'NewWeaponForm_EffectInputKai_' + i"
+            [id]="'NewWeaponForm_EffectKaiInput_' + i"
+            [name]="'NewWeaponForm_EffectKaiInput_' + i"
             [(ngModel)]="inputEffects_kai[i]"
             pInputText
             [style]="{ width: '100%', 'margin-bottom': '2px' }"
@@ -145,19 +145,24 @@
   <!---->
   <!-- Footer -->
   <!---->
-  <p-divider></p-divider>
+  <!--<div class="formGrid grid p-fluid">
+    <div class="col" [style]="{ 'min-width': minWidth + 'px', 'max-width': maxWidth + 'px' }">
+      <p-divider></p-divider>
+    </div>
+  </div>-->
+
   <p-button
     [label]="okLabel"
     icon="pi pi-check"
     [disabled]="!selectedType || inputName === '' || errorMessage !== '' || !selectedRarerity"
-    (click)="onOkClick()"
+    (onClick)="onOkClick()"
     [styleClass]="buttonStyleClass"
   ></p-button>
   <p-button
     [label]="cancelLabel"
     icon="pi pi-times"
     [style]="{ 'margin-left': '.5rem' }"
-    (click)="onCancelClick()"
+    (onClick)="onCancelClick()"
     [styleClass]="'p-button-secondary ' + buttonStyleClass"
   ></p-button>
 </form>

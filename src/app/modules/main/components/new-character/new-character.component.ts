@@ -4,6 +4,7 @@ import {
   FsAbility,
   FsAbilityType,
   FsCharacter,
+  FsCharacterTag,
   FsCharacterType,
   FsFacility,
   FsFacilityType,
@@ -16,10 +17,7 @@ import {
 } from 'src/app/services/firestore-data/firestore-document.interface';
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
 import { FirestoreCollectionName } from 'src/app/services/firestore-data/firestore-collection-name.enum';
-import {
-  CharacterTypeInNewCharacterForm,
-  RarerityInNewCharacterForm,
-} from '../../views/new-character-form/new-character-form.interface';
+import { CharacterTypeInNewCharacterForm } from '../../views/new-character-form/new-character-form.interface';
 import { ref, Storage, uploadBytes } from '@angular/fire/storage';
 import { AbstractControl, NG_VALIDATORS, ValidationErrors, Validator, ValidatorFn } from '@angular/forms';
 
@@ -37,11 +35,11 @@ export class NewCharacterComponent implements OnInit {
 
   selectedCharacterType?: CharacterTypeInNewCharacterForm;
 
+  characterTags!: FsCharacterTag[];
+
   inputName: string = '';
 
-  rarerityItems!: RarerityInNewCharacterForm[];
-
-  selectedRarerity?: RarerityInNewCharacterForm;
+  selectedRarerity: number = 1;
 
   geographTypes!: FsGeographType[];
 
@@ -81,11 +79,12 @@ export class NewCharacterComponent implements OnInit {
 
   ngOnInit(): void {
     this.characterTypes = this.firestore.getData(FirestoreCollectionName.CharacterTypes) as FsCharacterType[];
+    this.characterTags = this.firestore.getData(FirestoreCollectionName.CharacterTags) as FsCharacterTag[];
     this.geographTypes = this.firestore.getData(FirestoreCollectionName.GeographTypes) as FsGeographType[];
     this.weaponTypes = this.firestore.getData(FirestoreCollectionName.WeaponTypes) as FsWeaponType[];
     this.weapons = this.firestore.getData(FirestoreCollectionName.Weapons) as FsWeapon[];
     this.facilities = this.firestore.getData(FirestoreCollectionName.Facilities) as FsFacility[];
-    this.facilityTypes = this.firestore.getData(FirestoreCollectionName.Facilities) as FsFacilityType[];
+    this.facilityTypes = this.firestore.getData(FirestoreCollectionName.FacilityTypes) as FsFacilityType[];
     this.regions = this.firestore.getData(FirestoreCollectionName.Regions) as FsRegion[];
     this.voiceActors = this.firestore.getData(FirestoreCollectionName.VoiceActors) as FsVoiceActor[];
     this.illustrators = this.firestore.getData(FirestoreCollectionName.Illustrators) as FsIllustrator[];
@@ -96,8 +95,6 @@ export class NewCharacterComponent implements OnInit {
   async submit() {
     this.logger.trace(`NewCharacterComponent.submit()`);
 
-    this.selectedRarerity = { name: '★1', value: 1 };
-
     if (this.selectedCharacterType && this.selectedRarerity && this.selectedWeaponType) {
       //const count = await this.firestore.incrementCounter(FirestoreCollectionName.CharacterTypes, 0);
       const count = 1;
@@ -107,7 +104,7 @@ export class NewCharacterComponent implements OnInit {
         index: `${this.selectedCharacterType.code}-${('0000' + count.toString(16).toUpperCase()).slice(-4)}`,
         name: this.inputName,
         type: this.selectedCharacterType.id,
-        rarerity: this.selectedRarerity?.value,
+        rarerity: this.selectedRarerity,
         weaponType: this.selectedWeaponType.id,
         geographTypes: [this.selectedGeographTypes[0].id],
         region: '',

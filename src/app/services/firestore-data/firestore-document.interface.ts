@@ -31,6 +31,11 @@ export interface FsAbilityType extends FsDocumentBaseWithOrder {
   name: string;
 }
 
+export interface FsCharacterTag extends FsDocumentBase {
+  name: string;
+  characters: string[];
+}
+
 export interface FsCharacterType extends FsDocumentBaseWithCode {
   names: string[];
   weaponTypes: string[];
@@ -39,6 +44,8 @@ export interface FsCharacterType extends FsDocumentBaseWithCode {
   isCostCalcEnable: boolean;
   isKaichikuEnable: boolean;
 }
+
+export const FsCharacterRarerityMax = 7;
 
 export interface FsCharacter extends FsDocumentBaseWithStringIndex {
   type: string;

@@ -9,11 +9,6 @@ export interface CharacterTypeInNewCharacterForm extends FsCharacterType {
   longName: string;
 }
 
-export interface RarerityInNewCharacterForm {
-  name: string;
-  value: number;
-}
-
 export interface NewCharacterFormOutput {
   characterType: FsCharacterType;
   characterName: string;

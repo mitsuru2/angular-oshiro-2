@@ -2,6 +2,7 @@
 
 <app-new-character-form
   [characterTypes]="characterTypes"
+  [characterTags]="characterTags"
   [weaponTypes]="weaponTypes"
   [geographTypes]="geographTypes"
   [regions]="regions"
@@ -40,7 +41,7 @@
   <p class="m-0">
     Caracter Type: {{ selectedCharacterType?.longName }}<br />
     Character Name: {{ inputName }} <br />
-    Rarerity: {{ selectedRarerity?.name }}<br />
+    Rarerity: {{ selectedRarerity }}<br />
     Weapon Type: {{ selectedWeaponType?.name }} <br />
     Geograph Type: {{ selectedGeographTypes[0]?.name }} <span *ngIf="selectedGeographTypes[1]">, {{ selectedGeographTypes[1].name }}</span
     ><br />

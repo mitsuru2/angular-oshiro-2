@@ -39,6 +39,7 @@ export class AppComponent implements OnInit {
       await Promise.all([
         this.firestore.load(FirestoreCollectionName.Abilities),
         this.firestore.load(FirestoreCollectionName.AbilityTypes),
+        this.firestore.load(FirestoreCollectionName.CharacterTags),
         this.firestore.load(FirestoreCollectionName.CharacterTypes),
         this.firestore.load(FirestoreCollectionName.Characters),
         this.firestore.load(FirestoreCollectionName.Facilities),

@@ -5,7 +5,7 @@ import {
   FsFacilityRarerityMax,
   FsFacilityType,
 } from 'src/app/services/firestore-data/firestore-document.interface';
-import { NewFacilityFormMode, NewFacilityFormResult } from './new-facility-form.interafce';
+import { facilityFormMode, NewFacilityFormResult } from './new-facility-form.interafce';
 
 @Component({
   selector: 'app-new-facility-form',
@@ -19,11 +19,11 @@ export class NewFacilityFormComponent implements OnChanges {
   private className = 'NewFacilityFormComponent';
 
   /** Appearance. */
-  @Input() mode: NewFacilityFormMode = NewFacilityFormMode.normal;
+  @Input() mode: facilityFormMode = facilityFormMode.normal;
 
-  minimumMode = NewFacilityFormMode.minimum;
+  minimumMode = facilityFormMode.minimum;
 
-  normalMode = NewFacilityFormMode.normal;
+  normalMode = facilityFormMode.normal;
 
   @Input() minWidth = 300; // pixel
 
