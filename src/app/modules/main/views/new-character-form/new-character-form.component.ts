@@ -92,14 +92,14 @@ export class NewCharacterFormComponent implements OnChanges {
   /** Voice actor. */
   @Input() voiceActors!: FsVoiceActor[];
 
-  filteredVoiceActors: string[] = [];
+  suggestVoiceActorNames: string[] = [];
 
   inputVoiceActor: FsVoiceActorForNewCharacterForm = this.makeFsVoiceActorForNewCharacterForm();
 
   /** Illustrator. */
   @Input() illustrators!: FsIllustrator[];
 
-  filteredIllustrators: string[] = [];
+  suggestIllustratorNames: string[] = [];
 
   inputIllustrator: FsIllustratorForNewCharacterForm = this.makeFsIllustratorForNewCharacterForm();
 
@@ -144,9 +144,9 @@ export class NewCharacterFormComponent implements OnChanges {
   /** Ability */
   @Input() abilities!: FsAbility[];
 
-  filteredAbilities: string[][] = [[]];
+  suggestAbilityNames: string[][] = [[]];
 
-  filteredAbilities_kai: string[][] = [[]];
+  suggestAbilityNames_kai: string[][] = [[]];
 
   inputAbilities: FsAbilityForNewCharacterForm[] = [this.makeFsAbilityForNewCharacterForm()];
 
@@ -261,23 +261,19 @@ export class NewCharacterFormComponent implements OnChanges {
     // CASE: Voice actor input.
     if (inputId === 'NewCharacterForm_VoiceActorInput') {
       // Update suggestion item list.
-      this.filteredVoiceActors = [];
-      for (let i = 0; i < this.voiceActors.length; ++i) {
-        if (this.voiceActors[i].name.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
-          this.filteredVoiceActors.push(this.voiceActors[i].name);
-        }
-      }
+      this.suggestVoiceActorNames = this.makeSuggestLabels(
+        query,
+        this.voiceActors.map((item) => item.name)
+      );
     }
 
     // CASE: Illustrator input.
     else if (inputId === 'NewCharacterForm_IllustratorInput') {
       // Update suggestion item list.
-      this.filteredIllustrators = [];
-      for (let i = 0; i < this.illustrators.length; ++i) {
-        if (this.illustrators[i].name.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
-          this.filteredIllustrators.push(this.illustrators[i].name);
-        }
-      }
+      this.suggestIllustratorNames = this.makeSuggestLabels(
+        query,
+        this.illustrators.map((item) => item.name)
+      );
     }
 
     // CASE: Ablity name input.
@@ -285,15 +281,31 @@ export class NewCharacterFormComponent implements OnChanges {
       // Update suggestion item list.
       const index = Number(inputId.substring(inputId.lastIndexOf('_') + 1));
       this.logger.debug(location, { index: index });
-      this.filteredAbilities[index] = [];
-      for (let i = 0; i < this.abilities.length; ++i) {
-        if (this.abilities[i].name.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
-          this.filteredAbilities[index].push(this.abilities[i].name);
-        }
-      }
+      this.suggestAbilityNames[index] = this.makeSuggestLabels(
+        query,
+        this.abilities.map((item) => item.name)
+      );
 
       // Clear existing flag.
       this.inputAbilities[index].isExisting = false;
+
+      // If the input value is the same as an existing name,
+      // it will do the same as if an autofill candidate was selected.
+      this.onAutofillInputSelect(query, inputId);
+    }
+
+    // CASE: Ablity name input (Kai).
+    else if (inputId.indexOf('NewCharacterForm_AbilityNameKaiInput_') >= 0) {
+      // Update suggestion item list.
+      const index = Number(inputId.substring(inputId.lastIndexOf('_') + 1));
+      this.logger.debug(location, { index: index });
+      this.suggestAbilityNames_kai[index] = this.makeSuggestLabels(
+        query,
+        this.abilities.map((item) => item.name)
+      );
+
+      // Clear existing flag.
+      this.inputAbilities_kai[index].isExisting = false;
 
       // If the input value is the same as an existing name,
       // it will do the same as if an autofill candidate was selected.
@@ -310,37 +322,42 @@ export class NewCharacterFormComponent implements OnChanges {
     } else if (inputId === 'NewCharacterForm_IllustratorInput') {
       // Do nothing.
     }
-    // Case: Ability Name
+
+    // CASE: Ability names
     else if (inputId.indexOf('NewCharacterForm_AbilityNameInput_') >= 0) {
       const index = Number(inputId.substring(inputId.lastIndexOf('_') + 1));
-      const dest = this.inputAbilities[index];
       this.logger.debug(location, { index: index, value: value });
 
       // Search ability info and copy it to input ability info.
       for (let ability of this.abilities) {
         if (ability.name === value) {
-          dest.id = ability.id;
-          dest.type = ability.type;
-          dest.name = ability.name;
-          for (let i = 0; i < ability.descriptions.length; ++i) {
-            dest.descriptions[i] = ability.descriptions[i];
-          }
-          dest.keiryakuCost = ability.keiryakuCost;
-          dest.keiryakuInterval = ability.keiryakuInterval;
-          dest.tokenAvailable = ability.tokenLayouts ? true : false;
-          if (ability.tokenLayouts) {
-            dest.tokenLayouts = [];
-            for (let i = 0; i < ability.tokenLayouts?.length; ++i) {
-              dest.tokenLayouts[i] = ability.tokenLayouts[i];
-            }
-          }
-          dest.isExisting = true;
+          this.inputAbilities[index] = this.makeFsAbilityForNewCharacterForm(ability);
         }
 
         // Search ablity type and copy it to selected ability type.
         for (let abilityType of this.abilityTypes) {
-          if (abilityType.id === dest.type) {
+          if (abilityType.id === this.inputAbilities[index].type) {
             this.selectedAbilityTypes[index] = abilityType;
+          }
+        }
+      }
+    }
+
+    // CASE: Ability name (Kai)
+    else if (inputId.indexOf('NewCharacterForm_AbilityNameKaiInput_') >= 0) {
+      const index = Number(inputId.substring(inputId.lastIndexOf('_') + 1));
+      this.logger.debug(location, { index: index, value: value });
+
+      // Search ability info and copy it to input ability info.
+      for (let ability of this.abilities) {
+        if (ability.name === value) {
+          this.inputAbilities_kai[index] = this.makeFsAbilityForNewCharacterForm(ability);
+        }
+
+        // Search ablity type and copy it to selected ability type.
+        for (let abilityType of this.abilityTypes) {
+          if (abilityType.id === this.inputAbilities_kai[index].type) {
+            this.selectedAbilityTypes_kai[index] = abilityType;
           }
         }
       }
@@ -354,14 +371,14 @@ export class NewCharacterFormComponent implements OnChanges {
     // CASE: Before kaichiku.
     if (!kai) {
       this.selectedAbilityTypes.push(<FsAbilityType>{});
-      this.filteredAbilities.push([]);
+      this.suggestAbilityNames.push([]);
       this.inputAbilities.push(this.makeFsAbilityForNewCharacterForm());
     }
 
     // CASE: After kaichiku.
     else {
       this.selectedAbilityTypes_kai.push(<FsAbilityType>{});
-      this.filteredAbilities_kai.push([]);
+      this.suggestAbilityNames_kai.push([]);
       this.inputAbilities_kai.push(this.makeFsAbilityForNewCharacterForm());
     }
   }
@@ -373,14 +390,14 @@ export class NewCharacterFormComponent implements OnChanges {
     // CASE: Before kaichiku.
     if (!kai) {
       this.selectedAbilityTypes.splice(index, 1);
-      this.filteredAbilities.splice(index, 1);
+      this.suggestAbilityNames.splice(index, 1);
       this.inputAbilities.splice(index, 1);
     }
 
     // CASE: After kaichiku.
     else {
       this.selectedAbilityTypes_kai.splice(index, 1);
-      this.filteredAbilities_kai.splice(index, 1);
+      this.suggestAbilityNames_kai.splice(index, 1);
       this.inputAbilities_kai.splice(index, 1);
     }
   }
@@ -590,8 +607,8 @@ export class NewCharacterFormComponent implements OnChanges {
     };
   }
 
-  private makeFsAbilityForNewCharacterForm(): FsAbilityForNewCharacterForm {
-    return <FsAbilityForNewCharacterForm>{
+  private makeFsAbilityForNewCharacterForm(base?: FsAbility): FsAbilityForNewCharacterForm {
+    const result: FsAbilityForNewCharacterForm = {
       id: '',
       name: '',
       type: '',
@@ -602,5 +619,38 @@ export class NewCharacterFormComponent implements OnChanges {
       tokenAvailable: false,
       isExisting: false,
     };
+
+    if (base) {
+      result.id = base.id;
+      result.type = base.type;
+      result.name = base.name;
+      for (let i = 0; i < base.descriptions.length; ++i) {
+        result.descriptions[i] = base.descriptions[i];
+      }
+      result.keiryakuInterval = base.keiryakuInterval ? base.keiryakuInterval : 0;
+      result.keiryakuCost = base.keiryakuCost ? base.keiryakuCost : 0;
+      if (base.tokenLayouts) {
+        result.tokenLayouts = ['', ''];
+        for (let i = 0; i < base.tokenLayouts.length; ++i) {
+          result.tokenLayouts[i] = base.tokenLayouts[i];
+        }
+      }
+      result.tokenAvailable = base.tokenLayouts ? true : false;
+      result.isExisting = true;
+    }
+
+    return result;
+  }
+
+  private makeSuggestLabels(value: string, source: string[]): string[] {
+    const suggests: string[] = [];
+
+    for (let i = 0; i < source.length; ++i) {
+      if (source[i].toLowerCase().indexOf(value.toLowerCase()) >= 0) {
+        suggests.push(source[i]);
+      }
+    }
+
+    return suggests;
   }
 }
