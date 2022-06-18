@@ -134,16 +134,18 @@ export class NewCharacterFormComponent implements OnChanges {
 
   selectedAbilityTypes: FsAbilityType[] = [<FsAbilityType>{}];
 
+  selectedAbilityTypes_kai: FsAbilityType[] = [<FsAbilityType>{}];
+
   /** Ability */
   @Input() abilities!: FsAbility[];
 
   filteredAbilities: string[][] = [[]];
 
-  inputAbilities: FsAbilityForNewCharacterForm[] = [
-    <FsAbilityForNewCharacterForm>{
-      descriptions: ['', '', ''],
-    },
-  ];
+  filteredAbilities_kai: string[][] = [[]];
+
+  inputAbilities: FsAbilityForNewCharacterForm[] = [this.makeFsAbilityForNewCharacterForm()];
+
+  inputAbilities_kai: FsAbilityForNewCharacterForm[] = [this.makeFsAbilityForNewCharacterForm()];
 
   /** Output character data. */
   @Output() confirmEvent = new EventEmitter<NewCharacterFormOutput>();
@@ -220,6 +222,30 @@ export class NewCharacterFormComponent implements OnChanges {
     }
   }
 
+  onChipInputAdd(event: any) {
+    const location = `${this.className}.onChipInputAdd()`;
+    this.logger.trace(location);
+
+    const inputId = event.originalEvent.target.id;
+    let value = event.value;
+
+    // Switch process by target input element.
+    // Case: Motif weapon.
+    if (inputId === 'NewCharacterForm_MotifWeaponInput') {
+      this.onMotifWeaponInputAdd('NewCharacterForm_MotifFacilityInput', value);
+    }
+
+    // Case: Motif facility.
+    else if (inputId === 'NewCharacterForm_MotifFacilityInput') {
+      this.onMotifFacilityInputAdd('NewCharacterForm_MotifFacilityInput', value);
+    }
+
+    // Case: Character tags.
+    else if (inputId === 'NewCharacterForm_CharacterTagInput') {
+      this.onCharacterTagInputAdd('NewCharacterForm_CharacterTagInput', value);
+    }
+  }
+
   onAutofillInputChange(event: any) {
     const location = `${this.className}.onAutofillInputChange()`;
     this.logger.trace(location);
@@ -257,6 +283,10 @@ export class NewCharacterFormComponent implements OnChanges {
 
       // Clear existing flag.
       this.inputAbilities[index].isExisting = false;
+
+      // If the input value is the same as an existing name,
+      // it will do the same as if an autofill candidate was selected.
+      this.onAutofillInputSelect(query, inputId);
     }
 
     this.logger.debug(location, { inputId: inputId, query: query, items: items });
@@ -266,11 +296,11 @@ export class NewCharacterFormComponent implements OnChanges {
     const location = `${this.className}.onAutoFillInputSelect()`;
     this.logger.trace(location);
 
-    //const inputId = event.originalEvent.target.id;
-
     if (inputId === 'NewCharacterForm_VoiceActorInput') {
     } else if (inputId === 'NewCharacterForm_IllustratorInput') {
-    } else if (inputId.indexOf('NewCharacterForm_AbilityNameInput_') >= 0) {
+    }
+    // Case: Ability Name
+    else if (inputId.indexOf('NewCharacterForm_AbilityNameInput_') >= 0) {
       const index = Number(inputId.substring(inputId.lastIndexOf('_') + 1));
       const dest = this.inputAbilities[index];
       this.logger.debug(location, { index: index, value: value });
@@ -296,7 +326,7 @@ export class NewCharacterFormComponent implements OnChanges {
           dest.isExisting = true;
         }
 
-        // Search ablity type and copu it to selected ability type.
+        // Search ablity type and copy it to selected ability type.
         for (let abilityType of this.abilityTypes) {
           if (abilityType.id === dest.type) {
             this.selectedAbilityTypes[index] = abilityType;
@@ -306,28 +336,106 @@ export class NewCharacterFormComponent implements OnChanges {
     }
   }
 
-  onChipInputAdd(event: any) {
-    const location = `${this.className}.onChipInputAdd()`;
+  onAddAbilityButtonClick(kai: boolean) {
+    const location = `${this.className}.onAddAbilityButtonClick()`;
+    this.logger.trace(location, { kai: kai });
+
+    // CASE: Before kaichiku.
+    if (!kai) {
+      this.selectedAbilityTypes.push(<FsAbilityType>{});
+      this.filteredAbilities.push([]);
+      this.inputAbilities.push(this.makeFsAbilityForNewCharacterForm());
+      this.logger.debug({
+        selectedAbilityTypes: this.selectedAbilityTypes.length,
+        filteredAbilities: this.filteredAbilities.length,
+        inputAbilities: this.inputAbilities.length,
+      });
+    }
+
+    // CASE: After kaichiku.
+    else {
+      this.selectedAbilityTypes_kai.push(<FsAbilityType>{});
+      this.filteredAbilities_kai.push([]);
+      this.inputAbilities_kai.push(this.makeFsAbilityForNewCharacterForm());
+      this.logger.debug({
+        selectedAbilityTypes_kai: this.selectedAbilityTypes_kai.length,
+        filteredAbilities_kai: this.filteredAbilities_kai.length,
+        inputAbilities_kai: this.inputAbilities_kai.length,
+      });
+    }
+  }
+
+  onRemoveButtonoClick(kai: boolean, index: number) {
+    const location = `${this.className}.onAddAbilityButtonClick()`;
+    this.logger.trace(location, { kai: kai, index: index });
+
+    // CASE: Before kaichiku.
+    if (!kai) {
+      this.selectedAbilityTypes.splice(index, 1);
+      this.filteredAbilities.splice(index, 1);
+      this.inputAbilities.splice(index, 1);
+      this.logger.debug({
+        selectedAbilityTypes: this.selectedAbilityTypes.length,
+        filteredAbilities: this.filteredAbilities.length,
+        inputAbilities: this.inputAbilities.length,
+      });
+    }
+
+    // CASE: After kaichiku.
+    else {
+      this.selectedAbilityTypes_kai.splice(index, 1);
+      this.filteredAbilities_kai.splice(index, 1);
+      this.inputAbilities_kai.splice(index, 1);
+      this.logger.debug({
+        selectedAbilityTypes_kai: this.selectedAbilityTypes_kai.length,
+        filteredAbilities_kai: this.filteredAbilities_kai.length,
+        inputAbilities_kai: this.inputAbilities_kai.length,
+      });
+    }
+  }
+
+  onNewWeaponDialogResult(formResult: NewWeaponFormResult) {
+    const location = `${this.className}.onNewWeaponDialogResult()`;
     this.logger.trace(location);
 
-    const inputId = event.originalEvent.target.id;
-    let value = event.value;
+    this.logger.debug(location, formResult);
 
-    // Switch process by target input element.
-    // Case: Motif weapon.
-    if (inputId === 'NewCharacterForm_MotifWeaponInput') {
-      this.onMotifWeaponInputAdd('NewCharacterForm_MotifFacilityInput', value);
+    // Import form result to motif weapon field.
+    if (!formResult.canceled) {
+      const weaponText = `${formResult.rarerity.toString()}|${formResult.type.name}|${formResult.name}`;
+      this.inputMotifWeapons.push(weaponText);
     }
 
-    // Case: Motif facility.
-    else if (inputId === 'NewCharacterForm_MotifFacilityInput') {
-      this.onMotifFacilityInputAdd('NewCharacterForm_MotifFacilityInput', value);
+    // Reset GUI focus to the motif weapon input.
+    const element = document.getElementById('NewCharacterForm_MotifWeaponInput');
+    if (element != undefined) {
+      element.focus();
     }
 
-    // Case: Character tags.
-    else if (inputId === 'NewCharacterForm_CharacterTagInput') {
-      this.onCharacterTagInputAdd('NewCharacterForm_CharacterTagInput', value);
+    // Close dialog.
+    this.showWeaponForm = false;
+  }
+
+  onNewFacilityFormResult(formResult: NewFacilityFormResult) {
+    const location = `${this.className}.onNewFacilityFormResult()`;
+    this.logger.trace(location);
+
+    this.logger.debug(location, formResult);
+
+    // Import form result to motif weapon field.
+    if (!formResult.canceled) {
+      const facilityText = `${formResult.rarerity.toString()}|${formResult.type.name}|${formResult.name}`;
+      this.inputMotifFacilities.push(facilityText);
     }
+
+    // Reset GUI focus to the motif weapon input.
+    const element = document.getElementById('NewCharacterForm_MotifFacilityInput');
+    if (element != undefined) {
+      element.focus();
+    }
+
+    // Close dialog.
+    this.showFacilityForm = false;
   }
 
   onOkClick() {
@@ -341,6 +449,21 @@ export class NewCharacterFormComponent implements OnChanges {
     //this.clearInputs();
   }
 
+  /**
+   * Track function which is used by *ngFor directive.
+   * *ngFor cannot calculate index number when it's used with [(ngModel)].
+   * So, this function help *ngFor to calculate index.
+   * @param index Item index.
+   * @param obj List object. Not used.
+   * @returns Item index.
+   */
+     trackByItem(index: number, obj: any): any { // eslint-disable-line
+    return index;
+  }
+
+  //============================================================================
+  // Class private methods.
+  //
   private onMotifWeaponInputAdd(inputId: string, value: string) {
     // Get index.
     const index = this.inputMotifWeapons.findIndex((item) => item === value);
@@ -408,92 +531,6 @@ export class NewCharacterFormComponent implements OnChanges {
     }
   }
 
-  onNewWeaponDialogResult(formResult: NewWeaponFormResult) {
-    const location = `${this.className}.onNewWeaponDialogResult()`;
-    this.logger.trace(location);
-
-    this.logger.debug(location, formResult);
-
-    // Import form result to motif weapon field.
-    if (!formResult.canceled) {
-      const weaponText = `${formResult.rarerity.toString()}|${formResult.type.name}|${formResult.name}`;
-      this.inputMotifWeapons.push(weaponText);
-    }
-
-    // Reset GUI focus to the motif weapon input.
-    const element = document.getElementById('NewCharacterForm_MotifWeaponInput');
-    if (element != undefined) {
-      element.focus();
-    }
-
-    // Close dialog.
-    this.showWeaponForm = false;
-  }
-
-  onNewFacilityFormResult(formResult: NewFacilityFormResult) {
-    const location = `${this.className}.onNewFacilityFormResult()`;
-    this.logger.trace(location);
-
-    this.logger.debug(location, formResult);
-
-    // Import form result to motif weapon field.
-    if (!formResult.canceled) {
-      const facilityText = `${formResult.rarerity.toString()}|${formResult.type.name}|${formResult.name}`;
-      this.inputMotifFacilities.push(facilityText);
-    }
-
-    // Reset GUI focus to the motif weapon input.
-    const element = document.getElementById('NewCharacterForm_MotifFacilityInput');
-    if (element != undefined) {
-      element.focus();
-    }
-
-    // Close dialog.
-    this.showFacilityForm = false;
-  }
-
-  onConfirmButtonClick() {
-    const location = `${this.className}.onConfirmButtonClick()`;
-    this.logger.trace(location);
-
-    if (this.selectedRarerity == undefined || this.selectedWeaponType == undefined) {
-      return;
-    }
-
-    const character: NewCharacterFormOutput = {
-      characterType: this.selectedCharacterType,
-      characterName: this.inputCharacterName,
-      rarerity: this.selectedRarerity,
-      weaponType: this.selectedWeaponType,
-      geographTypes: this.selectedGeographTypes,
-      cost: 0,
-    };
-
-    if (this.selectedRegion != undefined) {
-      character.region = this.selectedRegion;
-    }
-
-    this.updateCharacterCost(character);
-
-    this.logger.debug(location, character);
-
-    this.confirmEvent.emit(character);
-
-    this.clearForm();
-  }
-
-  /**
-   * Track function which is used by *ngFor directive.
-   * *ngFor cannot calculate index number when it's used with [(ngModel)].
-   * So, this function help *ngFor to calculate index.
-   * @param index Item index.
-   * @param obj List object. Not used.
-   * @returns Item index.
-   */
-  trackByItem(index: number, obj: any): any { // eslint-disable-line
-    return index;
-  }
-
   private makeFilteredFormItems<T extends FsDocumentBase>(filter: string[], fsData: T[]): T[] {
     const location = `${this.className}.makeFilteredFormItems2()`;
     this.logger.trace(location);
@@ -549,5 +586,19 @@ export class NewCharacterFormComponent implements OnChanges {
         character.cost_kai = this.characterCost_kai;
       }
     }
+  }
+
+  private makeFsAbilityForNewCharacterForm(): FsAbilityForNewCharacterForm {
+    return <FsAbilityForNewCharacterForm>{
+      id: '',
+      name: '',
+      type: '',
+      descriptions: ['', '', ''],
+      keiryakuInterval: 0,
+      keiryakuCost: 0,
+      tokenLayouts: ['', ''],
+      tokenAvailable: false,
+      isExisting: false,
+    };
   }
 }

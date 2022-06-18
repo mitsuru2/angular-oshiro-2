@@ -391,10 +391,25 @@
         </p-card>
       </div>
       <div class="col-fix" [style]="{ width: '50px', 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
-        <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined"></button>
+        <button
+          pButton
+          pRipple
+          type="button"
+          icon="pi pi-times"
+          class="p-button-rounded p-button-danger p-button-outlined"
+          (click)="onRemoveButtonoClick(false, i)"
+        ></button>
       </div>
     </div>
-    <button pButton pRipple type="button" icon="pi pi-plus" label="追加" class="p-button-outlined p-button-rounded"></button>
+    <button
+      pButton
+      pRipple
+      type="button"
+      icon="pi pi-plus"
+      label="追加"
+      class="p-button-outlined p-button-rounded"
+      (click)="onAddAbilityButtonClick(false)"
+    ></button>
   </div>
 
   <!---->
