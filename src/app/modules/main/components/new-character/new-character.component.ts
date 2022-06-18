@@ -17,7 +17,6 @@ import {
 } from 'src/app/services/firestore-data/firestore-document.interface';
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
 import { FsCollectionName } from 'src/app/services/firestore-data/firestore-collection-name.enum';
-import { CharacterTypeInNewCharacterForm } from '../../views/new-character-form/new-character-form.interface';
 import { ref, Storage, uploadBytes } from '@angular/fire/storage';
 import { AbstractControl, NG_VALIDATORS, ValidationErrors, Validator, ValidatorFn } from '@angular/forms';
 
@@ -32,8 +31,6 @@ export class NewCharacterComponent implements OnInit {
   className: string = 'NewCharacterComponent';
 
   characterTypes!: FsCharacterType[];
-
-  selectedCharacterType?: CharacterTypeInNewCharacterForm;
 
   characterTags!: FsCharacterTag[];
 
@@ -95,15 +92,15 @@ export class NewCharacterComponent implements OnInit {
   async submit() {
     this.logger.trace(`NewCharacterComponent.submit()`);
 
-    if (this.selectedCharacterType && this.selectedRarerity && this.selectedWeaponType) {
+    if (this.selectedRarerity && this.selectedWeaponType) {
       //const count = await this.firestore.incrementCounter(FsCollectionName.CharacterTypes, 0);
       const count = 1;
 
       const character: FsCharacter = {
         id: '', // Auto ID.
-        index: `${this.selectedCharacterType.code}-${('0000' + count.toString(16).toUpperCase()).slice(-4)}`,
+        index: `10-${('0000' + count.toString(16).toUpperCase()).slice(-4)}`,
         name: this.inputName,
-        type: this.selectedCharacterType.id,
+        type: 'this.selectedCharacterType.id',
         rarerity: this.selectedRarerity,
         weaponType: this.selectedWeaponType.id,
         geographTypes: [this.selectedGeographTypes[0].id],

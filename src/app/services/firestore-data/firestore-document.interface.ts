@@ -24,7 +24,10 @@ export interface FsDocumentBaseWithCode extends FsDocumentBase {
 export interface FsAbility extends FsDocumentBase {
   name: string;
   type: string;
-  desc: string[];
+  descriptions: string[];
+  keiryakuInterval?: number;
+  keiryakuCost?: number;
+  tokenLayouts?: string[];
 }
 
 export interface FsAbilityType extends FsDocumentBaseWithOrder {

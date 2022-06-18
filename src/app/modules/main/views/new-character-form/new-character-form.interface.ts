@@ -1,12 +1,14 @@
 import {
+  FsAbility,
   FsCharacterType,
   FsGeographType,
   FsRegion,
   FsWeaponType,
 } from 'src/app/services/firestore-data/firestore-document.interface';
 
-export interface CharacterTypeInNewCharacterForm extends FsCharacterType {
-  longName: string;
+export interface FsAbilityForNewCharacterForm extends FsAbility {
+  tokenAvailable: boolean;
+  isExisting: boolean;
 }
 
 export interface NewCharacterFormOutput {

@@ -55,33 +55,29 @@
   <div class="formgrid grid" *ngIf="mode === normalMode" style="margin-bottom: 1rem">
     <div class="field col-12 md:col-6 p-fluid">
       <label for="NewWeaponForm_AttackInput">攻撃</label>
-      <div>
-        <p-inputNumber
-          inputId="NewWeaponForm_AttackInput"
-          name="NewWeaponForm_AttackInput"
-          [(ngModel)]="inputAttack"
-          mode="decimal"
-          [showButtons]="true"
-          [min]="0"
-          [max]="255"
-        >
-        </p-inputNumber>
-      </div>
+      <p-inputNumber
+        inputId="NewWeaponForm_AttackInput"
+        name="NewWeaponForm_AttackInput"
+        [(ngModel)]="inputAttack"
+        mode="decimal"
+        [showButtons]="true"
+        [min]="0"
+        [max]="255"
+      >
+      </p-inputNumber>
     </div>
     <div class="field col-12 md:col-6 p-fluid" *ngIf="selectedRarerity === 4">
       <label for="NewWeaponForm_AttackKaiInput">攻撃［改］</label>
-      <div>
-        <p-inputNumber
-          inputId="NewWeaponForm_AttackKaiInput"
-          name="NewWeaponForm_AttackKaiInput"
-          [(ngModel)]="inputAttack_kai"
-          mode="decimal"
-          [showButtons]="true"
-          [min]="0"
-          [max]="255"
-        >
-        </p-inputNumber>
-      </div>
+      <p-inputNumber
+        inputId="NewWeaponForm_AttackKaiInput"
+        name="NewWeaponForm_AttackKaiInput"
+        [(ngModel)]="inputAttack_kai"
+        mode="decimal"
+        [showButtons]="true"
+        [min]="0"
+        [max]="255"
+      >
+      </p-inputNumber>
     </div>
   </div>
 

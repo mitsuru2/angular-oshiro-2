@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { deepStrictEqual } from 'assert';
 import { NGXLogger } from 'ngx-logger';
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
 import {
@@ -20,7 +21,7 @@ import {
 } from 'src/app/services/firestore-data/firestore-document.interface';
 import { facilityFormMode, NewFacilityFormResult } from '../new-facility-form/new-facility-form.interafce';
 import { NewWeaponFormMode, NewWeaponFormResult } from '../new-weapon-form/new-weapon-form.interface';
-import { CharacterTypeInNewCharacterForm, NewCharacterFormOutput } from './new-character-form.interface';
+import { FsAbilityForNewCharacterForm, NewCharacterFormOutput } from './new-character-form.interface';
 
 @Component({
   selector: 'app-new-character-form',
@@ -34,6 +35,13 @@ export class NewCharacterFormComponent implements OnChanges {
   @Input() maxWidth = '1000px';
 
   iconButtonWidth = 50; // px
+
+  /** Button label and style. */
+  @Input() okLabel = 'Ok';
+
+  @Input() cancelLabel = 'Cancel';
+
+  @Input() buttonStyleClass = '';
 
   /** Character Type */
   @Input() characterTypes!: FsCharacterType[];
@@ -129,19 +137,13 @@ export class NewCharacterFormComponent implements OnChanges {
   /** Ability */
   @Input() abilities!: FsAbility[];
 
-  filteredAbilities: FsAbility[] = [];
+  filteredAbilities: string[][] = [[]];
 
-  inputAbilityNames: string[] = [];
-
-  inputAbilityDesc = ['', '', ''];
-
-  keiryakuCost = 0;
-
-  keiryakuInterval = 0;
-
-  tokenLayoutRed = false;
-
-  tokenLayoutBlue = false;
+  inputAbilities: FsAbilityForNewCharacterForm[] = [
+    <FsAbilityForNewCharacterForm>{
+      descriptions: ['', '', ''],
+    },
+  ];
 
   /** Output character data. */
   @Output() confirmEvent = new EventEmitter<NewCharacterFormOutput>();
@@ -226,7 +228,7 @@ export class NewCharacterFormComponent implements OnChanges {
     const query = event.query;
     let items: any;
 
-    if (inputId === 'voiceActorInput') {
+    if (inputId === 'NewCharacterForm_VoiceActorInput') {
       this.filteredVoiceActors = [];
       for (let i = 0; i < this.voiceActors.length; ++i) {
         if (this.voiceActors[i].name.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
@@ -234,7 +236,7 @@ export class NewCharacterFormComponent implements OnChanges {
         }
       }
       items = this.filteredVoiceActors;
-    } else if (inputId === 'illustratorInput') {
+    } else if (inputId === 'NewCharacterForm_IllustratorInput') {
       this.filteredIllustrators = [];
       for (let i = 0; i < this.illustrators.length; ++i) {
         if (this.illustrators[i].name.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
@@ -242,17 +244,66 @@ export class NewCharacterFormComponent implements OnChanges {
         }
       }
       items = this.filteredIllustrators;
-    } else if (inputId === 'abilityNameInput') {
-      this.filteredAbilities = [];
+    } else if (inputId.indexOf('NewCharacterForm_AbilityNameInput_') >= 0) {
+      const index = Number(inputId.substring(inputId.lastIndexOf('_') + 1));
+      this.logger.debug(location, { index: index });
+      this.filteredAbilities[index] = [];
       for (let i = 0; i < this.abilities.length; ++i) {
         if (this.abilities[i].name.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
-          this.filteredAbilities.push(this.abilities[i]);
+          this.filteredAbilities[index].push(this.abilities[i].name);
         }
       }
-      items = this.filteredAbilities;
+      items = this.filteredAbilities[index];
+
+      // Clear existing flag.
+      this.inputAbilities[index].isExisting = false;
     }
 
     this.logger.debug(location, { inputId: inputId, query: query, items: items });
+  }
+
+  onAutofillInputSelect(value: any, inputId: string) {
+    const location = `${this.className}.onAutoFillInputSelect()`;
+    this.logger.trace(location);
+
+    //const inputId = event.originalEvent.target.id;
+
+    if (inputId === 'NewCharacterForm_VoiceActorInput') {
+    } else if (inputId === 'NewCharacterForm_IllustratorInput') {
+    } else if (inputId.indexOf('NewCharacterForm_AbilityNameInput_') >= 0) {
+      const index = Number(inputId.substring(inputId.lastIndexOf('_') + 1));
+      const dest = this.inputAbilities[index];
+      this.logger.debug(location, { index: index, value: value });
+
+      // Search ability info and copy it to input ability info.
+      for (let ability of this.abilities) {
+        if (ability.name === value) {
+          dest.id = ability.id;
+          dest.type = ability.type;
+          dest.name = ability.name;
+          for (let i = 0; i < ability.descriptions.length; ++i) {
+            dest.descriptions[i] = ability.descriptions[i];
+          }
+          dest.keiryakuCost = ability.keiryakuCost;
+          dest.keiryakuInterval = ability.keiryakuInterval;
+          dest.tokenAvailable = ability.tokenLayouts ? true : false;
+          if (ability.tokenLayouts) {
+            dest.tokenLayouts = [];
+            for (let i = 0; i < ability.tokenLayouts?.length; ++i) {
+              dest.tokenLayouts[i] = ability.tokenLayouts[i];
+            }
+          }
+          dest.isExisting = true;
+        }
+
+        // Search ablity type and copu it to selected ability type.
+        for (let abilityType of this.abilityTypes) {
+          if (abilityType.id === dest.type) {
+            this.selectedAbilityTypes[index] = abilityType;
+          }
+        }
+      }
+    }
   }
 
   onChipInputAdd(event: any) {
@@ -277,6 +328,17 @@ export class NewCharacterFormComponent implements OnChanges {
     else if (inputId === 'NewCharacterForm_CharacterTagInput') {
       this.onCharacterTagInputAdd('NewCharacterForm_CharacterTagInput', value);
     }
+  }
+
+  onOkClick() {
+    this.logger.debug(this.inputAbilities);
+    //this.formResult.emit(this.makeWeaponInfo(false));
+    //this.clearInputs();
+  }
+
+  onCancelClick() {
+    //this.formResult.emit(this.makeWeaponInfo(true));
+    //this.clearInputs();
   }
 
   private onMotifWeaponInputAdd(inputId: string, value: string) {
