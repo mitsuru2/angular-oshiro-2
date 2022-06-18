@@ -21,7 +21,12 @@ import {
 } from 'src/app/services/firestore-data/firestore-document.interface';
 import { facilityFormMode, NewFacilityFormResult } from '../new-facility-form/new-facility-form.interafce';
 import { NewWeaponFormMode, NewWeaponFormResult } from '../new-weapon-form/new-weapon-form.interface';
-import { FsAbilityForNewCharacterForm, NewCharacterFormOutput } from './new-character-form.interface';
+import {
+  FsAbilityForNewCharacterForm,
+  FsIllustratorForNewCharacterForm,
+  FsVoiceActorForNewCharacterForm,
+  NewCharacterFormOutput,
+} from './new-character-form.interface';
 
 @Component({
   selector: 'app-new-character-form',
@@ -87,16 +92,16 @@ export class NewCharacterFormComponent implements OnChanges {
   /** Voice actor. */
   @Input() voiceActors!: FsVoiceActor[];
 
-  filteredVoiceActors: FsVoiceActor[] = [];
+  filteredVoiceActors: string[] = [];
 
-  inputVoiceActor: FsVoiceActor = <FsVoiceActor>{ name: '' };
+  inputVoiceActor: FsVoiceActorForNewCharacterForm = this.makeFsVoiceActorForNewCharacterForm();
 
   /** Illustrator. */
   @Input() illustrators!: FsIllustrator[];
 
-  filteredIllustrators: FsIllustrator[] = [];
+  filteredIllustrators: string[] = [];
 
-  inputIllustrator: FsIllustrator = <FsIllustrator>{ name: '' };
+  inputIllustrator: FsIllustratorForNewCharacterForm = this.makeFsIllustratorForNewCharacterForm();
 
   /** Motif weapons */
   @Input() weapons!: FsWeapon[];
@@ -252,25 +257,32 @@ export class NewCharacterFormComponent implements OnChanges {
 
     const inputId = event.originalEvent.target.id;
     const query = event.query;
-    let items: any;
 
+    // CASE: Voice actor input.
     if (inputId === 'NewCharacterForm_VoiceActorInput') {
+      // Update suggestion item list.
       this.filteredVoiceActors = [];
       for (let i = 0; i < this.voiceActors.length; ++i) {
         if (this.voiceActors[i].name.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
-          this.filteredVoiceActors.push(this.voiceActors[i]);
+          this.filteredVoiceActors.push(this.voiceActors[i].name);
         }
       }
-      items = this.filteredVoiceActors;
-    } else if (inputId === 'NewCharacterForm_IllustratorInput') {
+    }
+
+    // CASE: Illustrator input.
+    else if (inputId === 'NewCharacterForm_IllustratorInput') {
+      // Update suggestion item list.
       this.filteredIllustrators = [];
       for (let i = 0; i < this.illustrators.length; ++i) {
         if (this.illustrators[i].name.toLowerCase().indexOf(query.toLowerCase()) >= 0) {
-          this.filteredIllustrators.push(this.illustrators[i]);
+          this.filteredIllustrators.push(this.illustrators[i].name);
         }
       }
-      items = this.filteredIllustrators;
-    } else if (inputId.indexOf('NewCharacterForm_AbilityNameInput_') >= 0) {
+    }
+
+    // CASE: Ablity name input.
+    else if (inputId.indexOf('NewCharacterForm_AbilityNameInput_') >= 0) {
+      // Update suggestion item list.
       const index = Number(inputId.substring(inputId.lastIndexOf('_') + 1));
       this.logger.debug(location, { index: index });
       this.filteredAbilities[index] = [];
@@ -279,7 +291,6 @@ export class NewCharacterFormComponent implements OnChanges {
           this.filteredAbilities[index].push(this.abilities[i].name);
         }
       }
-      items = this.filteredAbilities[index];
 
       // Clear existing flag.
       this.inputAbilities[index].isExisting = false;
@@ -288,16 +299,16 @@ export class NewCharacterFormComponent implements OnChanges {
       // it will do the same as if an autofill candidate was selected.
       this.onAutofillInputSelect(query, inputId);
     }
-
-    this.logger.debug(location, { inputId: inputId, query: query, items: items });
   }
 
   onAutofillInputSelect(value: any, inputId: string) {
     const location = `${this.className}.onAutoFillInputSelect()`;
-    this.logger.trace(location);
+    this.logger.trace(location, { value: value, inputId: inputId });
 
     if (inputId === 'NewCharacterForm_VoiceActorInput') {
+      // Do nothing.
     } else if (inputId === 'NewCharacterForm_IllustratorInput') {
+      // Do nothing.
     }
     // Case: Ability Name
     else if (inputId.indexOf('NewCharacterForm_AbilityNameInput_') >= 0) {
@@ -345,11 +356,6 @@ export class NewCharacterFormComponent implements OnChanges {
       this.selectedAbilityTypes.push(<FsAbilityType>{});
       this.filteredAbilities.push([]);
       this.inputAbilities.push(this.makeFsAbilityForNewCharacterForm());
-      this.logger.debug({
-        selectedAbilityTypes: this.selectedAbilityTypes.length,
-        filteredAbilities: this.filteredAbilities.length,
-        inputAbilities: this.inputAbilities.length,
-      });
     }
 
     // CASE: After kaichiku.
@@ -357,11 +363,6 @@ export class NewCharacterFormComponent implements OnChanges {
       this.selectedAbilityTypes_kai.push(<FsAbilityType>{});
       this.filteredAbilities_kai.push([]);
       this.inputAbilities_kai.push(this.makeFsAbilityForNewCharacterForm());
-      this.logger.debug({
-        selectedAbilityTypes_kai: this.selectedAbilityTypes_kai.length,
-        filteredAbilities_kai: this.filteredAbilities_kai.length,
-        inputAbilities_kai: this.inputAbilities_kai.length,
-      });
     }
   }
 
@@ -374,11 +375,6 @@ export class NewCharacterFormComponent implements OnChanges {
       this.selectedAbilityTypes.splice(index, 1);
       this.filteredAbilities.splice(index, 1);
       this.inputAbilities.splice(index, 1);
-      this.logger.debug({
-        selectedAbilityTypes: this.selectedAbilityTypes.length,
-        filteredAbilities: this.filteredAbilities.length,
-        inputAbilities: this.inputAbilities.length,
-      });
     }
 
     // CASE: After kaichiku.
@@ -386,19 +382,12 @@ export class NewCharacterFormComponent implements OnChanges {
       this.selectedAbilityTypes_kai.splice(index, 1);
       this.filteredAbilities_kai.splice(index, 1);
       this.inputAbilities_kai.splice(index, 1);
-      this.logger.debug({
-        selectedAbilityTypes_kai: this.selectedAbilityTypes_kai.length,
-        filteredAbilities_kai: this.filteredAbilities_kai.length,
-        inputAbilities_kai: this.inputAbilities_kai.length,
-      });
     }
   }
 
   onNewWeaponDialogResult(formResult: NewWeaponFormResult) {
     const location = `${this.className}.onNewWeaponDialogResult()`;
-    this.logger.trace(location);
-
-    this.logger.debug(location, formResult);
+    this.logger.trace(location, { formResult: formResult });
 
     // Import form result to motif weapon field.
     if (!formResult.canceled) {
@@ -418,9 +407,7 @@ export class NewCharacterFormComponent implements OnChanges {
 
   onNewFacilityFormResult(formResult: NewFacilityFormResult) {
     const location = `${this.className}.onNewFacilityFormResult()`;
-    this.logger.trace(location);
-
-    this.logger.debug(location, formResult);
+    this.logger.trace(location, { formResult: formResult });
 
     // Import form result to motif weapon field.
     if (!formResult.canceled) {
@@ -439,7 +426,6 @@ export class NewCharacterFormComponent implements OnChanges {
   }
 
   onOkClick() {
-    this.logger.debug(this.inputAbilities);
     //this.formResult.emit(this.makeWeaponInfo(false));
     //this.clearInputs();
   }
@@ -586,6 +572,22 @@ export class NewCharacterFormComponent implements OnChanges {
         character.cost_kai = this.characterCost_kai;
       }
     }
+  }
+
+  private makeFsVoiceActorForNewCharacterForm(): FsVoiceActorForNewCharacterForm {
+    return <FsVoiceActorForNewCharacterForm>{
+      id: '',
+      name: '',
+      isExisting: false,
+    };
+  }
+
+  private makeFsIllustratorForNewCharacterForm(): FsIllustratorForNewCharacterForm {
+    return <FsIllustratorForNewCharacterForm>{
+      id: '',
+      name: '',
+      isExisting: false,
+    };
   }
 
   private makeFsAbilityForNewCharacterForm(): FsAbilityForNewCharacterForm {
