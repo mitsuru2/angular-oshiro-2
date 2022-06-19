@@ -1,5 +1,12 @@
 <form [style]="{ 'max-width': maxWidth, 'margin-bottom': '1rem' }">
   <!------------------------------------------------------------------------->
+  <!-- ERROR MESSAGE -------------------------------------------------------->
+  <!------------------------------------------------------------------------->
+  <div *ngIf="errorMessage.length > 0" [style]="{ 'margin-bottom': '1rem' }">
+    {{ errorMessage }}
+  </div>
+
+  <!------------------------------------------------------------------------->
   <!-- BASIC INFORMATION ---------------------------------------------------->
   <!------------------------------------------------------------------------->
   <div class="formgrid grid">
@@ -407,6 +414,7 @@
       label="追加"
       class="p-button-outlined p-button-rounded"
       (click)="onAddAbilityButtonClick(false)"
+      [disabled]="inputAbilities.length >= abilityFormMax"
     ></button>
   </div>
 
@@ -571,6 +579,7 @@
       label="追加"
       class="p-button-outlined p-button-rounded"
       (click)="onAddAbilityButtonClick(true)"
+      [disabled]="inputAbilitiesKai.length >= abilityFormMax"
     ></button>
   </div>
 
@@ -683,9 +692,7 @@
     icon="pi pi-check"
     (onClick)="onOkClick()"
     [styleClass]="buttonStyleClass"
-    [disabled]="
-      !selectedCharacterType || inputCharacterName === '' || !selectedRarerity || !selectedWeaponType || selectedGeographTypes.length === 0 || !selectedRegion
-    "
+    [disabled]="!selectedCharacterType || inputCharacterName === '' || !selectedRarerity || !selectedWeaponType || selectedGeographTypes.length === 0"
   ></p-button>
   <p-button
     [label]="cancelLabel"

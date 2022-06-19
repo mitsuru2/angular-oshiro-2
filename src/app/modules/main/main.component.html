@@ -1,15 +1,10 @@
 <p-confirmDialog header="Confirmation" icon="pi pi-question-circle" [style]="{ width: '50vw' }"></p-confirmDialog>
 <div class="tool-bar">
-  <app-top-menu
-    [title]="appInfo.title"
-    [isSignedIn]="isSignedIn"
-    (toggleSideMenuEvent)="toggleSideMenu()"
-    (requestSignOutEvent)="askSignOut()"
-  ></app-top-menu>
+  <app-top-menu [title]="appInfo.title" [isSignedIn]="isSignedIn" (toggleSideMenuEvent)="toggleSideMenu()" (requestSignOutEvent)="askSignOut()"></app-top-menu>
 </div>
 <div class="container">
   <app-side-menu [isOpen]="isSideMenuOpen" [items]="sideMenuItems"></app-side-menu>
-  <div class="content">
+  <div class="content" id="MainContents">
     <router-outlet></router-outlet>
   </div>
 </div>

@@ -61,6 +61,20 @@
   <!--------------------------------------------------------------------------->
   <!-- Ability (before kaichiku) ---------------------------------------------->
   <!--------------------------------------------------------------------------->
+  <div class="formgrid grid">
+    <div class="col">
+      <p-divider align="center"><span>特技/計略</span></p-divider>
+    </div>
+  </div>
+  <div *ngFor="let ability of character.abilities; let i = index">
+    <div class="formgrid grid" style="margin-bottom: 0.5rem">
+      <div class="col-6 md:col-3">特技/計略タイプ</div>
+      <div class="col-6 md:col-3">{{ character.abilityTypes[i].name }}</div>
+      <div class="col-6 md:col-3">特技/計略名</div>
+      <div class="col-6 md:col-3">{{ ability.name }}</div>
+      <div class="col-12"></div>
+    </div>
+  </div>
 </div>
 
 <!----------------------------------------------------------------------------->

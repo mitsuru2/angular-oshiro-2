@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { deepStrictEqual } from 'assert';
 import { NGXLogger } from 'ngx-logger';
 import { type } from 'os';
@@ -19,6 +19,8 @@ import {
   FsCharacterRarerityMax,
   FsCharacterTag,
   FsSubCharacterType,
+  FsCharacter,
+  FsWeaponRarerityMax,
 } from 'src/app/services/firestore-data/firestore-document.interface';
 import { facilityFormMode, NewFacilityFormResult } from '../new-facility-form/new-facility-form.interafce';
 import { NewWeaponFormMode, NewWeaponFormResult } from '../new-weapon-form/new-weapon-form.interface';
@@ -33,7 +35,8 @@ export class NewCharacterFormComponent implements OnChanges {
   private className = 'NewCharacterFormComponent';
 
   /** Appearance. */
-  @Input() maxWidth = 'auto';
+  @Input()
+  maxWidth = 'auto';
 
   iconButtonWidth = 50; // px
 
@@ -52,6 +55,8 @@ export class NewCharacterFormComponent implements OnChanges {
   selectedSubCharacterType?: FsSubCharacterType;
 
   /** Character Name */
+  @Input() characters!: FsCharacter[];
+
   inputCharacterName = '';
 
   /** Rearity */
@@ -133,20 +138,31 @@ export class NewCharacterFormComponent implements OnChanges {
   /** Ability Type */
   @Input() abilityTypes!: FsAbilityType[];
 
-  selectedAbilityTypes: FsAbilityType[] = [<FsAbilityType>{}];
+  selectedAbilityTypes: FsAbilityType[] = [];
 
-  selectedAbilityTypesKai: FsAbilityType[] = [<FsAbilityType>{}];
+  selectedAbilityTypesKai: FsAbilityType[] = [];
 
   /** Ability */
   @Input() abilities!: FsAbility[];
 
-  suggestAbilityNames: string[][] = [[]];
+  suggestAbilityNames: string[][] = [];
 
-  suggestAbilityNamesKai: string[][] = [[]];
+  suggestAbilityNamesKai: string[][] = [];
 
-  inputAbilities: FsAbilityForNewCharacterForm[] = [this.makeFsAbilityForNewCharacterForm()];
+  inputAbilities: FsAbilityForNewCharacterForm[] = [];
 
-  inputAbilitiesKai: FsAbilityForNewCharacterForm[] = [this.makeFsAbilityForNewCharacterForm()];
+  inputAbilitiesKai: FsAbilityForNewCharacterForm[] = [];
+
+  abilityFormMax = 8;
+
+  isAbilitiesValid = true;
+
+  isAbilitiesKaiValid = true;
+
+  /** Validation */
+  isFormValid = true;
+
+  errorMessage: string = '';
 
   /** Output character data. */
   @Output() formResult = new EventEmitter<NewCharacterFormResult>();
@@ -366,14 +382,14 @@ export class NewCharacterFormComponent implements OnChanges {
 
     // CASE: Before kaichiku.
     if (!kai) {
-      this.selectedAbilityTypes.push(<FsAbilityType>{});
+      this.selectedAbilityTypes.push(this.abilityTypes[0]);
       this.suggestAbilityNames.push([]);
       this.inputAbilities.push(this.makeFsAbilityForNewCharacterForm());
     }
 
     // CASE: After kaichiku.
     else {
-      this.selectedAbilityTypesKai.push(<FsAbilityType>{});
+      this.selectedAbilityTypesKai.push(this.abilityTypes[0]);
       this.suggestAbilityNamesKai.push([]);
       this.inputAbilitiesKai.push(this.makeFsAbilityForNewCharacterForm());
     }
@@ -438,9 +454,69 @@ export class NewCharacterFormComponent implements OnChanges {
     this.showFacilityForm = false;
   }
 
+  checkAbilityFields(kaichiku: boolean): void {
+    const location = `${this.className}.checkAbilityFields()`;
+    this.logger.trace(location, { kaichiku: kaichiku });
+
+    const abilitiesRef = kaichiku ? this.inputAbilitiesKai : this.inputAbilities;
+    const abilityTypesRef = kaichiku ? this.selectedAbilityTypesKai : this.selectedAbilityTypes;
+    let result = true;
+
+    // Check all ability fields.
+    for (let i = 0; i < abilitiesRef.length; ++i) {
+      // No ability name.
+      if (abilitiesRef[i].name === '') {
+        this.logger.warn(location, 'no ability name.');
+        result = false;
+        break;
+      }
+
+      // No descriptions.
+      if (abilitiesRef[i].descriptions[0] === '') {
+        this.logger.warn(location, 'no description.');
+        result = false;
+        break;
+      }
+
+      // No token layout info even if token is available.
+      if (abilityTypesRef[i].name === '計略' && abilitiesRef[i].tokenAvailable) {
+        const tokenLayouts = abilitiesRef[i].tokenLayouts;
+        if (!tokenLayouts) {
+          this.logger.warn(location, 'no token layout info 1.');
+          result = false;
+          break;
+        }
+        let isFound = false;
+        for (let j = 0; j < tokenLayouts.length; ++j) {
+          if (tokenLayouts[j] !== '') {
+            isFound = true;
+            break;
+          }
+        }
+
+        if (!isFound) {
+          this.logger.warn(location, 'no token layout info 2.');
+          result = false;
+          break;
+        }
+      }
+    }
+
+    if (!kaichiku) {
+      this.isAbilitiesValid = result;
+    } else {
+      this.isAbilitiesKaiValid = result;
+    }
+  }
+
   onOkClick() {
-    this.formResult.emit(this.makeCharacterInfo(false));
-    this.clearForm();
+    this.validateForm();
+    if (this.isFormValid) {
+      this.formResult.emit(this.makeCharacterInfo(false));
+      this.clearForm();
+    } else {
+      this.scrollToTop();
+    }
   }
 
   onCancelClick() {
@@ -738,6 +814,25 @@ export class NewCharacterFormComponent implements OnChanges {
       for (let i = 0; i < this.inputCharacterTags.length; ++i) {
         result.characterTags.push(this.getCharacterTagDataFromInputText(this.inputCharacterTags[i]));
       }
+
+      // Ability type and ability.
+      {
+        // Check input ability info.
+
+        // Copy ability type.
+        result.abilityTypes = this.selectedAbilityTypes;
+        result.abilityTypesKai = this.selectedAbilityTypesKai;
+
+        // Copy ability info.
+        result.abilities = [];
+        for (let i = 0; i < this.inputAbilities.length; ++i) {
+          result.abilities.push(this.makeAbilityInfoForFormResult(this.inputAbilities[i]));
+        }
+        result.abilitiesKai = [];
+        for (let i = 0; i < this.inputAbilitiesKai.length; ++i) {
+          result.abilitiesKai.push(this.makeAbilityInfoForFormResult(this.inputAbilitiesKai[i]));
+        }
+      }
     }
 
     return result;
@@ -929,5 +1024,168 @@ export class NewCharacterFormComponent implements OnChanges {
     }
 
     return tag;
+  }
+
+  private makeAbilityInfoForFormResult(input: FsAbilityForNewCharacterForm): FsAbility {
+    const result: FsAbility = <FsAbility>{};
+
+    result.id = input.id;
+    result.type = input.type;
+    result.name = input.name;
+    result.descriptions = input.descriptions.filter((text) => text.length > 0);
+    result.keiryakuInterval = input.keiryakuInterval;
+    result.keiryakuCost = input.keiryakuCost;
+    result.tokenLayouts = input.tokenLayouts;
+
+    return result;
+  }
+
+  private validateForm() {
+    const location = `${this.className}.validateForm()`;
+
+    // Clear status and error message.
+    this.isFormValid = false;
+    this.errorMessage = '';
+
+    // Basic information.
+    {
+      // Character type.
+      if (!this.selectedCharacterType) {
+        this.logger.warn(location, 'No character type is selected.');
+        this.errorMessage = 'キャラクタータイプを選択してください。';
+        return;
+      }
+
+      // Sub-character type.
+      if (this.selectedCharacterType.subTypes && !this.selectedSubCharacterType) {
+        this.logger.warn(location, 'No character type is selected.');
+        this.errorMessage = 'キャラクタータイプを選択してください。';
+        return;
+      }
+
+      // Character name.
+      if (this.inputCharacterName === '') {
+        this.logger.warn(location, 'No character name is input.');
+        this.errorMessage = 'キャラクター名を入力してください。';
+        return;
+      }
+      for (let i = 0; i < this.characters.length; ++i) {
+        if (this.characters[i].name === this.inputCharacterName) {
+          this.logger.warn(location, 'Existing character name.');
+          this.errorMessage = '登録済のキャラクター名です。';
+          return;
+        }
+      }
+
+      // Rarerity.
+      if (!this.selectedRarerity) {
+        this.logger.warn(location, 'No rarerity is selected.');
+        this.errorMessage = 'レアリティを選択してください。';
+        return;
+      }
+
+      // Weapon type.
+      if (!this.selectedWeaponType) {
+        this.logger.warn(location, 'No weapon type is selected.');
+        this.errorMessage = '武器タイプを選択してください。';
+        return;
+      }
+
+      // Geograph type.
+      if (this.selectedGeographTypes.length === 0) {
+        this.logger.warn(location, 'No geograph type is selected.');
+        this.errorMessage = '地形適性を選択してください。';
+        return;
+      }
+
+      // Regions.
+      if (this.selectedCharacterType.regions && !this.selectedRegion) {
+        this.logger.warn(location, 'No region type is selected.');
+        this.errorMessage = '地域を選択してください。';
+        return;
+      }
+
+      // Voice actor. --> Nothing to do.
+      // Illustrator. --> Nothing to do.
+      // Motif weapon. --> Nothing to do.
+      // Motif facility. --> Nothing to do.
+      // Character tag. --> Nothing to do.
+    }
+
+    // Abilities.
+    {
+      if (this.validateAbilityInputs(this.inputAbilities, this.selectedAbilityTypes) === false) {
+        return;
+      }
+      if (this.validateAbilityInputs(this.inputAbilitiesKai, this.selectedAbilityTypesKai) === false) {
+        return;
+      }
+    }
+
+    // If the process come here, the form is valid.
+    this.isFormValid = true;
+
+    return;
+  }
+
+  private validateAbilityInputs(
+    inputAbilities: FsAbilityForNewCharacterForm[],
+    selectedAbilityTypes: FsAbilityType[]
+  ): boolean {
+    const location = `${this.className}.validateAbilityInputs()`;
+
+    for (let i = 0; i < inputAbilities.length; ++i) {
+      const ability = inputAbilities[i];
+      const abilityType = selectedAbilityTypes[i];
+
+      // Ability name.
+      if (ability.name === '') {
+        this.logger.warn(location, 'No ablity name is input.', { index: i, kaichiku: false });
+        this.errorMessage = '特技/計略名を入力してください。';
+        return false;
+      }
+
+      // Ability type.
+      if (!abilityType) {
+        this.logger.warn(location, 'No ablity type is selected.', { index: i, kaichiku: false });
+        this.errorMessage = '特技/計略タイプを選択してください。';
+        return false;
+      }
+
+      // Token layout.
+      if (abilityType.name === '計略' && ability.tokenAvailable) {
+        if (!ability.tokenLayouts || ability.tokenLayouts.length === 0) {
+          this.logger.warn(location, 'No token layout option is selected.', { index: i, kaichiku: false });
+          this.errorMessage = 'トークン計略の場合はトークンの配置マスタイプを選択してください。';
+          return false;
+        }
+        let isBlank = true;
+        for (let j = 0; j < ability.tokenLayouts.length; ++j) {
+          if (ability.tokenLayouts[j] !== '') {
+            isBlank = false;
+            break;
+          }
+        }
+        if (isBlank) {
+          this.logger.warn(location, 'No token layout option is selected.', { index: i, kaichiku: false });
+          this.errorMessage = 'トークン計略の場合はトークンの配置マスタイプを選択してください。';
+          return false;
+        }
+      }
+
+      // Description.
+      if (ability.descriptions.length === 0 || ability.descriptions[0] === '') {
+        this.logger.warn(location, 'No ability description is input.', { index: i, kaichiku: false });
+        this.errorMessage = '特技/計略の説明を入力してください。説明文は1行目から入力してください。';
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private scrollToTop() {
+    this.logger.trace('scrollToTop()');
+    document.getElementById('MainContents')?.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }

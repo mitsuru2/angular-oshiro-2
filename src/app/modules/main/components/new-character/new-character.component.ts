@@ -33,6 +33,8 @@ export class NewCharacterComponent implements OnInit {
 
   characterTypes!: FsCharacterType[];
 
+  characters!: FsCharacter[];
+
   characterTags!: FsCharacterTag[];
 
   inputName: string = '';
@@ -83,6 +85,7 @@ export class NewCharacterComponent implements OnInit {
 
   ngOnInit(): void {
     this.characterTypes = this.firestore.getData(FsCollectionName.CharacterTypes) as FsCharacterType[];
+    this.characters = this.firestore.getData(FsCollectionName.Characters) as FsCharacter[];
     this.characterTags = this.firestore.getData(FsCollectionName.CharacterTags) as FsCharacterTag[];
     this.geographTypes = this.firestore.getData(FsCollectionName.GeographTypes) as FsGeographType[];
     this.weaponTypes = this.firestore.getData(FsCollectionName.WeaponTypes) as FsWeaponType[];
