@@ -678,7 +678,15 @@
   <!---->
   <!-- Footer -->
   <!---->
-  <p-button [label]="okLabel" icon="pi pi-check" (onClick)="onOkClick()" [styleClass]="buttonStyleClass"></p-button>
+  <p-button
+    [label]="okLabel"
+    icon="pi pi-check"
+    (onClick)="onOkClick()"
+    [styleClass]="buttonStyleClass"
+    [disabled]="
+      !selectedCharacterType || inputCharacterName === '' || !selectedRarerity || !selectedWeaponType || selectedGeographTypes.length === 0 || !selectedRegion
+    "
+  ></p-button>
   <p-button
     [label]="cancelLabel"
     icon="pi pi-times"
