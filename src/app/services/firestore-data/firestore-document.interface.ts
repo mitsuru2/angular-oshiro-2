@@ -64,9 +64,9 @@ export interface FsCharacter extends FsDocumentBaseWithStringIndex {
   geographTypes: string[];
   region?: string;
   cost: number;
-  cost_kai?: number;
+  costKai?: number;
   abilities?: string[];
-  abilities_kai?: string[];
+  abilitiesKai?: string[];
   voiceActors?: string[];
   illustrators?: string[];
   motifWeapons?: string[];
@@ -117,7 +117,7 @@ export interface FsWeapon extends FsDocumentBase {
   rarerity: number;
   descriptions: string[];
   attack: number;
-  attack_kai?: number;
+  attackKai?: number;
   effects: string[];
-  effects_kai?: string[];
+  effectsKai?: string[];
 }

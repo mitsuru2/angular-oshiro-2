@@ -18,7 +18,7 @@
 
   <div class="formgrid grid" style="margin-bottom: 1rem">
     <div class="field col">
-      <label for="NewWeaponForm_WeaponNameInput">名前</label>
+      <label for="NewWeaponForm_WeaponNameInput">武器名</label>
       <span class="p-input-icon-right" [style]="{ width: '100%' }">
         <i *ngIf="inputName !== ''" class="pi pi-times" (click)="inputName = ''"></i>
         <input
@@ -71,7 +71,7 @@
       <p-inputNumber
         inputId="NewWeaponForm_AttackKaiInput"
         name="NewWeaponForm_AttackKaiInput"
-        [(ngModel)]="inputAttack_kai"
+        [(ngModel)]="inputAttackKai"
         mode="decimal"
         [showButtons]="true"
         [min]="0"
@@ -122,14 +122,14 @@
   <div class="formgrid grid" *ngIf="mode === normalMode" style="margin-bottom: 1rem">
     <div class="field col" *ngIf="selectedRarerity === 4">
       <label>効果［改］</label>
-      <div *ngFor="let desc of inputEffects_kai; trackBy: trackByItem; let i = index">
+      <div *ngFor="let desc of inputEffectsKai; trackBy: trackByItem; let i = index">
         <span class="p-input-icon-right" [style]="{ width: '100%' }">
-          <i *ngIf="inputEffects_kai[i] !== ''" class="pi pi-times" (click)="inputEffects_kai[i] = ''"></i>
+          <i *ngIf="inputEffectsKai[i] !== ''" class="pi pi-times" (click)="inputEffectsKai[i] = ''"></i>
           <input
             type="text"
             [id]="'NewWeaponForm_EffectKaiInput_' + i"
             [name]="'NewWeaponForm_EffectKaiInput_' + i"
-            [(ngModel)]="inputEffects_kai[i]"
+            [(ngModel)]="inputEffectsKai[i]"
             pInputText
             [style]="{ width: '100%', 'margin-bottom': '2px' }"
           />

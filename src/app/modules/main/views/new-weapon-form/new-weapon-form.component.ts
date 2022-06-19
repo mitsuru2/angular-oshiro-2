@@ -56,7 +56,7 @@ export class NewWeaponFormComponent implements OnChanges {
   /** Attack */
   inputAttack = 0;
 
-  inputAttack_kai = 0;
+  inputAttackKai = 0;
 
   /** Description */
   inputDescriptions: string[] = [''];
@@ -64,7 +64,7 @@ export class NewWeaponFormComponent implements OnChanges {
   /** Effect */
   inputEffects: string[] = ['', '', ''];
 
-  inputEffects_kai: string[] = ['', '', ''];
+  inputEffectsKai: string[] = ['', '', ''];
 
   /** Result weapon info. */
   @Output() formResult = new EventEmitter<NewWeaponFormResult>();
@@ -145,10 +145,10 @@ export class NewWeaponFormComponent implements OnChanges {
     this.errorMessage = '';
     this.selectedRarerity = undefined;
     this.inputAttack = 0;
-    this.inputAttack_kai = 0;
+    this.inputAttackKai = 0;
     this.inputDescriptions = [''];
     this.inputEffects = ['', '', ''];
-    this.inputEffects_kai = ['', '', ''];
+    this.inputEffectsKai = ['', '', ''];
   }
 
   private makeWeaponInfo(canceled: boolean) {
@@ -179,10 +179,10 @@ export class NewWeaponFormComponent implements OnChanges {
       result.name = this.inputName;
       result.rarerity = this.selectedRarerity;
       result.attack = this.inputAttack;
-      result.attack_kai = this.inputAttack_kai;
+      result.attackKai = this.inputAttackKai;
       result.descriptions = this.inputDescriptions.filter((text) => text.length > 0);
       result.effects = this.inputEffects.filter((text) => text.length > 0);
-      result.effects_kai = this.inputEffects_kai.filter((text) => text.length > 0);
+      result.effectsKai = this.inputEffectsKai.filter((text) => text.length > 0);
     }
 
     return result;

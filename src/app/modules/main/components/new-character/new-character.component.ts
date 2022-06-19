@@ -19,6 +19,7 @@ import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-
 import { FsCollectionName } from 'src/app/services/firestore-data/firestore-collection-name.enum';
 import { ref, Storage, uploadBytes } from '@angular/fire/storage';
 import { AbstractControl, NG_VALIDATORS, ValidationErrors, Validator, ValidatorFn } from '@angular/forms';
+import { NewCharacterFormResult } from '../../views/new-character-form/new-character-form.interface';
 
 @Component({
   selector: 'app-new-character',
@@ -87,6 +88,11 @@ export class NewCharacterComponent implements OnInit {
     this.illustrators = this.firestore.getData(FsCollectionName.Illustrators) as FsIllustrator[];
     this.abilityTypes = this.firestore.getData(FsCollectionName.AbilityTypes) as FsAbilityType[];
     this.abilities = this.firestore.getData(FsCollectionName.Abilities) as FsAbility[];
+  }
+
+  onNewCharacterFormResult(formResult: NewCharacterFormResult) {
+    const location = `${this.className}.onNewCharacterFormResult()`;
+    this.logger.trace(location, { formResult: formResult });
   }
 
   async submit() {

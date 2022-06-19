@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { deepStrictEqual } from 'assert';
 import { NGXLogger } from 'ngx-logger';
+import { type } from 'os';
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
 import {
   FsCharacterType,
@@ -21,12 +22,7 @@ import {
 } from 'src/app/services/firestore-data/firestore-document.interface';
 import { facilityFormMode, NewFacilityFormResult } from '../new-facility-form/new-facility-form.interafce';
 import { NewWeaponFormMode, NewWeaponFormResult } from '../new-weapon-form/new-weapon-form.interface';
-import {
-  FsAbilityForNewCharacterForm,
-  FsIllustratorForNewCharacterForm,
-  FsVoiceActorForNewCharacterForm,
-  NewCharacterFormOutput,
-} from './new-character-form.interface';
+import { FsAbilityForNewCharacterForm, NewCharacterFormResult } from './new-character-form.interface';
 
 @Component({
   selector: 'app-new-character-form',
@@ -37,7 +33,7 @@ export class NewCharacterFormComponent implements OnChanges {
   private className = 'NewCharacterFormComponent';
 
   /** Appearance. */
-  @Input() maxWidth = '1000px';
+  @Input() maxWidth = 'auto';
 
   iconButtonWidth = 50; // px
 
@@ -85,23 +81,23 @@ export class NewCharacterFormComponent implements OnChanges {
   selectedRegion?: FsRegion;
 
   /** Cost */
-  characterCost = 0;
+  inputCharacterCost = 0;
 
-  characterCost_kai = 0;
+  inputCharacterCostKai = 0;
 
   /** Voice actor. */
   @Input() voiceActors!: FsVoiceActor[];
 
   suggestVoiceActorNames: string[] = [];
 
-  inputVoiceActor: FsVoiceActorForNewCharacterForm = this.makeFsVoiceActorForNewCharacterForm();
+  inputVoiceActor: FsVoiceActor = <FsVoiceActor>{};
 
   /** Illustrator. */
   @Input() illustrators!: FsIllustrator[];
 
   suggestIllustratorNames: string[] = [];
 
-  inputIllustrator: FsIllustratorForNewCharacterForm = this.makeFsIllustratorForNewCharacterForm();
+  inputIllustrator: FsIllustrator = <FsIllustrator>{};
 
   /** Motif weapons */
   @Input() weapons!: FsWeapon[];
@@ -139,21 +135,21 @@ export class NewCharacterFormComponent implements OnChanges {
 
   selectedAbilityTypes: FsAbilityType[] = [<FsAbilityType>{}];
 
-  selectedAbilityTypes_kai: FsAbilityType[] = [<FsAbilityType>{}];
+  selectedAbilityTypesKai: FsAbilityType[] = [<FsAbilityType>{}];
 
   /** Ability */
   @Input() abilities!: FsAbility[];
 
   suggestAbilityNames: string[][] = [[]];
 
-  suggestAbilityNames_kai: string[][] = [[]];
+  suggestAbilityNamesKai: string[][] = [[]];
 
   inputAbilities: FsAbilityForNewCharacterForm[] = [this.makeFsAbilityForNewCharacterForm()];
 
-  inputAbilities_kai: FsAbilityForNewCharacterForm[] = [this.makeFsAbilityForNewCharacterForm()];
+  inputAbilitiesKai: FsAbilityForNewCharacterForm[] = [this.makeFsAbilityForNewCharacterForm()];
 
   /** Output character data. */
-  @Output() confirmEvent = new EventEmitter<NewCharacterFormOutput>();
+  @Output() formResult = new EventEmitter<NewCharacterFormResult>();
 
   //============================================================================
   // Class methods.
@@ -299,13 +295,13 @@ export class NewCharacterFormComponent implements OnChanges {
       // Update suggestion item list.
       const index = Number(inputId.substring(inputId.lastIndexOf('_') + 1));
       this.logger.debug(location, { index: index });
-      this.suggestAbilityNames_kai[index] = this.makeSuggestLabels(
+      this.suggestAbilityNamesKai[index] = this.makeSuggestLabels(
         query,
         this.abilities.map((item) => item.name)
       );
 
       // Clear existing flag.
-      this.inputAbilities_kai[index].isExisting = false;
+      this.inputAbilitiesKai[index].isExisting = false;
 
       // If the input value is the same as an existing name,
       // it will do the same as if an autofill candidate was selected.
@@ -351,13 +347,13 @@ export class NewCharacterFormComponent implements OnChanges {
       // Search ability info and copy it to input ability info.
       for (let ability of this.abilities) {
         if (ability.name === value) {
-          this.inputAbilities_kai[index] = this.makeFsAbilityForNewCharacterForm(ability);
+          this.inputAbilitiesKai[index] = this.makeFsAbilityForNewCharacterForm(ability);
         }
 
         // Search ablity type and copy it to selected ability type.
         for (let abilityType of this.abilityTypes) {
-          if (abilityType.id === this.inputAbilities_kai[index].type) {
-            this.selectedAbilityTypes_kai[index] = abilityType;
+          if (abilityType.id === this.inputAbilitiesKai[index].type) {
+            this.selectedAbilityTypesKai[index] = abilityType;
           }
         }
       }
@@ -377,9 +373,9 @@ export class NewCharacterFormComponent implements OnChanges {
 
     // CASE: After kaichiku.
     else {
-      this.selectedAbilityTypes_kai.push(<FsAbilityType>{});
-      this.suggestAbilityNames_kai.push([]);
-      this.inputAbilities_kai.push(this.makeFsAbilityForNewCharacterForm());
+      this.selectedAbilityTypesKai.push(<FsAbilityType>{});
+      this.suggestAbilityNamesKai.push([]);
+      this.inputAbilitiesKai.push(this.makeFsAbilityForNewCharacterForm());
     }
   }
 
@@ -396,9 +392,9 @@ export class NewCharacterFormComponent implements OnChanges {
 
     // CASE: After kaichiku.
     else {
-      this.selectedAbilityTypes_kai.splice(index, 1);
-      this.suggestAbilityNames_kai.splice(index, 1);
-      this.inputAbilities_kai.splice(index, 1);
+      this.selectedAbilityTypesKai.splice(index, 1);
+      this.suggestAbilityNamesKai.splice(index, 1);
+      this.inputAbilitiesKai.splice(index, 1);
     }
   }
 
@@ -443,13 +439,13 @@ export class NewCharacterFormComponent implements OnChanges {
   }
 
   onOkClick() {
-    //this.formResult.emit(this.makeWeaponInfo(false));
-    //this.clearInputs();
+    this.formResult.emit(this.makeCharacterInfo(false));
+    this.clearForm();
   }
 
   onCancelClick() {
-    //this.formResult.emit(this.makeWeaponInfo(true));
-    //this.clearInputs();
+    this.formResult.emit(this.makeCharacterInfo(true));
+    this.clearForm();
   }
 
   /**
@@ -575,36 +571,27 @@ export class NewCharacterFormComponent implements OnChanges {
     if (exceptItems.includes('region') === false) {
       this.selectedRegion = undefined;
     }
-  }
-
-  private updateCharacterCost(character: NewCharacterFormOutput) {
-    if (character.characterType.isCostCalcEnable) {
-      character.cost = character.weaponType.baseCost;
-      if (character.characterType.isKaichikuEnable) {
-        character.cost_kai = character.cost - 1;
-      }
-    } else {
-      character.cost = this.characterCost;
-      if (character.characterType.isKaichikuEnable) {
-        character.cost_kai = this.characterCost_kai;
-      }
+    if (exceptItems.includes('voiceActor') === false) {
+      this.inputVoiceActor.name = '';
     }
-  }
-
-  private makeFsVoiceActorForNewCharacterForm(): FsVoiceActorForNewCharacterForm {
-    return <FsVoiceActorForNewCharacterForm>{
-      id: '',
-      name: '',
-      isExisting: false,
-    };
-  }
-
-  private makeFsIllustratorForNewCharacterForm(): FsIllustratorForNewCharacterForm {
-    return <FsIllustratorForNewCharacterForm>{
-      id: '',
-      name: '',
-      isExisting: false,
-    };
+    if (exceptItems.includes('illustrator') === false) {
+      this.inputIllustrator.name = '';
+    }
+    if (exceptItems.includes('motifWeapon') === false) {
+      this.inputMotifWeapons = [];
+    }
+    if (exceptItems.includes('motifFacility') === false) {
+      this.inputMotifFacilities = [];
+    }
+    if (exceptItems.includes('characterTag') === false) {
+      this.inputCharacterTags = [];
+    }
+    if (exceptItems.includes('ability') === false) {
+      this.selectedAbilityTypes = [<FsAbilityType>{}];
+      this.selectedAbilityTypesKai = [<FsAbilityType>{}];
+      this.inputAbilities = [this.makeFsAbilityForNewCharacterForm()];
+      this.inputAbilitiesKai = [this.makeFsAbilityForNewCharacterForm()];
+    }
   }
 
   private makeFsAbilityForNewCharacterForm(base?: FsAbility): FsAbilityForNewCharacterForm {
@@ -652,5 +639,295 @@ export class NewCharacterFormComponent implements OnChanges {
     }
 
     return suggests;
+  }
+
+  private makeCharacterInfo(canceled: boolean): NewCharacterFormResult {
+    const location = `${this.className}.makeCharacterInfo()`;
+    const result: NewCharacterFormResult = <NewCharacterFormResult>{};
+
+    // When the form is canceled, it returns canceled flag only.
+    if (canceled) {
+      result.canceled = true;
+    }
+
+    // When the form is input, it returns input weapon data.
+    else {
+      // The mandatory input fields must not be null or undefined.
+      // Input value validation shall be implemented at template.
+      if (
+        !this.selectedCharacterType ||
+        this.inputCharacterName === '' ||
+        !this.selectedRarerity ||
+        !this.selectedWeaponType ||
+        !this.selectedGeographTypes
+      ) {
+        this.logger.error(location, 'Necessary field is not input.', {
+          type: this.selectedCharacterType,
+          name: this.inputCharacterName,
+          rarerity: this.selectedRarerity,
+          weapon: this.selectedWeaponType,
+          geographType: this.selectedGeographTypes,
+        });
+        throw Error(`${location} Necessary field is not input.`);
+      }
+
+      // Make character data to be returned.
+      // Cancel flag.
+      result.canceled = false;
+
+      // Type, name, rarerity, weapon type, geograph type, and region.
+      result.characterType = this.selectedCharacterType;
+      result.characterName = this.inputCharacterName;
+      result.rarerity = this.selectedRarerity;
+      result.weaponType = this.selectedWeaponType;
+      result.geographTypes = this.selectedGeographTypes;
+      result.region = this.selectedRegion;
+
+      // Character cost.
+      result.cost = this.calcCharacterCost(
+        this.selectedCharacterType,
+        this.selectedWeaponType,
+        this.inputAbilities,
+        this.inputAbilitiesKai,
+        false
+      ) as number;
+      result.costKai = this.calcCharacterCost(
+        this.selectedCharacterType,
+        this.selectedWeaponType,
+        this.inputAbilities,
+        this.inputAbilitiesKai,
+        true
+      );
+
+      // Voice actor.
+      let voiceActor: FsVoiceActor = { id: '', name: this.inputVoiceActor.name };
+      for (let i = 0; i < this.voiceActors.length; ++i) {
+        if (this.inputVoiceActor.name === this.voiceActors[i].name) {
+          voiceActor = this.voiceActors[i];
+          break;
+        }
+      }
+      result.voiceActors = [];
+      result.voiceActors.push(voiceActor);
+
+      // Illustrator.
+      let illustrator: FsIllustrator = { id: '', name: this.inputIllustrator.name };
+      for (let i = 0; i < this.illustrators.length; ++i) {
+        if (this.inputIllustrator.name === this.illustrators[i].name) {
+          illustrator = this.illustrators[i];
+          break;
+        }
+      }
+      result.illustrators = [];
+      result.illustrators.push(illustrator);
+
+      // Motif weapon.
+      result.motifWeapons = [];
+      for (let i = 0; i < this.inputMotifWeapons.length; ++i) {
+        result.motifWeapons.push(this.getWeaponDataFromInputText(this.inputMotifWeapons[i]));
+      }
+
+      // Motif facility.
+      result.motifFacilities = [];
+      for (let i = 0; i < this.inputMotifFacilities.length; ++i) {
+        result.motifFacilities.push(this.getFacilityDataFromInputText(this.inputMotifFacilities[i]));
+      }
+
+      // Character tag.
+      result.characterTags = [];
+      for (let i = 0; i < this.inputCharacterTags.length; ++i) {
+        result.characterTags.push(this.getCharacterTagDataFromInputText(this.inputCharacterTags[i]));
+      }
+    }
+
+    return result;
+  }
+
+  private calcCharacterCost(
+    characterType: FsCharacterType,
+    weaponType: FsWeaponType,
+    abilities: FsAbility[],
+    abilitiesKai: FsAbility[],
+    kaichiku: boolean
+  ): number | undefined {
+    const location = `${this.className}.calcCharacterCost()`;
+
+    // Precondition.
+    // If the character type doesn't support kaichiku and 'kai' is TRUE,
+    // it returns undefined.
+    if (kaichiku && !characterType.isKaichikuEnable) {
+      return undefined;
+    }
+
+    // CASE: Cost calcuration is disable.
+    // It returns input cost value.
+    if (!characterType.isCostCalcEnable) {
+      if (!kaichiku) {
+        return this.inputCharacterCost;
+      } else {
+        return this.inputCharacterCostKai;
+      }
+    }
+
+    // CASE: Cost calcuration is enable.
+    // Get the base cost from weapon type.
+    let cost = weaponType.baseCost;
+
+    // Get keyryaku id.
+    let keiryakuTypeId = '';
+    for (let abilityType of this.abilityTypes) {
+      if (abilityType.name === '計略') {
+        keiryakuTypeId = abilityType.id;
+      }
+    }
+    if (keiryakuTypeId === '') {
+      this.logger.error(location, 'Keiryaku is not found in ability type data.');
+      throw Error('Keiryaku is not found in ability type data.');
+    }
+
+    // Check the character has keiryaku or not.
+    let hasKeiryaku = false;
+    let hasKeiryakuKai = false;
+    for (let ability of abilities) {
+      if (ability.type === keiryakuTypeId) {
+        hasKeiryaku = true;
+        break;
+      }
+    }
+    for (let ability of abilitiesKai) {
+      if (ability.type === keiryakuTypeId) {
+        hasKeiryakuKai = true;
+        break;
+      }
+    }
+
+    // Calculate character cost.
+    if (hasKeiryaku) {
+      cost += 2;
+    } else if (hasKeiryakuKai) {
+      cost += 1;
+    }
+    if (kaichiku) {
+      cost -= 1;
+    }
+
+    return cost;
+  }
+
+  private getWeaponDataFromInputText(text: string): FsWeapon {
+    //const location = `${this.className}.getWeaponDataFromInputText()`;
+    let weapon: FsWeapon = <FsWeapon>{};
+    let name: string = text;
+
+    // Get weapon info from input text
+    // if the input text has separater character "|".
+    if (text.indexOf('|') >= 0) {
+      // Split text.
+      const tokens = text.split('|');
+      if (tokens.length !== 3) {
+        this.logger.error(location, 'Invalid format text.', { text: text });
+        throw Error(`${location} Invalid format text. ${{ text: text }}`);
+      }
+      const rarerity = Number(tokens[0]);
+      const typeName = tokens[1];
+      name = tokens[2];
+
+      // Make weapon info.
+      weapon.id = '';
+      weapon.name = name;
+      weapon.rarerity = rarerity;
+      weapon.descriptions = [];
+      weapon.attack = 0;
+      for (let i = 0; i < this.weaponTypes.length; ++i) {
+        if (typeName === this.weaponTypes[i].name) {
+          weapon.type = this.weaponTypes[i].id;
+          break;
+        }
+      }
+    }
+
+    // Check if the input weapon name is existing or not.
+    for (let i = 0; i < this.weapons.length; ++i) {
+      if (name === this.weapons[i].name) {
+        weapon = this.weapons[i];
+        break;
+      }
+    }
+
+    return weapon;
+  }
+
+  private getFacilityDataFromInputText(text: string): FsFacility {
+    const location = `${this.className}.getFacilityDataFromInputText()`;
+    let facility: FsFacility = <FsFacility>{};
+    let name: string = text;
+
+    // Get facility info from input text
+    // if the input text has separater character "|".
+    if (text.indexOf('|') >= 0) {
+      // Split text.
+      const tokens = text.split('|');
+      if (tokens.length !== 3) {
+        this.logger.error(location, 'Invalid format text.', { text: text });
+        throw Error(`${location} Invalid format text. ${{ text: text }}`);
+      }
+      const rarerity = Number(tokens[0]);
+      const typeName = tokens[1];
+      name = tokens[2];
+
+      // Make facility info.
+      facility.id = '';
+      facility.name = name;
+      facility.rarerity = rarerity;
+      for (let i = 0; i < this.facilityTypes.length; ++i) {
+        if (typeName === this.facilityTypes[i].name) {
+          facility.type = this.facilityTypes[i].id;
+          break;
+        }
+      }
+    }
+
+    // Check if the input facility name is existing or not.
+    for (let i = 0; i < this.facilities.length; ++i) {
+      if (name === this.facilities[i].name) {
+        facility = this.facilities[i];
+        break;
+      }
+    }
+
+    return facility;
+  }
+
+  private getCharacterTagDataFromInputText(text: string): FsCharacterTag {
+    const location = `${this.className}.getCharacterTagDataFromInputText()`;
+    let tag: FsCharacterTag = <FsCharacterTag>{};
+    let name: string = text;
+
+    // Get tag info from input text
+    // if the input text has separater character "|".
+    if (text.indexOf('|') >= 0) {
+      // Split text.
+      const tokens = text.split('|');
+      if (tokens.length !== 2) {
+        this.logger.error(location, 'Invalid format text.', { text: text });
+        throw Error(`${location} Invalid format text. ${{ text: text }}`);
+      }
+      name = tokens[0];
+
+      // Make tag info.
+      tag.id = '';
+      tag.name = name;
+      tag.characters = [];
+    }
+
+    // Check if the input weapon name is existing or not.
+    for (let i = 0; i < this.characterTags.length; ++i) {
+      if (name === this.characterTags[i].name) {
+        tag = this.characterTags[i];
+        break;
+      }
+    }
+
+    return tag;
   }
 }

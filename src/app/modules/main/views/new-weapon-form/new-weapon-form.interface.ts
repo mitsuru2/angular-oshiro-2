@@ -11,8 +11,8 @@ export interface NewWeaponFormResult {
   name: string;
   rarerity: number;
   attack?: number;
-  attack_kai?: number;
+  attackKai?: number;
   descriptions?: string[];
   effects?: string[];
-  effects_kai?: string[];
+  effectsKai?: string[];
 }
