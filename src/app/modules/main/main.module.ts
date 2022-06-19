@@ -30,6 +30,7 @@ import { LegalComponent } from './components/legal/legal.component';
 import { NewCharacterFormComponent } from './views/new-character-form/new-character-form.component';
 import { NewWeaponFormComponent } from './views/new-weapon-form/new-weapon-form.component';
 import { NewFacilityFormComponent } from './views/new-facility-form/new-facility-form.component';
+import { NewCharacterConfirmationComponent } from './views/new-character-confirmation/new-character-confirmation.component';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import { NewFacilityFormComponent } from './views/new-facility-form/new-facility
     NewCharacterFormComponent,
     NewWeaponFormComponent,
     NewFacilityFormComponent,
+    NewCharacterConfirmationComponent,
   ],
   imports: [
     CommonModule,

@@ -71,6 +71,12 @@ export class NewCharacterComponent implements OnInit {
 
   isDialogShow = false;
 
+  /** New character form. */
+  newCharacterFormResult?: NewCharacterFormResult;
+
+  /** New character confirmation dialog. */
+  showConfirmationDialog = false;
+
   constructor(private logger: NGXLogger, private firestore: FirestoreDataService, private storage: Storage) {
     this.logger.trace(`new ${this.className}()`);
   }
@@ -93,7 +99,25 @@ export class NewCharacterComponent implements OnInit {
   onNewCharacterFormResult(formResult: NewCharacterFormResult) {
     const location = `${this.className}.onNewCharacterFormResult()`;
     this.logger.trace(location, { formResult: formResult });
+
+    /** If valid data input, open the confirmation dialog. */
+    if (!formResult.canceled) {
+      this.newCharacterFormResult = formResult;
+      this.showConfirmationDialog = true;
+    }
   }
+
+  onNewCharacterConfirmResult(result: boolean) {
+    const location = `${this.className}.onNewCharacterConfirmResult()`;
+    this.logger.trace(location, { confirmationResult: result });
+
+    // Close dialog.
+    this.showConfirmationDialog = false;
+  }
+
+  /**
+   * Old codes from here.
+   */
 
   async submit() {
     this.logger.trace(`NewCharacterComponent.submit()`);

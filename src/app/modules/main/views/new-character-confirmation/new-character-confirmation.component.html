@@ -1,0 +1,76 @@
+<!----------------------------------------------------------------------------->
+<!-- Contents ----------------------------------------------------------------->
+<!----------------------------------------------------------------------------->
+
+<div [style]="{ 'max-width': maxWidth }">
+  <!--------------------------------------------------------------------------->
+  <!-- Basic Information ------------------------------------------------------>
+  <!--------------------------------------------------------------------------->
+  <div class="formgrid grid">
+    <div class="col">
+      <p-divider align="center"><span>基本情報</span></p-divider>
+    </div>
+  </div>
+  <div class="formgrid grid" style="margin-bottom: 0.5rem">
+    <div class="col-6 md:col-3">キャラクタータイプ</div>
+    <div class="col-6 md:col-3">{{ character.characterType.name }}</div>
+    <div class="col-6 md:col-3">サブタイプ</div>
+    <div class="col-6 md:col-3">
+      <span *ngIf="character.subCharacterType">{{ character.subCharacterType.name }}</span>
+      <span *ngIf="!character.subCharacterType">{{ textNotAvailable }}</span>
+    </div>
+    <div class="col-6 md:col-3">キャラクター名</div>
+    <div class="col-6 md:col-3">{{ character.characterName }}</div>
+    <div class="col-6 md:col-3">レアリティ</div>
+    <div class="col-6 md:col-3">{{ character.rarerity }}</div>
+    <div class="col-6 md:col-3">武器タイプ</div>
+    <div class="col-6 md:col-3">{{ character.weaponType.name }}</div>
+    <div class="col-6 md:col-3">地形属性</div>
+    <div class="col-6 md:col-3">
+      <span *ngFor="let geoType of character.geographTypes; let i = index">
+        <span *ngIf="i > 0">, </span>
+        <span>{{ geoType.name }}</span>
+      </span>
+    </div>
+    <div class="col-6 md:col-3">地域</div>
+    <div class="col-6 md:col-9">
+      <span *ngIf="character.region">{{ character.region.name }}</span>
+      <span *ngIf="!character.region">{{ textNotAvailable }}</span>
+    </div>
+    <div class="col-6 md:col-3">キャラクターボイス</div>
+    <div class="col-6 md:col-3">
+      <span *ngIf="character.voiceActors.length > 0">{{ character.voiceActors[0].name }}</span>
+      <span *ngIf="character.voiceActors.length === 0">{{ textNotAvailable }}</span>
+    </div>
+    <div class="col-6 md:col-3">イラストレーター</div>
+    <div class="col-6 md:col-3">
+      <span *ngIf="character.illustrators.length > 0">{{ character.illustrators[0].name }}</span>
+      <span *ngIf="character.illustrators.length === 0">{{ textNotAvailable }}</span>
+    </div>
+    <div class="col-6 md:col-3">タグ</div>
+    <div class="col-6 md:col-9">
+      <span *ngIf="character.characterTags.length > 0"
+        ><span *ngFor="let tag of character.characterTags; let i = index"
+          ><span *ngIf="i > 0">, </span><span>{{ tag.name }}</span></span
+        ></span
+      >
+      <span *ngIf="character.characterTags.length === 0">{{ textNotAvailable }}</span>
+    </div>
+  </div>
+
+  <!--------------------------------------------------------------------------->
+  <!-- Ability (before kaichiku) ---------------------------------------------->
+  <!--------------------------------------------------------------------------->
+</div>
+
+<!----------------------------------------------------------------------------->
+<!-- Footer ------------------------------------------------------------------->
+<!----------------------------------------------------------------------------->
+<p-button [label]="okLabel" icon="pi pi-check" [disabled]="false" (onClick)="onOkClick()" [styleClass]="buttonStyleClass"></p-button>
+<p-button
+  [label]="cancelLabel"
+  icon="pi pi-times"
+  [style]="{ 'margin-left': '.5rem' }"
+  (onClick)="onCancelClick()"
+  [styleClass]="'p-button-secondary ' + buttonStyleClass"
+></p-button>

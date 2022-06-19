@@ -1,5 +1,6 @@
 import {
   FsAbility,
+  FsAbilityType,
   FsCharacterTag,
   FsCharacterType,
   FsFacility,
@@ -35,6 +36,8 @@ export interface NewCharacterFormResult {
   characterTags: FsCharacterTag[];
   abilities: FsAbility[];
   abilitiesKai: FsAbility[];
+  abilityTypes: FsAbilityType[];
+  abilityTypesKai: FsAbilityType[];
   // shiromusumeImage
   // ojouImage
   // tokugiImage
