@@ -454,61 +454,6 @@ export class NewCharacterFormComponent implements OnChanges {
     this.showFacilityForm = false;
   }
 
-  checkAbilityFields(kaichiku: boolean): void {
-    const location = `${this.className}.checkAbilityFields()`;
-    this.logger.trace(location, { kaichiku: kaichiku });
-
-    const abilitiesRef = kaichiku ? this.inputAbilitiesKai : this.inputAbilities;
-    const abilityTypesRef = kaichiku ? this.selectedAbilityTypesKai : this.selectedAbilityTypes;
-    let result = true;
-
-    // Check all ability fields.
-    for (let i = 0; i < abilitiesRef.length; ++i) {
-      // No ability name.
-      if (abilitiesRef[i].name === '') {
-        this.logger.warn(location, 'no ability name.');
-        result = false;
-        break;
-      }
-
-      // No descriptions.
-      if (abilitiesRef[i].descriptions[0] === '') {
-        this.logger.warn(location, 'no description.');
-        result = false;
-        break;
-      }
-
-      // No token layout info even if token is available.
-      if (abilityTypesRef[i].name === '計略' && abilitiesRef[i].tokenAvailable) {
-        const tokenLayouts = abilitiesRef[i].tokenLayouts;
-        if (!tokenLayouts) {
-          this.logger.warn(location, 'no token layout info 1.');
-          result = false;
-          break;
-        }
-        let isFound = false;
-        for (let j = 0; j < tokenLayouts.length; ++j) {
-          if (tokenLayouts[j] !== '') {
-            isFound = true;
-            break;
-          }
-        }
-
-        if (!isFound) {
-          this.logger.warn(location, 'no token layout info 2.');
-          result = false;
-          break;
-        }
-      }
-    }
-
-    if (!kaichiku) {
-      this.isAbilitiesValid = result;
-    } else {
-      this.isAbilitiesKaiValid = result;
-    }
-  }
-
   onOkClick() {
     this.validateForm();
     if (this.isFormValid) {
@@ -800,19 +745,19 @@ export class NewCharacterFormComponent implements OnChanges {
       // Motif weapon.
       result.motifWeapons = [];
       for (let i = 0; i < this.inputMotifWeapons.length; ++i) {
-        result.motifWeapons.push(this.getWeaponDataFromInputText(this.inputMotifWeapons[i]));
+        result.motifWeapons.push(this.makeWeaponDataFromInputText(this.inputMotifWeapons[i]));
       }
 
       // Motif facility.
       result.motifFacilities = [];
       for (let i = 0; i < this.inputMotifFacilities.length; ++i) {
-        result.motifFacilities.push(this.getFacilityDataFromInputText(this.inputMotifFacilities[i]));
+        result.motifFacilities.push(this.makeFacilityDataFromInputText(this.inputMotifFacilities[i]));
       }
 
       // Character tag.
       result.characterTags = [];
       for (let i = 0; i < this.inputCharacterTags.length; ++i) {
-        result.characterTags.push(this.getCharacterTagDataFromInputText(this.inputCharacterTags[i]));
+        result.characterTags.push(this.makeCharacterTagDataFromInputText(this.inputCharacterTags[i]));
       }
 
       // Ability type and ability.
@@ -909,8 +854,8 @@ export class NewCharacterFormComponent implements OnChanges {
     return cost;
   }
 
-  private getWeaponDataFromInputText(text: string): FsWeapon {
-    //const location = `${this.className}.getWeaponDataFromInputText()`;
+  private makeWeaponDataFromInputText(text: string): FsWeapon {
+    //const location = `${this.className}.makeWeaponDataFromInputText()`;
     let weapon: FsWeapon = <FsWeapon>{};
     let name: string = text;
 
@@ -952,8 +897,8 @@ export class NewCharacterFormComponent implements OnChanges {
     return weapon;
   }
 
-  private getFacilityDataFromInputText(text: string): FsFacility {
-    const location = `${this.className}.getFacilityDataFromInputText()`;
+  private makeFacilityDataFromInputText(text: string): FsFacility {
+    const location = `${this.className}.makeFacilityDataFromInputText()`;
     let facility: FsFacility = <FsFacility>{};
     let name: string = text;
 
@@ -993,8 +938,8 @@ export class NewCharacterFormComponent implements OnChanges {
     return facility;
   }
 
-  private getCharacterTagDataFromInputText(text: string): FsCharacterTag {
-    const location = `${this.className}.getCharacterTagDataFromInputText()`;
+  private makeCharacterTagDataFromInputText(text: string): FsCharacterTag {
+    const location = `${this.className}.makeCharacterTagDataFromInputText()`;
     let tag: FsCharacterTag = <FsCharacterTag>{};
     let name: string = text;
 

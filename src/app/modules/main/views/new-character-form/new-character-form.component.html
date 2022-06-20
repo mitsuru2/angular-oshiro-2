@@ -19,7 +19,7 @@
   <!-- Character type & name -->
   <!---->
   <div class="formgrid grid" style="margin-bottom: 1rem">
-    <div class="field col-12 md:col-6">
+    <div class="field col-12 lg:col-6">
       <label for="NewCharacterForm_CharacterTypeInput">キャラクタータイプ</label>
       <p-dropdown
         id="NewCharacterForm_CharacterTypeInput"
@@ -31,7 +31,7 @@
         (onChange)="onCharacterTypeChanged()"
       ></p-dropdown>
     </div>
-    <div class="field col-12 md:col-6" *ngIf="selectedCharacterType.subTypes">
+    <div class="field col-12 lg:col-6" *ngIf="selectedCharacterType.subTypes">
       <label for="NewCharacterForm_SubCharacterTypeInput">サブキャラクタータイプ</label>
       <p-dropdown
         id="NewCharacterForm_SubCharacterTypeInput"
@@ -146,7 +146,7 @@
   <!-- Character cost & kai -->
   <!---->
   <div class="formgrid grid" *ngIf="!selectedCharacterType.isCostCalcEnable">
-    <div class="field col-12 md:col-6 p-fluid">
+    <div class="field col-12 lg:col-6 p-fluid">
       <label for="NewCharacterForm_CharacterCostInput">基本消費気</label>
       <p-inputNumber
         inputId="NewCharacterForm_CharacterCostInput"
@@ -159,7 +159,7 @@
       >
       </p-inputNumber>
     </div>
-    <div class="field col-12 md:col-6 p-fluid" *ngIf="selectedCharacterType.isKaichikuEnable">
+    <div class="field col-12 lg:col-6 p-fluid" *ngIf="selectedCharacterType.isKaichikuEnable">
       <label for="NewCharacterForm_CharacterCostKaiInput">基本消費気 (改壱)</label>
       <p-inputNumber
         inputId="NewCharacterForm_CharacterCostKaiInput"
@@ -178,7 +178,7 @@
   <!-- CV & Illustrator -->
   <!---->
   <div class="formgrid grid">
-    <div class="field col-12 md:col-6">
+    <div class="field col-12 lg:col-6">
       <label for="NewCharacterForm_VoiceActorInput">キャラクターボイス</label>
       <p-autoComplete
         inputId="NewCharacterForm_VoiceActorInput"
@@ -192,7 +192,7 @@
         [showClear]="true"
       ></p-autoComplete>
     </div>
-    <div class="field col-12 md:col-6">
+    <div class="field col-12 lg:col-6">
       <label for="NewCharacterForm_IllustratorInput">イラストレーター</label>
       <p-autoComplete
         inputId="NewCharacterForm_IllustratorInput"
@@ -267,7 +267,7 @@
       <div class="col" [style]="{ 'margin-bottom': '1rem' }">
         <p-card>
           <div class="formgrid grid">
-            <div class="field col-12 md:col-6" [style]="{ 'margin-top': '2px' }">
+            <div class="field col-12 lg:col-6" [style]="{ 'margin-top': '2px' }">
               <label [for]="'NewCharacterForm_AbilityNameInput_' + i">特技/計略名</label>
               <p-autoComplete
                 [inputId]="'NewCharacterForm_AbilityNameInput_' + i"
@@ -283,7 +283,7 @@
                 [showClear]="true"
               ></p-autoComplete>
             </div>
-            <div class="field col-12 md:col-6">
+            <div class="field col-12 lg:col-6">
               <label [for]="'NewCharacterForm_AbilityTypeInput_' + i">特技/計略タイプ</label>
               <p-dropdown
                 [id]="'NewCharacterForm_AbilityTypeInput_' + i"
@@ -297,7 +297,7 @@
             </div>
           </div>
           <div class="formgrid grid p-fluid" *ngIf="selectedAbilityTypes[i].name === '計略'">
-            <div class="field col-12 md:col-6">
+            <div class="field col-12 lg:col-6">
               <label [for]="'NewCharacterForm_KeiryakuIntervalInput_' + i">使用間隔</label>
               <p-inputNumber
                 [inputId]="'NewCharacterForm_KeiryakuIntervalInput_' + i"
@@ -312,7 +312,7 @@
               >
               </p-inputNumber>
             </div>
-            <div class="field col-12 md:col-6">
+            <div class="field col-12 lg:col-6">
               <label [for]="'NewCharacterForm_KeiryakuCostInput_' + i">消費気</label>
               <p-inputNumber
                 [inputId]="'NewCharacterForm_KeiryakuCostInput_' + i"
@@ -432,7 +432,7 @@
       <div class="col" [style]="{ 'margin-bottom': '1rem' }">
         <p-card>
           <div class="formgrid grid">
-            <div class="field col-12 md:col-6" [style]="{ 'margin-top': '2px' }">
+            <div class="field col-12 lg:col-6" [style]="{ 'margin-top': '2px' }">
               <label [for]="'NewCharacterForm_AbilityNameKaiInput_' + i">特技/計略名</label>
               <p-autoComplete
                 [inputId]="'NewCharacterForm_AbilityNameKaiInput_' + i"
@@ -448,7 +448,7 @@
                 [showClear]="true"
               ></p-autoComplete>
             </div>
-            <div class="field col-12 md:col-6">
+            <div class="field col-12 lg:col-6">
               <label [for]="'NewCharacterForm_AbilityTypeKaiInput_' + i">特技/計略タイプ</label>
               <p-dropdown
                 [id]="'NewCharacterForm_AbilityTypeKaiInput_' + i"
@@ -462,7 +462,7 @@
             </div>
           </div>
           <div class="formgrid grid p-fluid" *ngIf="selectedAbilityTypesKai[i].name === '計略'">
-            <div class="field col-12 md:col-6">
+            <div class="field col-12 lg:col-6">
               <label [for]="'NewCharacterForm_KeiryakuIntervalKaiInput_' + i">使用間隔</label>
               <p-inputNumber
                 [inputId]="'NewCharacterForm_KeiryakuIntervalKaiInput_' + i"
@@ -477,7 +477,7 @@
               >
               </p-inputNumber>
             </div>
-            <div class="field col-12 md:col-6">
+            <div class="field col-12 lg:col-6">
               <label [for]="'NewCharacterForm_KeiryakuCostKaiInput_' + i">消費気</label>
               <p-inputNumber
                 [inputId]="'NewCharacterForm_KeiryakuCostKaiInput_' + i"

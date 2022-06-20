@@ -55,15 +55,31 @@ export class ListCharacterComponent implements OnInit {
     costKai: 4,
     voiceActors: [],
     illustrators: [],
-    abilities: [{ id: '', descriptions: ['a', 'b', 'c'], name: 'AAA', type: 'TOKUGI' }],
-    abilityTypes: [{ id: '', name: '特技', order: 0 }],
+    abilities: [
+      { id: '', descriptions: ['a', 'b', 'c'], name: 'AAA', type: 'TOKUGI' },
+      {
+        id: '',
+        descriptions: ['hogehoge', 'piyopiyo'],
+        name: 'BBB',
+        type: 'KEIRYAKU',
+        keiryakuInterval: 30,
+        keiryakuCost: 10,
+        tokenLayouts: ['赤', '青'],
+      },
+    ],
+    abilityTypes: [
+      { id: '', name: '特技', order: 0 },
+      { id: '', name: '計略', order: 4 },
+    ],
     abilitiesKai: [],
     abilityTypesKai: [],
     characterTags: [
       { id: '', name: '日本100名城', characters: [] },
       { id: '', name: '夏', characters: [] },
     ],
-    motifWeapons: [],
+    motifWeapons: [
+      { id: '', type: '', name: '一乗飛燕小太刀', attack: 4, descriptions: ['a', 'b'], effects: ['k'], rarerity: 5 },
+    ],
     motifFacilities: [],
   };
 

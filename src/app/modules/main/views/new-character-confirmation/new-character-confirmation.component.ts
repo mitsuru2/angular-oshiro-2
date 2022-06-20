@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, /*OnInit,*/ Output } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
 import { NewCharacterFormResult } from '../new-character-form/new-character-form.interface';
 
@@ -7,7 +7,7 @@ import { NewCharacterFormResult } from '../new-character-form/new-character-form
   templateUrl: './new-character-confirmation.component.html',
   styleUrls: ['./new-character-confirmation.component.scss'],
 })
-export class NewCharacterConfirmationComponent implements OnInit {
+export class NewCharacterConfirmationComponent /*implements OnInit*/ {
   private className = 'NewCharacterConfirmationComponent';
 
   /** Appearance */
@@ -34,13 +34,17 @@ export class NewCharacterConfirmationComponent implements OnInit {
     this.logger.trace(`new ${this.className}()`);
   }
 
-  ngOnInit(): void {}
+  //ngOnInit(): void {}
 
   onOkClick() {
+    const location = `${this.className}.onOkClick()`;
+    this.logger.trace(location);
     this.confirmationResult.emit(true);
   }
 
   onCancelClick() {
+    const location = `${this.className}.onCancelClick()`;
+    this.logger.trace(location);
     this.confirmationResult.emit(false);
   }
 }
