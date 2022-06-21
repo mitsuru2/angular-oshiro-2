@@ -1,7 +1,5 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { deepStrictEqual } from 'assert';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
-import { type } from 'os';
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
 import {
   FsCharacterType,
@@ -20,7 +18,6 @@ import {
   FsCharacterTag,
   FsSubCharacterType,
   FsCharacter,
-  FsWeaponRarerityMax,
 } from 'src/app/services/firestore-data/firestore-document.interface';
 import { facilityFormMode, NewFacilityFormResult } from '../new-facility-form/new-facility-form.interafce';
 import { NewWeaponFormMode, NewWeaponFormResult } from '../new-weapon-form/new-weapon-form.interface';
