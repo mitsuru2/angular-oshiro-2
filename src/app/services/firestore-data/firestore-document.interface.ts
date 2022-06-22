@@ -3,6 +3,7 @@
  */
 export interface FsDocumentBase {
   id: string;
+  name: string;
 }
 
 export interface FsDocumentBaseWithStringIndex extends FsDocumentBase {
@@ -22,7 +23,6 @@ export interface FsDocumentBaseWithCode extends FsDocumentBase {
  * Practical data types.
  */
 export interface FsAbility extends FsDocumentBase {
-  name: string;
   type: string;
   descriptions: string[];
   keiryakuInterval?: number;
@@ -30,17 +30,13 @@ export interface FsAbility extends FsDocumentBase {
   tokenLayouts?: string[];
 }
 
-export interface FsAbilityType extends FsDocumentBaseWithOrder {
-  name: string;
-}
+export interface FsAbilityType extends FsDocumentBaseWithOrder {}
 
 export interface FsCharacterTag extends FsDocumentBase {
-  name: string;
   characters: string[];
 }
 
 export interface FsCharacterType extends FsDocumentBaseWithCode {
-  name: string;
   weaponTypes: string[];
   geographTypes: string[];
   regions?: string[];
@@ -50,15 +46,13 @@ export interface FsCharacterType extends FsDocumentBaseWithCode {
   subTypes?: FsSubCharacterType[];
 }
 
-export interface FsSubCharacterType extends FsDocumentBaseWithCode {
-  name: string;
-}
+export interface FsSubCharacterType extends FsDocumentBaseWithCode {}
 
 export const FsCharacterRarerityMax = 7;
 
-export interface FsCharacter extends FsDocumentBaseWithStringIndex {
+export interface FsCharacter extends FsDocumentBase {
+  index: string;
   type: string;
-  name: string;
   rarerity: number;
   weaponType: string;
   geographTypes: string[];
@@ -73,39 +67,27 @@ export interface FsCharacter extends FsDocumentBaseWithStringIndex {
   motifFacilities?: string[];
 }
 
-export interface FsFacilityType extends FsDocumentBaseWithCode {
-  name: string;
-}
+export interface FsFacilityType extends FsDocumentBaseWithCode {}
 
 export const FsFacilityRarerityMax = 5;
 
 export interface FsFacility extends FsDocumentBase {
   type: string;
-  name: string;
   rarerity: number;
   descriptions?: string[];
   effects?: string[];
   details?: string[];
 }
 
-export interface FsGeographType extends FsDocumentBaseWithOrder {
-  name: string;
-}
+export interface FsGeographType extends FsDocumentBaseWithOrder {}
 
-export interface FsIllustrator extends FsDocumentBase {
-  name: string;
-}
+export interface FsIllustrator extends FsDocumentBase {}
 
-export interface FsRegion extends FsDocumentBaseWithOrder {
-  name: string;
-}
+export interface FsRegion extends FsDocumentBaseWithOrder {}
 
-export interface FsVoiceActor extends FsDocumentBase {
-  name: string;
-}
+export interface FsVoiceActor extends FsDocumentBase {}
 
 export interface FsWeaponType extends FsDocumentBaseWithCode {
-  name: string;
   baseCost: number;
 }
 
@@ -113,7 +95,6 @@ export const FsWeaponRarerityMax = 5;
 
 export interface FsWeapon extends FsDocumentBase {
   type: string;
-  name: string;
   rarerity: number;
   descriptions: string[];
   attack: number;

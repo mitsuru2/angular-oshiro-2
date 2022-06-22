@@ -605,10 +605,10 @@ export class NewCharacterFormComponent implements OnChanges {
       this.inputCharacterTags = [];
     }
     if (exceptItems.includes('ability') === false) {
-      this.selectedAbilityTypes = [<FsAbilityType>{}];
-      this.selectedAbilityTypesKai = [<FsAbilityType>{}];
-      this.inputAbilities = [this.makeFsAbilityForNewCharacterForm()];
-      this.inputAbilitiesKai = [this.makeFsAbilityForNewCharacterForm()];
+      this.selectedAbilityTypes = [];
+      this.selectedAbilityTypesKai = [];
+      this.inputAbilities = [];
+      this.inputAbilitiesKai = [];
     }
   }
 

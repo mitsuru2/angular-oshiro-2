@@ -118,9 +118,25 @@ export class FirestoreDataService {
     return this.collections[name].data;
   }
 
-  addData(name: FsCollectionName, data: any) {
+  /**
+   * It adds new data to the specified data collection.
+   * And it returns document ID.
+   * @param name Data collection name.
+   * @param data Target data.
+   * @returns Data document ID.
+   */
+  async addData(name: FsCollectionName, data: any): Promise<string> {
     this.logger.trace(`FirestoreDataService.addData(${name})`);
-    this.collections[name].add(data);
+
+    let docId = '';
+
+    try {
+      docId = await this.collections[name].add(data);
+    } catch (error) {
+      throw error;
+    }
+
+    return docId;
   }
 
   /**
@@ -198,7 +214,17 @@ export class FirestoreDataService {
     for (let i = 0; i < fsCollection.data.length; ++i) {
       const docData = fsCollection.data[i] as FsCharacterType;
       if (docData.hasSubTypes) {
-        docData.subTypes = await fsCollection.loadSub<FsSubCharacterType>(docData.id, 'SubTypes');
+        const tmp = await fsCollection.loadSub<FsSubCharacterType>(docData.id, 'SubTypes');
+        if (!docData.subTypes) {
+          docData.subTypes = tmp;
+        } else {
+          while (docData.subTypes.length > 0) {
+            docData.subTypes.pop();
+          }
+          for (let j = 0; j < tmp.length; ++j) {
+            docData.subTypes.push(tmp[j]);
+          }
+        }
         this.logger.debug(location, docData);
       }
     }

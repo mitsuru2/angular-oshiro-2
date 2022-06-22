@@ -9,6 +9,7 @@ import {
   onSnapshot,
   orderBy,
   query,
+  runTransaction,
 } from '@angular/fire/firestore';
 import { Unsubscribe } from '@angular/fire/app-check';
 import { NGXLogger } from 'ngx-logger';
@@ -19,7 +20,7 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
 
   private collection: CollectionReference<T>;
 
-  data: any[];
+  data: FsDocumentBase[];
 
   isLoaded: boolean;
 
@@ -46,6 +47,11 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
     const location = `${this.className}.load()`;
     this.logger.trace(`${location}`, { name: this.name });
 
+    // Clear current data.
+    while (this.data.length > 0) {
+      this.data.pop();
+    }
+
     // Get data.
     try {
       // Copy document ID and its data to "this.data" object, if it's not empty.
@@ -67,8 +73,6 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
       this.logger.error(`${location} Data loading failed.`, { name: this.name }, error);
       throw error;
     }
-
-    //this.logger.debug(location, { data: this.data });
 
     // Return data length.
     return Object.keys(this.data).length;
@@ -170,18 +174,49 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
    * Add new document to the collection.
    * ID will be assigned automatically.
    * @param data Target data.
-   * @returns Promise<boolean>. Return true if it succeeded.
+   * @returns Promise<string>. New document ID.
    */
-  async add(data: any): Promise<boolean> {
+  async add(data: T): Promise<string> {
     const location = `${this.className}.add()`;
-    this.logger.trace(`${location}`, { name: this.name });
+    this.logger.trace(location, { name: this.name, data: data });
+
+    let docId = '';
 
     try {
-      await addDoc(this.collection, data);
+      // Start transaction.
+      await runTransaction(this.fs, async () => {
+        // Reload data collection.
+        await this.load();
+
+        // If it found data which has same name as the target data.
+        // It skip to add the target data because the data is already registered.
+        for (let i = 0; i < this.data.length; ++i) {
+          if (this.data[i].name === data.name) {
+            this.logger.warn(location, 'Target data is already existing. Data adding is skipped.', {
+              collection: this.name,
+              id: this.data[i].id,
+              name: this.data[i].name,
+            });
+            docId = this.data[i].id;
+            return;
+          }
+        }
+
+        // Remove 'id' field from the target data.
+        const tmp = { ...data } as any;
+        delete tmp.id;
+
+        // Add target data to the server.
+        const docRef = await addDoc(this.collection, tmp);
+        docId = docRef.id;
+        this.logger.info(location, 'Target data is added.', { collection: this.name, id: docId, name: data.name });
+
+        return;
+      });
     } catch (error) {
-      return false;
+      this.logger.error(location, error);
     }
 
-    return true;
+    return docId;
   }
 }
