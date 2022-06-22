@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { assert } from 'console';
 import { NGXLogger } from 'ngx-logger';
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
 import {
@@ -19,6 +20,7 @@ import {
   FsSubCharacterType,
   FsCharacter,
 } from 'src/app/services/firestore-data/firestore-document.interface';
+import { threadId } from 'worker_threads';
 import { facilityFormMode, NewFacilityFormResult } from '../new-facility-form/new-facility-form.interafce';
 import { NewWeaponFormMode, NewWeaponFormResult } from '../new-weapon-form/new-weapon-form.interface';
 import { FsAbilityForNewCharacterForm, NewCharacterFormResult } from './new-character-form.interface';
@@ -92,14 +94,14 @@ export class NewCharacterFormComponent implements OnChanges {
 
   suggestVoiceActorNames: string[] = [];
 
-  inputVoiceActor: FsVoiceActor = <FsVoiceActor>{};
+  inputVoiceActor: FsVoiceActor = <FsVoiceActor>{ name: '' };
 
   /** Illustrator. */
   @Input() illustrators!: FsIllustrator[];
 
   suggestIllustratorNames: string[] = [];
 
-  inputIllustrator: FsIllustrator = <FsIllustrator>{};
+  inputIllustrator: FsIllustrator = <FsIllustrator>{ name: '' };
 
   /** Motif weapons */
   @Input() weapons!: FsWeapon[];
@@ -138,6 +140,8 @@ export class NewCharacterFormComponent implements OnChanges {
   selectedAbilityTypes: FsAbilityType[] = [];
 
   selectedAbilityTypesKai: FsAbilityType[] = [];
+
+  keiryakuTypeId!: string;
 
   /** Ability */
   @Input() abilities!: FsAbility[];
@@ -204,6 +208,14 @@ export class NewCharacterFormComponent implements OnChanges {
 
     // Ability type.
     this.firestore.sortByOrder(this.abilityTypes);
+
+    // Get keiryaku ability type.
+    for (let i = 0; i < this.abilityTypes.length; ++i) {
+      if (this.abilityTypes[i].name === '計略') {
+        this.keiryakuTypeId = this.abilityTypes[i].id;
+        break;
+      }
+    }
   }
 
   onCharacterTypeChanged() {
@@ -648,6 +660,7 @@ export class NewCharacterFormComponent implements OnChanges {
   }
 
   private makeSuggestLabels(value: string, source: string[]): string[] {
+    //const locatin = `${this.className}.makeSuggestLabels()`;
     const suggests: string[] = [];
 
     for (let i = 0; i < source.length; ++i) {
@@ -701,6 +714,9 @@ export class NewCharacterFormComponent implements OnChanges {
       result.geographTypes = this.selectedGeographTypes;
       result.region = this.selectedRegion;
 
+      // Sub character type.
+      // TODO
+
       // Character cost.
       result.cost = this.calcCharacterCost(
         this.selectedCharacterType,
@@ -718,26 +734,30 @@ export class NewCharacterFormComponent implements OnChanges {
       );
 
       // Voice actor.
-      let voiceActor: FsVoiceActor = { id: '', name: this.inputVoiceActor.name };
-      for (let i = 0; i < this.voiceActors.length; ++i) {
-        if (this.inputVoiceActor.name === this.voiceActors[i].name) {
-          voiceActor = this.voiceActors[i];
-          break;
-        }
-      }
       result.voiceActors = [];
-      result.voiceActors.push(voiceActor);
+      if (this.inputVoiceActor.name !== '') {
+        let voiceActor: FsVoiceActor = { id: '', name: this.inputVoiceActor.name };
+        for (let i = 0; i < this.voiceActors.length; ++i) {
+          if (voiceActor.name === this.voiceActors[i].name) {
+            voiceActor = this.voiceActors[i];
+            break;
+          }
+        }
+        result.voiceActors.push(voiceActor);
+      }
 
       // Illustrator.
-      let illustrator: FsIllustrator = { id: '', name: this.inputIllustrator.name };
-      for (let i = 0; i < this.illustrators.length; ++i) {
-        if (this.inputIllustrator.name === this.illustrators[i].name) {
-          illustrator = this.illustrators[i];
-          break;
-        }
-      }
       result.illustrators = [];
-      result.illustrators.push(illustrator);
+      if (this.inputIllustrator.name !== '') {
+        let illustrator: FsIllustrator = { id: '', name: this.inputIllustrator.name };
+        for (let i = 0; i < this.illustrators.length; ++i) {
+          if (illustrator.name === this.illustrators[i].name) {
+            illustrator = this.illustrators[i];
+            break;
+          }
+        }
+        result.illustrators.push(illustrator);
+      }
 
       // Motif weapon.
       result.motifWeapons = [];
@@ -759,8 +779,6 @@ export class NewCharacterFormComponent implements OnChanges {
 
       // Ability type and ability.
       {
-        // Check input ability info.
-
         // Copy ability type.
         result.abilityTypes = this.selectedAbilityTypes;
         result.abilityTypesKai = this.selectedAbilityTypesKai;
@@ -773,6 +791,30 @@ export class NewCharacterFormComponent implements OnChanges {
         result.abilitiesKai = [];
         for (let i = 0; i < this.inputAbilitiesKai.length; ++i) {
           result.abilitiesKai.push(this.makeAbilityInfoForFormResult(this.inputAbilitiesKai[i]));
+        }
+
+        // Copy ability type ID.
+        if (result.abilityTypes.length !== result.abilities.length) {
+          this.logger.error(location, 'Ability and ability types is not corresponding.', {
+            abilities: result.abilities,
+            abilityTypes: result.abilityTypes,
+          });
+          console.assert(false);
+        }
+        for (let i = 0; i < result.abilities.length; ++i) {
+          result.abilities[i].type = result.abilityTypes[i].id;
+        }
+
+        // Copy ability type ID. (kaichiku)
+        if (result.abilityTypesKai.length !== result.abilitiesKai.length) {
+          this.logger.error(location, 'Ability and ability types is not corresponding.', {
+            abilities: result.abilitiesKai,
+            abilityTypes: result.abilityTypesKai,
+          });
+          console.assert(false);
+        }
+        for (let i = 0; i < result.abilities.length; ++i) {
+          result.abilitiesKai[i].type = result.abilityTypesKai[i].id;
         }
       }
     }
@@ -975,9 +1017,18 @@ export class NewCharacterFormComponent implements OnChanges {
     result.type = input.type;
     result.name = input.name;
     result.descriptions = input.descriptions.filter((text) => text.length > 0);
-    result.keiryakuInterval = input.keiryakuInterval;
-    result.keiryakuCost = input.keiryakuCost;
-    result.tokenLayouts = input.tokenLayouts;
+    if (input.type === this.keiryakuTypeId) {
+      result.keiryakuInterval = input.keiryakuInterval;
+      result.keiryakuCost = input.keiryakuCost;
+      if (input.tokenLayouts) {
+        for (let i = 0; i < input.tokenLayouts.length; ++i) {
+          if (input.tokenLayouts[i].length > 0) {
+            result.tokenLayouts = input.tokenLayouts.filter((text) => text.length > 0);
+            break;
+          }
+        }
+      }
+    }
 
     return result;
   }

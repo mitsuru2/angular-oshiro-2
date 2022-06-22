@@ -274,47 +274,62 @@ export class NewCharacterComponent implements OnInit {
 
     // Check input motif weapons.
     for (let i = 0; i < formResult.motifWeapons.length; ++i) {
-      // Check if the weapon is new or not.
-      if (false) {
-        // Upload new weapon info and get document ID.
-        try {
-          // Transaction.
-        } catch {
-          throw Error('It failed to register motif weapon information.');
-        }
+      // Add new data if not existing, and get document ID.
+      docId = await this.addDataAndGetDocumentId(FsCollectionName.Weapons, formResult.motifWeapons[i]);
+
+      // Store document ID of motif weapons.
+      if (!character.motifWeapons) {
+        character.motifWeapons = [];
       }
+      character.motifWeapons.push(docId);
     }
 
     // Check input motif facilities.
     for (let i = 0; i < formResult.motifFacilities.length; ++i) {
-      // Check if the facility is new or not.
-      if (false) {
-        // Upload new facility info and get document ID.
+      // Add new data if not existing, and get document ID.
+      docId = await this.addDataAndGetDocumentId(FsCollectionName.Facilities, formResult.motifFacilities[i]);
+
+      // Store document ID of motif facilities.
+      if (!character.motifFacilities) {
+        character.motifFacilities = [];
       }
+      character.motifFacilities.push(docId);
     }
 
     // Check input character tags.
     for (let i = 0; i < formResult.characterTags.length; ++i) {
-      // Check if the tag is new or not.
-      if (false) {
-        // Upload new tag info and get document ID.
+      // Add new data if not existing, and get document ID.
+      docId = await this.addDataAndGetDocumentId(FsCollectionName.CharacterTags, formResult.characterTags[i]);
+
+      // Store document ID of character tags.
+      if (!character.tags) {
+        character.tags = [];
       }
+      character.tags.push(docId);
     }
 
     // Check input abilities.
     for (let i = 0; i < formResult.abilities.length; ++i) {
-      // Check if the ability is new or not.
-      if (false) {
-        // Upload new ability info and get document ID.
+      // Add new data if not existing, and get document ID.
+      docId = await this.addDataAndGetDocumentId(FsCollectionName.Abilities, formResult.abilities[i]);
+
+      // Store document ID of ability.
+      if (!character.abilities) {
+        character.abilities = [];
       }
+      character.abilities.push(docId);
     }
 
     // Check input abilities (kaichiku).
     for (let i = 0; i < formResult.abilitiesKai.length; ++i) {
-      // Check if the ability is new or not.
-      if (false) {
-        // Upload new ability info and get document ID.
+      // Add new data if not existing, and get document ID.
+      docId = await this.addDataAndGetDocumentId(FsCollectionName.Abilities, formResult.abilitiesKai[i]);
+
+      // Store document ID of ability.
+      if (!character.abilitiesKai) {
+        character.abilitiesKai = [];
       }
+      character.abilitiesKai.push(docId);
     }
 
     // Upload character info.

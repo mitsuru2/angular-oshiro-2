@@ -65,6 +65,7 @@ export interface FsCharacter extends FsDocumentBase {
   illustrators?: string[];
   motifWeapons?: string[];
   motifFacilities?: string[];
+  tags?: string[];
 }
 
 export interface FsFacilityType extends FsDocumentBaseWithCode {}
