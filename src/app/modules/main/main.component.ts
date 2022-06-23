@@ -20,19 +20,19 @@ export class MainComponent implements OnInit {
 
   sideMenuItems = [
     {
-      label: 'new',
+      label: '新規キャラクター登録',
       command: () => {
         this.navigate('/main/new-character');
       },
     },
     {
-      label: 'list',
+      label: 'キャラクター一覧',
       command: () => {
         this.navigate('/main/list-character');
       },
     },
     {
-      label: 'legal',
+      label: 'コピーライト表記',
       command: () => {
         this.navigate('/main/legal');
       },
