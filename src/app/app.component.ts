@@ -57,6 +57,7 @@ export class AppComponent implements OnInit {
       this.logger.error('error occurred.');
       this.appNavi.status = AppStatus.Error;
     }
+
     return true;
   }
 

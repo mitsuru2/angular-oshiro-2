@@ -53,6 +53,7 @@ export const FsCharacterRarerityMax = 7;
 export interface FsCharacter extends FsDocumentBase {
   index: string;
   type: string;
+  subType?: string;
   rarerity: number;
   weaponType: string;
   geographTypes: string[];

@@ -3,7 +3,7 @@
 //
 import { Injectable } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
-import { Firestore, doc, runTransaction } from '@angular/fire/firestore';
+import { Firestore, doc, runTransaction, DocumentReference } from '@angular/fire/firestore';
 import { FsCollectionName } from './firestore-collection-name.enum';
 import {
   FsAbility,
@@ -126,31 +126,41 @@ export class FirestoreDataService {
    * @returns Data document ID.
    */
   async addData(name: FsCollectionName, data: any): Promise<string> {
-    this.logger.trace(`FirestoreDataService.addData(${name})`);
-
-    let docId = '';
-
-    try {
-      docId = await this.collections[name].add(data);
-    } catch (error) {
-      throw error;
-    }
-
+    const docId = await this.collections[name].add(data);
     return docId;
+  }
+
+  async pushToListField<TField>(
+    name: FsCollectionName,
+    docId: string,
+    fieldName: string,
+    value: TField
+  ): Promise<string> {
+    const docIdResult = await this.collections[name].pushToListField<TField>(docId, fieldName, value);
+    return docIdResult;
   }
 
   /**
    * Increment 'count' field of the specified document.
    * @param name Data collection name.
-   * @param index Document index.
-   * @returns Promise with number. The number represents the counter value before increment.
+   * @param docId Document ID.
+   * @returns Promise with number. The number represents the counter value after increment.
    */
-  async incrementCounter(name: FsCollectionName, index: number): Promise<number> {
-    this.logger.trace(`FirestoreDataService.incrementCounter(${name}, ${index})`);
+  async incrementCounter(name: FsCollectionName, docId: string, subName?: string, subDocId?: string): Promise<number> {
+    const location = `${this.className}.incrementCounter()`;
+    this.logger.trace(location, { name: name, docId: docId, subName: subName, subDocId: subDocId });
 
-    if (name === FsCollectionName.CharacterTypes) {
-      const docId = this.collections[name].data[index].id;
-      const docRef = doc(this.fs, `${name}/${docId}`);
+    if (
+      name === FsCollectionName.CharacterTypes ||
+      name === FsCollectionName.FacilityTypes ||
+      name === FsCollectionName.WeaponTypes
+    ) {
+      let docRef: DocumentReference;
+      if (!subName || !subDocId) {
+        docRef = doc(this.fs, `${name}/${docId}`);
+      } else {
+        docRef = doc(this.fs, `${name}/${docId}/${subName}/${subDocId}`);
+      }
       let count = 0;
 
       await runTransaction(this.fs, async (transaction) => {
@@ -164,7 +174,8 @@ export class FirestoreDataService {
         }
 
         count = (docBody.data() as FsCharacterType).count;
-        transaction.update(docRef, { count: count + 1 });
+        count += 1;
+        transaction.update(docRef, { count: count });
       });
 
       this.logger.debug(`count: ${count}`);

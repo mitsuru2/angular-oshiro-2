@@ -12,6 +12,7 @@ import {
   FsGeographType,
   FsIllustrator,
   FsRegion,
+  FsSubCharacterType,
   FsVoiceActor,
   FsWeapon,
   FsWeaponType,
@@ -244,6 +245,8 @@ export class NewCharacterComponent implements OnInit {
   // Private methods.
   //
   private async uploadCharacterInfo(formResult: NewCharacterFormResult) {
+    const location = `${this.className}.uploadCharacterInfo()`;
+
     // Make character info to be registered.
     const character = this.makeCharacterInfo(formResult);
     let docId = '';
@@ -332,8 +335,29 @@ export class NewCharacterComponent implements OnInit {
       character.abilitiesKai.push(docId);
     }
 
+    // Make character index.
+    character.index = await this.makeNewCharacterIndex(formResult.characterType, formResult.subCharacterType);
+    this.logger.info(location, { character: character });
+
     // Upload character info.
-    this.logger.debug(character);
+    const characterId = await this.firestore.addData(FsCollectionName.Characters, character);
+
+    // Update character tag info.
+    if (character.tags) {
+      for (let i = 0; i < this.characterTags.length; ++i) {
+        for (let j = 0; j < character.tags.length; ++j) {
+          if (this.characterTags[i].id === character.tags[j]) {
+            // Add character ID to the tag info.
+            await this.firestore.pushToListField<string>(
+              FsCollectionName.CharacterTags,
+              this.characterTags[i].id,
+              'characters',
+              characterId
+            );
+          }
+        }
+      }
+    }
   }
 
   private makeCharacterInfo(formResult?: NewCharacterFormResult): FsCharacter {
@@ -352,6 +376,9 @@ export class NewCharacterComponent implements OnInit {
     // If form result is available, copy a part of information.
     if (formResult) {
       character.type = formResult.characterType.id;
+      if (formResult.subCharacterType) {
+        character.subType = formResult.subCharacterType.id;
+      }
       character.name = formResult.characterName;
       character.rarerity = formResult.rarerity;
       character.weaponType = formResult.weaponType.id;
@@ -363,7 +390,7 @@ export class NewCharacterComponent implements OnInit {
       }
       character.cost = formResult.cost;
       if (formResult.costKai) {
-        character.cost = formResult.costKai;
+        character.costKai = formResult.costKai;
       }
     }
 
@@ -389,5 +416,25 @@ export class NewCharacterComponent implements OnInit {
     }
 
     return docId;
+  }
+
+  private async makeNewCharacterIndex(type: FsCharacterType, subType?: FsSubCharacterType): Promise<string> {
+    const location = `${this.className}.makeNewCharacterIndex()`;
+    let index = '';
+    let code = type.code;
+    let subCode = subType ? subType.code : '00';
+    let count = 0;
+
+    // Increment and get character type count.
+    count = await this.firestore.incrementCounter(FsCollectionName.CharacterTypes, type.id);
+    if (subType) {
+      count = await this.firestore.incrementCounter(FsCollectionName.CharacterTypes, type.id, 'SubTypes', subType.id);
+    }
+
+    // Make string index.
+    index = `${code}-${subCode}-${(count - 1).toString(16).padStart(4, '0')}`;
+    this.logger.info(location, { index: index });
+
+    return index;
   }
 }

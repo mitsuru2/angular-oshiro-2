@@ -14,6 +14,7 @@ import {
 import { Unsubscribe } from '@angular/fire/app-check';
 import { NGXLogger } from 'ngx-logger';
 import { FsDocumentBase } from './firestore-document.interface';
+import { doc } from '@firebase/firestore';
 
 export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
   private className: string;
@@ -80,7 +81,7 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
 
   async loadSub<TSub extends FsDocumentBase>(docId: string, subName: string): Promise<TSub[]> {
     const location = `${this.className}.loadSub()`;
-    this.logger.trace(location);
+    this.logger.trace(location, { name: this.name, docId: docId, subName: subName });
 
     const result: TSub[] = [];
 
@@ -216,6 +217,44 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
     } catch (error) {
       this.logger.error(location, error);
     }
+
+    return docId;
+  }
+
+  /**
+   * It update target data document.
+   * It push input data to the specified field which is list type.
+   * @param docId Document ID.
+   * @param fieldName Target field name.
+   * @param value Data to be pushed to the target list field.
+   * @returns Document ID.
+   */
+  async pushToListField<TField>(docId: string, fieldName: string, value: TField): Promise<string> {
+    const location = `${this.className}.pushToListField()`;
+    this.logger.trace(location, { name: this.name, docId: docId, fieldName: fieldName, value: value });
+
+    // Get document reference.
+    const docRef = doc(this.fs, `${this.name}/${docId}`);
+
+    // Do transaction.
+    await runTransaction(this.fs, async (transaction) => {
+      // Get target document.
+      // Throw error if the target document is not existing.
+      const docBody = await transaction.get(docRef);
+      if (!docBody.exists()) {
+        this.logger.error(
+          `FirestoreDataService.incrementCounter() | Document was not found. { path: ${name}/${docId} }`
+        );
+        throw Error(`FirestoreDataService.incrementCounter() | Document was not found. { path: ${name}/${docId} }`);
+      }
+
+      // Update specified field.
+      const docData = docBody.data() as any;
+      if (Object.keys(docData).includes(fieldName)) {
+        docData[fieldName].push(value);
+      }
+      transaction.update(docRef, { [fieldName]: docData[fieldName] });
+    });
 
     return docId;
   }

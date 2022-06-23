@@ -715,7 +715,9 @@ export class NewCharacterFormComponent implements OnChanges {
       result.region = this.selectedRegion;
 
       // Sub character type.
-      // TODO
+      if (result.characterType.hasSubTypes && this.selectedSubCharacterType) {
+        result.subCharacterType = this.selectedSubCharacterType;
+      }
 
       // Character cost.
       result.cost = this.calcCharacterCost(
