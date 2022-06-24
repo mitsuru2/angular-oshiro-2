@@ -31,6 +31,7 @@ import { NewCharacterFormComponent } from './views/new-character-form/new-charac
 import { NewWeaponFormComponent } from './views/new-weapon-form/new-weapon-form.component';
 import { NewFacilityFormComponent } from './views/new-facility-form/new-facility-form.component';
 import { NewCharacterConfirmationComponent } from './views/new-character-confirmation/new-character-confirmation.component';
+import { MakeThumbnailImageComponent } from './views/make-thumbnail-image/make-thumbnail-image.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { NewCharacterConfirmationComponent } from './views/new-character-confirm
     NewWeaponFormComponent,
     NewFacilityFormComponent,
     NewCharacterConfirmationComponent,
+    MakeThumbnailImageComponent,
   ],
   imports: [
     CommonModule,
