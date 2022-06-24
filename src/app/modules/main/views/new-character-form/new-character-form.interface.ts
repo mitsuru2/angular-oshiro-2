@@ -47,3 +47,10 @@ export interface NewCharacterFormResult {
   // tokugiImageKai
   // taihaImageKai
 }
+
+export enum CharacterImageType {
+  Shiromusume = 0,
+  Ojou,
+  Tokugi,
+  Taiha,
+}

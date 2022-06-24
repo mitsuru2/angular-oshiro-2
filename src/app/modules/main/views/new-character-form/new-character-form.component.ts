@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { assert } from 'console';
 import { NGXLogger } from 'ngx-logger';
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
@@ -23,7 +23,11 @@ import {
 import { threadId } from 'worker_threads';
 import { facilityFormMode, NewFacilityFormResult } from '../new-facility-form/new-facility-form.interafce';
 import { NewWeaponFormMode, NewWeaponFormResult } from '../new-weapon-form/new-weapon-form.interface';
-import { FsAbilityForNewCharacterForm, NewCharacterFormResult } from './new-character-form.interface';
+import {
+  CharacterImageType,
+  FsAbilityForNewCharacterForm,
+  NewCharacterFormResult,
+} from './new-character-form.interface';
 
 @Component({
   selector: 'app-new-character-form',
@@ -34,10 +38,13 @@ export class NewCharacterFormComponent implements OnChanges {
   private className = 'NewCharacterFormComponent';
 
   /** Appearance. */
-  @Input()
-  maxWidth = 'auto';
+  @Input() maxWidth = 'auto';
 
   iconButtonWidth = 50; // px
+
+  previewCanvasWidth = '300px';
+
+  previewCanvasHeight = this.previewCanvasWidth;
 
   /** Button label and style. */
   @Input() okLabel = 'Ok';
@@ -164,6 +171,20 @@ export class NewCharacterFormComponent implements OnChanges {
   isFormValid = true;
 
   errorMessage: string = '';
+
+  /** Shiromusume images. */
+  imageInputIdsAndLabels: { id: string; label: string }[] = [
+    { id: 'Shiromusume', label: '城娘' },
+    { id: 'Ojou', label: '御嬢' },
+    { id: 'Tokugi', label: '特技' },
+    { id: 'Taiha', label: '大破' },
+  ];
+
+  imageTypeMax: number = this.imageInputIdsAndLabels.length;
+
+  inputImageFiles: any[] = Array(this.imageTypeMax);
+
+  inputImageFilesKai: any[] = Array(this.imageTypeMax);
 
   /** Output character data. */
   @Output() formResult = new EventEmitter<NewCharacterFormResult>();
@@ -404,7 +425,7 @@ export class NewCharacterFormComponent implements OnChanges {
     }
   }
 
-  onRemoveButtonoClick(kai: boolean, index: number) {
+  onRemoveAbilityButtonClick(kai: boolean, index: number) {
     const location = `${this.className}.onAddAbilityButtonClick()`;
     this.logger.trace(location, { kai: kai, index: index });
 
@@ -461,6 +482,52 @@ export class NewCharacterFormComponent implements OnChanges {
 
     // Close dialog.
     this.showFacilityForm = false;
+  }
+
+  onInputImageFileChange(index: number, kaichiku: boolean, event: Event) {
+    const location = `${this.className}.onInputImageFileChange()`;
+    this.logger.trace(location, { index: index, kaichiku: kaichiku, event: event });
+
+    const input = event.target as HTMLInputElement;
+    let elemId = `NewCharacterForm_${this.imageInputIdsAndLabels[index].id}Preview`;
+    elemId += kaichiku ? 'Kai' : '';
+
+    if (!input.files) {
+      this.logger.warn(location, 'No file is selected.');
+      return;
+    }
+
+    if (kaichiku) {
+      this.inputImageFilesKai[index] = input.files[0];
+    } else {
+      this.inputImageFiles[index] = input.files[0];
+    }
+
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+      const canvas = document.getElementById(elemId) as HTMLCanvasElement;
+      const context = canvas.getContext('2d');
+      const image = new Image();
+      image.src = fileReader.result as string;
+      image.onload = () => {
+        canvas.width = image.height;
+        canvas.height = image.height;
+        const offsetX = (image.height - image.width) / 2;
+        context?.drawImage(image, offsetX, 0);
+      };
+    };
+    fileReader.readAsDataURL(input.files[0]);
+  }
+
+  onRemoveImageFileClick(index: number, kaichiku: boolean) {
+    const location = `${this.className}.onRemoveImageFileClick()`;
+    this.logger.trace(location, { index: index, kaichiku: kaichiku });
+
+    if (kaichiku) {
+      this.inputImageFilesKai[index] = undefined;
+    } else {
+      this.inputImageFiles[index] = undefined;
+    }
   }
 
   onOkClick() {

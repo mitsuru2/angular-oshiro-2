@@ -9,11 +9,7 @@
   <!------------------------------------------------------------------------->
   <!-- BASIC INFORMATION ---------------------------------------------------->
   <!------------------------------------------------------------------------->
-  <div class="formgrid grid">
-    <div class="col">
-      <p-divider align="center"><span>基本情報</span></p-divider>
-    </div>
-  </div>
+  <p-divider align="center"><span>基本情報</span></p-divider>
 
   <!---->
   <!-- Character type & name -->
@@ -256,11 +252,7 @@
   <!------------------------------------------------------------------------->
   <!-- Ability -------------------------------------------------------------->
   <!------------------------------------------------------------------------->
-  <div class="p-formgrid grid">
-    <div class="field col">
-      <p-divider align="center"><span>特技 / 計略</span></p-divider>
-    </div>
-  </div>
+  <p-divider align="center"><span>特技 / 計略</span></p-divider>
 
   <div>
     <div class="formgrid grid" *ngFor="let item of selectedAbilityTypes; trackBy: trackByItem; let i = index">
@@ -375,7 +367,7 @@
             </div>
           </div>
           <div class="formgid grid">
-            <div class="col" style="min-width: 300px">
+            <div class="col">
               <label>説明</label>
               <div *ngFor="let desc of inputAbilities[i].descriptions; trackBy: trackByItem; let j = index">
                 <span class="p-input-icon-right" [style]="{ width: '100%' }">
@@ -402,7 +394,7 @@
           type="button"
           icon="pi pi-times"
           class="p-button-rounded p-button-danger p-button-outlined"
-          (click)="onRemoveButtonoClick(false, i)"
+          (click)="onRemoveAbilityButtonClick(false, i)"
         ></button>
       </div>
     </div>
@@ -421,11 +413,7 @@
   <!------------------------------------------------------------------------->
   <!-- Ability (Kaichiku) --------------------------------------------------->
   <!------------------------------------------------------------------------->
-  <div class="p-formgrid grid">
-    <div class="field col">
-      <p-divider align="center"><span>特技 / 計略 (改壱)</span></p-divider>
-    </div>
-  </div>
+  <p-divider align="center"><span>特技 / 計略 (改壱)</span></p-divider>
 
   <div>
     <div class="formgrid grid" *ngFor="let item of selectedAbilityTypesKai; trackBy: trackByItem; let i = index">
@@ -540,7 +528,7 @@
             </div>
           </div>
           <div class="formgid grid">
-            <div class="col" style="min-width: 300px">
+            <div class="col">
               <label>説明</label>
               <div *ngFor="let desc of inputAbilitiesKai[i].descriptions; trackBy: trackByItem; let j = index">
                 <span class="p-input-icon-right" [style]="{ width: '100%' }">
@@ -567,7 +555,7 @@
           type="button"
           icon="pi pi-times"
           class="p-button-rounded p-button-danger p-button-outlined"
-          (click)="onRemoveButtonoClick(true, i)"
+          (click)="onRemoveAbilityButtonClick(true, i)"
         ></button>
       </div>
     </div>
@@ -583,103 +571,80 @@
     ></button>
   </div>
 
-  <!-- Shiromusume Image File. -->
+  <!------------------------------------------------------------------------->
+  <!-- Image files ---------------------------------------------------------->
+  <!------------------------------------------------------------------------->
   <p-divider align="center"><span>画像登録</span></p-divider>
-  <div class="formGrid grid p-fluid">
-    <div class="col" style="min-width: 300px">
-      <label for="shiromusumeImage" pButton label="城娘" class="p-button-rounded p-button-outlined">
-        <input type="file" id="shiromusumeImage" [style]="{ display: 'none' }" />
+  <div class="formgrid grid p-fluid">
+    <div class="field col-12 lg:col-6" *ngFor="let imageType of imageInputIdsAndLabels; let i = index">
+      <label [for]="'NewCharacterForm_' + imageType.id + 'ImageInput'" pButton [label]="imageType.label" class="p-button-rounded p-button-outlined">
+        <input
+          type="file"
+          [id]="'NewCharacterForm_' + imageType.id + 'ImageInput'"
+          [style]="{ display: 'none' }"
+          (change)="onInputImageFileChange(i, false, $event)"
+        />
       </label>
-      <div>
-        <canvas #shiromusumePreview style="max-width: 300px"></canvas>
+      <div *ngIf="inputImageFiles[i]" [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex', 'margin-bottom': '0.5rem' }">
+        <canvas [id]="'NewCharacterForm_' + imageType.id + 'Preview'" [style]="{ 'max-width': previewCanvasWidth, 'max-height': previewCanvasHeight }"></canvas>
       </div>
-      <div [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
-        <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined"></button>
-      </div>
-    </div>
-    <div class="col" style="min-width: 300px">
-      <label for="shiromusumeImage" pButton label="御嬢" class="p-button-rounded p-button-outlined">
-        <input type="file" id="shiromusumeImage" [style]="{ display: 'none' }" />
-      </label>
-      <div>
-        <canvas #shiromusumePreview style="max-width: 300px"></canvas>
-      </div>
-      <div [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
-        <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined"></button>
-      </div>
-    </div>
-  </div>
-  <div class="formGrid grid p-fluid">
-    <div class="col" style="min-width: 300px">
-      <label for="shiromusumeImage" pButton label="特技" class="p-button-rounded p-button-outlined">
-        <input type="file" id="shiromusumeImage" [style]="{ display: 'none' }" />
-      </label>
-      <div>
-        <canvas #shiromusumePreview style="max-width: 300px"></canvas>
-      </div>
-      <div [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
-        <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined"></button>
-      </div>
-    </div>
-    <div class="col" style="min-width: 300px">
-      <label for="shiromusumeImage" pButton label="大破" class="p-button-rounded p-button-outlined">
-        <input type="file" id="shiromusumeImage" [style]="{ display: 'none' }" />
-      </label>
-      <div>
-        <canvas #shiromusumePreview style="max-width: 300px"></canvas>
-      </div>
-      <div [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
-        <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined"></button>
+      <div *ngIf="inputImageFiles[i]" [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
+        <button
+          pButton
+          pRipple
+          type="button"
+          icon="pi pi-times"
+          class="p-button-rounded p-button-danger p-button-outlined"
+          (click)="onRemoveImageFileClick(i, false)"
+        ></button>
       </div>
     </div>
   </div>
   <button pButton pRipple type="button" icon="pi pi-image" label="サムネイル作成" class="p-button-outlined p-button-rounded"></button>
 
-  <!-- Shiromusume Image File. -->
+  <!------------------------------------------------------------------------->
+  <!-- Image files (kaichiku) ----------------------------------------------->
+  <!------------------------------------------------------------------------->
   <p-divider align="center"><span>画像登録 (改壱)</span></p-divider>
-  <div class="formGrid grid p-fluid">
-    <div class="col" style="min-width: 300px">
-      <label for="shiromusumeImage" pButton label="城娘" class="p-button-rounded p-button-outlined">
-        <input type="file" id="shiromusumeImage" [style]="{ display: 'none' }" />
+  <div class="formgrid grid p-fluid">
+    <div class="field col-12 lg:col-6" *ngFor="let imageType of imageInputIdsAndLabels; let i = index">
+      <label
+        *ngIf="imageType.id !== 'Ojou'"
+        [for]="'NewCharacterForm_' + imageType.id + 'ImageInputKai'"
+        pButton
+        [label]="imageType.label"
+        class="p-button-rounded p-button-outlined"
+      >
+        <input
+          type="file"
+          [id]="'NewCharacterForm_' + imageType.id + 'ImageInputKai'"
+          [style]="{ display: 'none' }"
+          (change)="onInputImageFileChange(i, true, $event)"
+        />
       </label>
-      <div>
-        <canvas #shiromusumePreview style="max-width: 300px"></canvas>
+      <button
+        pButton
+        type="button"
+        *ngIf="imageType.id === 'Ojou'"
+        [label]="imageType.label"
+        class="p-button-rounded p-button-outlined"
+        disabled="true"
+      ></button>
+      <div *ngIf="inputImageFilesKai[i]" [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex', 'margin-bottom': '0.5rem' }">
+        <canvas
+          [id]="'NewCharacterForm_' + imageType.id + 'PreviewKai'"
+          [style]="{ 'max-width': previewCanvasWidth, 'max-height': previewCanvasHeight }"
+        ></canvas>
       </div>
-      <div [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
-        <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined"></button>
-      </div>
-    </div>
-    <div class="col" style="min-width: 300px">
-      <button type="button" pButton label="御嬢" class="p-button-rounded p-button-outlined" [disabled]="true"></button>
-      <div>
-        <canvas #shiromusumePreview style="max-width: 300px"></canvas>
-      </div>
-      <div [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
-        <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined" [disabled]="true"></button>
-      </div>
-    </div>
-  </div>
-  <div class="formGrid grid p-fluid">
-    <div class="col" style="min-width: 300px">
-      <label for="shiromusumeImage" pButton label="特技" class="p-button-rounded p-button-outlined">
-        <input type="file" id="shiromusumeImage" [style]="{ display: 'none' }" />
-      </label>
-      <div>
-        <canvas #shiromusumePreview style="max-width: 300px"></canvas>
-      </div>
-      <div [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
-        <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined"></button>
-      </div>
-    </div>
-    <div class="col" style="min-width: 300px">
-      <label for="shiromusumeImage" pButton label="大破" class="p-button-rounded p-button-outlined">
-        <input type="file" id="shiromusumeImage" [style]="{ display: 'none' }" />
-      </label>
-      <div>
-        <canvas #shiromusumePreview style="max-width: 300px"></canvas>
-      </div>
-      <div [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
-        <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-outlined"></button>
+      <div *ngIf="inputImageFilesKai[i]" [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
+        <button
+          pButton
+          pRipple
+          type="button"
+          icon="pi pi-times"
+          class="p-button-rounded p-button-danger p-button-outlined"
+          (click)="onRemoveImageFileClick(i, true)"
+        ></button>
       </div>
     </div>
   </div>
