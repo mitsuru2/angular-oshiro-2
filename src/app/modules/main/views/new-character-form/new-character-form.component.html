@@ -600,7 +600,16 @@
       </div>
     </div>
   </div>
-  <button pButton pRipple type="button" icon="pi pi-image" label="サムネイル作成" class="p-button-outlined p-button-rounded"></button>
+  <button
+    pButton
+    pRipple
+    type="button"
+    icon="pi pi-image"
+    label="サムネイル作成"
+    class="p-button-outlined p-button-rounded"
+    (click)="onMakeThumbnailImageClick()"
+    [disabled]="!inputImageFiles[0]"
+  ></button>
 
   <!------------------------------------------------------------------------->
   <!-- Image files (kaichiku) ----------------------------------------------->
@@ -671,7 +680,9 @@
 <!----------------------------------------------------------------------------->
 <!-- DIALOGS ------------------------------------------------------------------>
 <!----------------------------------------------------------------------------->
+<!---->
 <!-- New Weapon Form Dialog -->
+<!---->
 <p-dialog
   header="未登録の武器です。必須情報を入力してください。"
   [(visible)]="showWeaponForm"
@@ -692,7 +703,9 @@
   ></app-new-weapon-form>
 </p-dialog>
 
+<!---->
 <!-- New Facility Form Dialog -->
+<!---->
 <p-dialog
   header="未登録の施設です。必須情報を入力してください。"
   [(visible)]="showFacilityForm"
@@ -712,3 +725,15 @@
     (formResult)="onNewFacilityFormResult($event)"
   ></app-new-facility-form>
 </p-dialog>
+
+<!---->
+<!-- Make thumbnail image dialog -->
+<!---->
+<p-dialog
+  header="サムネイル画像を作成します。"
+  [(visible)]="showMakeThumbnailDialog"
+  [modal]="true"
+  [style]="{ width: '50%' }"
+  [draggable]="false"
+  [resizable]="false"
+></p-dialog>

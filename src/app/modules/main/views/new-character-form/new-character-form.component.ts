@@ -186,6 +186,9 @@ export class NewCharacterFormComponent implements OnChanges {
 
   inputImageFilesKai: any[] = Array(this.imageTypeMax);
 
+  /** Thumbnail image dialog. */
+  showMakeThumbnailDialog = false;
+
   /** Output character data. */
   @Output() formResult = new EventEmitter<NewCharacterFormResult>();
 
@@ -528,6 +531,13 @@ export class NewCharacterFormComponent implements OnChanges {
     } else {
       this.inputImageFiles[index] = undefined;
     }
+  }
+
+  onMakeThumbnailImageClick() {
+    const location = `${this.className}.onMakeThumbnailImageClick()`;
+    this.logger.trace(location);
+
+    this.showMakeThumbnailDialog = true;
   }
 
   onOkClick() {
