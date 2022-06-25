@@ -18,6 +18,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { DividerModule } from 'primeng/divider';
 import { ChipsModule } from 'primeng/chips';
+import {ProgressSpinnerModule} from 'primeng/progressspinner';
 
 import { MainRoutingModule } from './main-routing.module';
 import { MainComponent } from './main.component';
@@ -68,6 +69,7 @@ import { MakeThumbnailImageComponent } from './views/make-thumbnail-image/make-t
     AutoCompleteModule,
     DividerModule,
     ChipsModule,
+    ProgressSpinnerModule
   ],
   bootstrap: [MainComponent],
   providers: [ConfirmationService],

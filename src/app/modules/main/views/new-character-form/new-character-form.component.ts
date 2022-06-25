@@ -181,6 +181,10 @@ export class NewCharacterFormComponent implements OnChanges {
 
   inputImageFilesKai: any[] = Array(this.imageTypeMax);
 
+  imageLoadFlags: boolean[] = Array(this.imageTypeMax);
+
+  imageLoadFlagsKai: boolean[] = Array(this.imageTypeMax);
+
   /** Thumbnail image dialog. */
   showMakeThumbnailDialog = false;
 
@@ -497,10 +501,12 @@ export class NewCharacterFormComponent implements OnChanges {
       return;
     }
 
-    if (kaichiku) {
-      this.inputImageFilesKai[index] = input.files[0];
-    } else {
+    if (!kaichiku) {
+      this.imageLoadFlags[index] = false;
       this.inputImageFiles[index] = input.files[0];
+    } else {
+      this.imageLoadFlagsKai[index] = false;
+      this.inputImageFilesKai[index] = input.files[0];
     }
 
     const fileReader = new FileReader();
@@ -518,6 +524,11 @@ export class NewCharacterFormComponent implements OnChanges {
         canvas.height = image.height;
         const offsetX = (image.height - image.width) / 2;
         context?.drawImage(image, offsetX, 0);
+        if (!kaichiku) {
+          this.imageLoadFlags[index] = true;
+        } else {
+          this.imageLoadFlagsKai[index] = true;
+        }
       };
     };
     fileReader.readAsDataURL(input.files[0]);
