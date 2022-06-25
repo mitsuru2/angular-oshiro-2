@@ -1,5 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
-import { assert } from 'console';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
 import {
@@ -20,14 +19,10 @@ import {
   FsSubCharacterType,
   FsCharacter,
 } from 'src/app/services/firestore-data/firestore-document.interface';
-import { threadId } from 'worker_threads';
+import { MakeThumbnailImageResult } from '../make-thumbnail-image/make-thumbnail-image.interface';
 import { facilityFormMode, NewFacilityFormResult } from '../new-facility-form/new-facility-form.interafce';
 import { NewWeaponFormMode, NewWeaponFormResult } from '../new-weapon-form/new-weapon-form.interface';
-import {
-  CharacterImageType,
-  FsAbilityForNewCharacterForm,
-  NewCharacterFormResult,
-} from './new-character-form.interface';
+import { FsAbilityForNewCharacterForm, NewCharacterFormResult } from './new-character-form.interface';
 
 @Component({
   selector: 'app-new-character-form',
@@ -188,6 +183,8 @@ export class NewCharacterFormComponent implements OnChanges {
 
   /** Thumbnail image dialog. */
   showMakeThumbnailDialog = false;
+
+  thumbnailBlob?: Blob;
 
   /** Output character data. */
   @Output() formResult = new EventEmitter<NewCharacterFormResult>();
@@ -508,7 +505,11 @@ export class NewCharacterFormComponent implements OnChanges {
 
     const fileReader = new FileReader();
     fileReader.onload = () => {
-      const canvas = document.getElementById(elemId) as HTMLCanvasElement;
+      let canvas = document.getElementById(elemId) as HTMLCanvasElement;
+      if (!canvas) {
+        this.logger.error(location, 'Canvas is not available.');
+        return;
+      }
       const context = canvas.getContext('2d');
       const image = new Image();
       image.src = fileReader.result as string;
@@ -538,6 +539,36 @@ export class NewCharacterFormComponent implements OnChanges {
     this.logger.trace(location);
 
     this.showMakeThumbnailDialog = true;
+  }
+
+  onMakeThumbnailImageResult(thumbResult: MakeThumbnailImageResult) {
+    const location = `${this.className}.onMakeThumbnailImageResult()`;
+    this.logger.trace(location, { canceld: thumbResult.canceled });
+
+    if (!thumbResult.canceled) {
+      this.thumbnailBlob = thumbResult.thumb;
+      if (this.thumbnailBlob) {
+        const fileReader = new FileReader();
+        fileReader.onload = () => {
+          let canvas = document.getElementById('NewCharacterForm_ThumbnailPreview') as HTMLCanvasElement;
+          if (!canvas) {
+            this.logger.error(location, 'Canvas is not available.');
+            return;
+          }
+          const context = canvas.getContext('2d');
+          const image = new Image();
+          image.src = fileReader.result as string;
+          image.onload = () => {
+            canvas.width = image.width;
+            canvas.height = image.height;
+            context?.drawImage(image, 0, 0);
+          };
+        };
+        fileReader.readAsDataURL(this.thumbnailBlob);
+      }
+    }
+
+    this.showMakeThumbnailDialog = false;
   }
 
   onOkClick() {

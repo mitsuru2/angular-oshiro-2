@@ -610,6 +610,9 @@
     (click)="onMakeThumbnailImageClick()"
     [disabled]="!inputImageFiles[0]"
   ></button>
+  <div *ngIf="this.thumbnailBlob" style="margin-top: 1rem">
+    <canvas id="NewCharacterForm_ThumbnailPreview"></canvas>
+  </div>
 
   <!------------------------------------------------------------------------->
   <!-- Image files (kaichiku) ----------------------------------------------->
@@ -737,5 +740,10 @@
   [draggable]="false"
   [resizable]="false"
 >
-  <app-make-thumbnail-image></app-make-thumbnail-image>
+  <app-make-thumbnail-image
+    [inputFile]="inputImageFiles[0]"
+    [buttonStyleClass]="'p-button-text'"
+    [imageScale]="75"
+    (thumbResult)="onMakeThumbnailImageResult($event)"
+  ></app-make-thumbnail-image>
 </p-dialog>

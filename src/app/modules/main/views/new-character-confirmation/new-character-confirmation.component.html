@@ -80,7 +80,7 @@
       <p-divider align="center"><span>特技/計略</span></p-divider>
     </div>
   </div>
-  <div *ngIf="character.abilities.length === 0">{{ textNotAvailable }}</div>
+  <div *ngIf="character.abilities.length === 0" [style]="{ 'margin-bottom': '1rem' }">{{ textNotAvailable }}</div>
   <div *ngFor="let ability of character.abilities; let i = index">
     <p-card [style]="{ 'margin-bottom': '1rem' }">
       <div class="formgrid grid">
@@ -115,7 +115,7 @@
       <p-divider align="center"><span>特技/計略 (改壱)</span></p-divider>
     </div>
   </div>
-  <div *ngIf="character.abilities.length === 0">{{ textNotAvailable }}</div>
+  <div *ngIf="character.abilities.length === 0" [style]="{ 'margin-bottom': '1rem' }">{{ textNotAvailable }}</div>
   <div *ngFor="let ability of character.abilitiesKai; let i = index">
     <p-card [style]="{ 'margin-bottom': '1rem' }">
       <div class="formgrid grid">
