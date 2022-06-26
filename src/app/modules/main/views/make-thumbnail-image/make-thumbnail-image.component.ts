@@ -1,5 +1,7 @@
 import { AfterViewChecked, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
+import { HtmlCanvas } from '../../utils/html-canvas/html-canvas.utility';
+import { loadImageFile } from '../../utils/image-file/image-file.utility';
 import { MakeThumbnailImageResult, WH, XY } from './make-thumbnail-image.interface';
 
 @Component({
@@ -37,7 +39,8 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewChecked 
   scaledImageSize: WH = { w: 0, h: 0 };
 
   /** Canvas. */
-  canvas?: HTMLCanvasElement;
+  // canvas?: HTMLCanvasElement;
+  canvas?: HtmlCanvas;
 
   /** Mouse */
   isMouseDragging = false;
@@ -76,7 +79,7 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewChecked 
     const location = `${this.className}.ngAfterViewChecked()`;
 
     if (!this.canvas) {
-      this.canvas = document.getElementById('MakeThumbnailImage_Preview') as HTMLCanvasElement;
+      this.canvas = HtmlCanvas.createCanvas('MakeThumbnailImage_Preview');
       if (this.canvas) {
         this.logger.info(location, 'Canvas is initialized.');
         this.canvas.width = this.canvasSize.w;
@@ -130,36 +133,27 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewChecked 
   // Private methods.
   //
   private loadImage(inputFile: File) {
-    const fileReader = new FileReader();
-    fileReader.onload = () => {
-      this.inputImage.src = fileReader.result as string;
-      this.inputImage.onload = () => {
-        this.imagePos.x = (this.canvasSize.w - this.inputImage.width) / 2;
-        this.isImageLoaded = true;
-        this.scaledImageSize = this.calcScaledImageSize(100);
-
-        if (this.canvas) {
-          this.onImageScaleInputChange({ value: this.imageScale });
-          this.draw();
-        }
-      };
-    };
-    fileReader.readAsDataURL(inputFile);
+    const promise = loadImageFile(inputFile);
+    promise.then((result) => {
+      this.inputImage = result;
+      this.imagePos.x = (this.canvasSize.w - this.inputImage.width) / 2;
+      this.isImageLoaded = true;
+      this.scaledImageSize = this.calcScaledImageSize(100);
+      if (this.canvas) {
+        this.onImageScaleInputChange({ value: this.imageScale });
+        this.draw();
+      }
+    });
   }
 
   private draw() {
     const location = `${this.className}.draw()`;
 
     if (this.canvas) {
-      const context = this.canvas.getContext('2d');
-      if (!context) {
-        this.logger.error(location, 'Canvas context is not available.');
-        return;
-      }
-      this.clearCanvas(context);
-      this.drawImage(context);
-      this.drawMarginFrame(context);
-      this.drawCenterLine(context);
+      this.canvas.clear();
+      this.drawImage();
+      this.drawMarginFrame();
+      this.drawCenterLine();
     }
   }
 
@@ -167,43 +161,44 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewChecked 
     context.clearRect(0, 0, this.canvasSize.w, this.canvasSize.h);
   }
 
-  private drawImage(context: CanvasRenderingContext2D) {
+  private drawImage() {
     const location = `${this.className}.drawImage()`;
 
-    context.drawImage(
-      this.inputImage,
-      this.imagePos.x,
-      this.imagePos.y,
-      this.scaledImageSize.w,
-      this.scaledImageSize.h
-    );
+    if (this.canvas) {
+      this.canvas.drawImage(
+        this.inputImage,
+        this.imagePos.x,
+        this.imagePos.y,
+        this.scaledImageSize.w,
+        this.scaledImageSize.h
+      );
+    }
     this.logger.debug(location, { width: this.inputImage.width, height: this.inputImage.height }, this.scaledImageSize);
   }
 
-  private drawMarginFrame(context: CanvasRenderingContext2D) {
+  private drawMarginFrame() {
     // Set color.
     // 50% transparent gray.
-    context.fillStyle = 'rgba(128, 128, 128, 0.5)';
-    context.fillRect(0, 0, this.canvasSize.w, this.margin.h);
-    context.fillRect(0, this.margin.h, this.margin.w, this.canvasSize.h - this.margin.h * 2);
-    context.fillRect(
-      this.canvasSize.w - this.margin.w,
-      this.margin.h,
-      this.margin.w,
-      this.canvasSize.h - this.margin.h * 2
-    );
-    context.fillRect(0, this.canvasSize.h - this.margin.h, this.canvasSize.w, this.margin.h);
+    if (this.canvas) {
+      this.canvas.fillStyle = 'rgba(128, 128, 128, 0.5)';
+      this.canvas.drawRect(0, 0, this.canvasSize.w, this.margin.h);
+      this.canvas.drawRect(0, this.margin.h, this.margin.w, this.canvasSize.h - this.margin.h * 2);
+      this.canvas.drawRect(
+        this.canvasSize.w - this.margin.w,
+        this.margin.h,
+        this.margin.w,
+        this.canvasSize.h - this.margin.h * 2
+      );
+      this.canvas.drawRect(0, this.canvasSize.h - this.margin.h, this.canvasSize.w, this.margin.h);
+    }
   }
 
-  private drawCenterLine(context: CanvasRenderingContext2D) {
-    context.strokeStyle = 'rgba(0, 0, 255, 0.5)'; // 50% Blue.
-    context.beginPath();
-    context.moveTo(0, Math.ceil(this.canvasSize.h / 2));
-    context.lineTo(this.canvasSize.w, Math.ceil(this.canvasSize.h / 2));
-    context.moveTo(Math.ceil(this.canvasSize.w / 2), 0);
-    context.lineTo(Math.ceil(this.canvasSize.w / 2), this.canvasSize.h);
-    context.closePath();
-    context.stroke();
+  private drawCenterLine() {
+    if (this.canvas) {
+      this.canvas.strokeStyle = 'rgba(0, 0, 255, 0.5)'; // 50% Blue.
+      this.canvas.drawLine(0, Math.ceil(this.canvasSize.h / 2), this.canvasSize.w, Math.ceil(this.canvasSize.h / 2));
+      this.canvas.drawLine(Math.ceil(this.canvasSize.w / 2), 0, Math.ceil(this.canvasSize.w / 2), this.canvasSize.h);
+    }
   }
 
   private onMouseDown() {

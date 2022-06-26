@@ -574,7 +574,7 @@
   <!------------------------------------------------------------------------->
   <!-- Image files ---------------------------------------------------------->
   <!------------------------------------------------------------------------->
-  <p-divider align="center"><span>画像登録</span></p-divider>
+  <p-divider align="center"><span>画像</span></p-divider>
   <div class="formgrid grid p-fluid">
     <div class="field col-12 lg:col-6" *ngFor="let imageType of imageInputIdsAndLabels; let i = index">
       <label [for]="'NewCharacterForm_' + imageType.id + 'ImageInput'" pButton [label]="imageType.label" class="p-button-rounded p-button-outlined">
@@ -622,7 +622,7 @@
   <!------------------------------------------------------------------------->
   <!-- Image files (kaichiku) ----------------------------------------------->
   <!------------------------------------------------------------------------->
-  <p-divider align="center"><span>画像登録 (改壱)</span></p-divider>
+  <p-divider align="center"><span>画像 (改壱)</span></p-divider>
   <div class="formgrid grid p-fluid">
     <div class="field col-12 lg:col-6" *ngFor="let imageType of imageInputIdsAndLabels; let i = index">
       <label
@@ -676,7 +676,14 @@
     icon="pi pi-check"
     (onClick)="onOkClick()"
     [styleClass]="buttonStyleClass"
-    [disabled]="!selectedCharacterType || inputCharacterName === '' || !selectedRarerity || !selectedWeaponType || selectedGeographTypes.length === 0"
+    [disabled]="
+      !selectedCharacterType ||
+      inputCharacterName === '' ||
+      !selectedRarerity ||
+      !selectedWeaponType ||
+      selectedGeographTypes.length === 0 ||
+      !this.thumbnailBlob
+    "
   ></p-button>
   <p-button
     [label]="cancelLabel"

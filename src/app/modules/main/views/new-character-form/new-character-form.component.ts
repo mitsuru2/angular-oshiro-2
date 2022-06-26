@@ -19,6 +19,8 @@ import {
   FsSubCharacterType,
   FsCharacter,
 } from 'src/app/services/firestore-data/firestore-document.interface';
+import { HtmlCanvas } from '../../utils/html-canvas/html-canvas.utility';
+import { loadImageFile } from '../../utils/image-file/image-file.utility';
 import { MakeThumbnailImageResult } from '../make-thumbnail-image/make-thumbnail-image.interface';
 import { facilityFormMode, NewFacilityFormResult } from '../new-facility-form/new-facility-form.interafce';
 import { NewWeaponFormMode, NewWeaponFormResult } from '../new-weapon-form/new-weapon-form.interface';
@@ -509,29 +511,25 @@ export class NewCharacterFormComponent implements OnChanges {
       this.inputImageFilesKai[index] = input.files[0];
     }
 
-    const fileReader = new FileReader();
-    fileReader.onload = () => {
-      let canvas = document.getElementById(elemId) as HTMLCanvasElement;
+    let promise = loadImageFile(input.files[0]);
+    promise.then((result) => {
+      const canvas = HtmlCanvas.createCanvas(elemId);
       if (!canvas) {
         this.logger.error(location, 'Canvas is not available.');
         return;
       }
-      const context = canvas.getContext('2d');
-      const image = new Image();
-      image.src = fileReader.result as string;
-      image.onload = () => {
-        canvas.width = image.height;
-        canvas.height = image.height;
-        const offsetX = (image.height - image.width) / 2;
-        context?.drawImage(image, offsetX, 0);
-        if (!kaichiku) {
-          this.imageLoadFlags[index] = true;
-        } else {
-          this.imageLoadFlagsKai[index] = true;
-        }
-      };
-    };
-    fileReader.readAsDataURL(input.files[0]);
+
+      canvas.width = result.height;
+      canvas.height = result.height;
+      const offsetX = (result.height - result.width) / 2;
+      canvas.drawImage(result, offsetX, 0);
+
+      if (!kaichiku) {
+        this.imageLoadFlags[index] = true;
+      } else {
+        this.imageLoadFlagsKai[index] = true;
+      }
+    });
   }
 
   onRemoveImageFileClick(index: number, kaichiku: boolean) {
@@ -559,23 +557,18 @@ export class NewCharacterFormComponent implements OnChanges {
     if (!thumbResult.canceled) {
       this.thumbnailBlob = thumbResult.thumb;
       if (this.thumbnailBlob) {
-        const fileReader = new FileReader();
-        fileReader.onload = () => {
+        const promise = loadImageFile(this.thumbnailBlob);
+        promise.then((result) => {
           let canvas = document.getElementById('NewCharacterForm_ThumbnailPreview') as HTMLCanvasElement;
           if (!canvas) {
-            this.logger.error(location, 'Canvas is not available.');
+            this.logger.error(location, 'Canvas is not availale.');
             return;
           }
           const context = canvas.getContext('2d');
-          const image = new Image();
-          image.src = fileReader.result as string;
-          image.onload = () => {
-            canvas.width = image.width;
-            canvas.height = image.height;
-            context?.drawImage(image, 0, 0);
-          };
-        };
-        fileReader.readAsDataURL(this.thumbnailBlob);
+          canvas.width = result.width;
+          canvas.height = result.height;
+          context?.drawImage(result, 0, 0);
+        });
       }
     }
 
@@ -936,6 +929,28 @@ export class NewCharacterFormComponent implements OnChanges {
         }
         for (let i = 0; i < result.abilities.length; ++i) {
           result.abilitiesKai[i].type = result.abilityTypesKai[i].id;
+        }
+      }
+
+      // Image files (include thumbnail).
+      {
+        // Make image file array.
+        result.imageFiles = Array(this.imageTypeMax);
+        result.imageFilesKai = Array(this.imageTypeMax);
+
+        // Copy input image files.
+        for (let i = 0; i < this.imageTypeMax; ++i) {
+          if (this.inputImageFiles[i]) {
+            result.imageFiles[i] = this.inputImageFiles[i];
+          }
+          if (this.inputImageFilesKai[i]) {
+            result.imageFilesKai[i] = this.inputImageFilesKai[i];
+          }
+        }
+
+        // Thumbnail.
+        if (this.thumbnailBlob) {
+          result.thumbnailImage = this.thumbnailBlob;
         }
       }
     }

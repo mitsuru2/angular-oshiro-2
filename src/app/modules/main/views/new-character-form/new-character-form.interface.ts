@@ -38,19 +38,7 @@ export interface NewCharacterFormResult {
   abilitiesKai: FsAbility[];
   abilityTypes: FsAbilityType[];
   abilityTypesKai: FsAbilityType[];
-  // shiromusumeImage
-  // ojouImage
-  // tokugiImage
-  // taihaImage
-  // thumbnailImage
-  // shiromusumeImageKai
-  // tokugiImageKai
-  // taihaImageKai
-}
-
-export enum CharacterImageType {
-  Shiromusume = 0,
-  Ojou,
-  Tokugi,
-  Taiha,
+  imageFiles: File[];
+  imageFilesKai: File[];
+  thumbnailImage?: Blob;
 }

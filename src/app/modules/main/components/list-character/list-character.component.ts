@@ -81,6 +81,8 @@ export class ListCharacterComponent implements OnInit {
       { id: '', type: '', name: '一乗飛燕小太刀', attack: 4, descriptions: ['a', 'b'], effects: ['k'], rarerity: 5 },
     ],
     motifFacilities: [],
+    imageFiles: [],
+    imageFilesKai: [],
   };
 
   constructor(private logger: NGXLogger, private firestore: FirestoreDataService) {}
