@@ -1,6 +1,16 @@
-{{ appInfo.title }}
+{{ appInfo.title }} {{ appInfo.subTitle }}
 <p>Copyright Takahashi Mitsuru 2022</p>
-<p>This system uses following open source softwares.</p>
+<p>It uses following software libraries and/or materials.</p>
 
-<p-panel header="Angular"> Copyright (c) 2010-2022 Google LLC. http://angular.io/license </p-panel>
-<p-panel header="PrimeNG"> Copyright (c) 2009-2021 PrimeTek </p-panel>
+<p-panel header="Angular" [style]="{ 'margin-bottom': '1rem' }">
+  <p>Copyright (c) 2010-2022 Google LLC. http://angular.io/license</p>
+  <p>Angular is an application design framework and development platform for creating efficient and sophisticated single-page apps.</p>
+</p-panel>
+<p-panel header="PrimeNG" [style]="{ 'margin-bottom': '1rem' }">
+  <p>Copyright (c) 2009-2021 PrimeTek.</p>
+  <p>PrimeNG is a rich set of open source native Angular UI components.</p>
+</p-panel>
+<p-panel header="発光大王堂" [style]="{ 'margin-bottom': '1rem' }">
+  <p>Copyright (c) 2010 hakko-daiodo.com All rights reserved.</p>
+  <p>Favicon image materials.</p>
+</p-panel>

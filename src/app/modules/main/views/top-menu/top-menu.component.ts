@@ -9,6 +9,8 @@ import { NGXLogger } from 'ngx-logger';
 export class TopMenuComponent implements OnInit {
   @Input() title!: string;
 
+  @Input() subTitle?: string;
+
   @Input() isSignedIn!: boolean;
 
   @Output() toggleSideMenuEvent = new EventEmitter<boolean>();
