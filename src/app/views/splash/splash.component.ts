@@ -9,6 +9,8 @@ import { NGXLogger } from 'ngx-logger';
 export class SplashComponent {
   @Input() title?: string;
 
+  @Input() subTitle?: string;
+
   @Input() message?: string;
 
   constructor(private logger: NGXLogger) {

@@ -20,6 +20,8 @@ export class AppComponent implements OnInit {
 
   readonly title: string = AppInfo.title;
 
+  readonly subTitle: string = AppInfo.subTitle;
+
   @ViewChild('mainComponent', { read: ViewContainerRef })
   mainComponent!: ViewContainerRef;
 

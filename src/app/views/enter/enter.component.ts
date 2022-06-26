@@ -9,6 +9,8 @@ import { NGXLogger } from 'ngx-logger';
 export class EnterComponent {
   @Input() title?: string;
 
+  @Input() subTitle?: string;
+
   @Output() enterEvent = new EventEmitter<boolean>();
 
   constructor(private logger: NGXLogger) {
