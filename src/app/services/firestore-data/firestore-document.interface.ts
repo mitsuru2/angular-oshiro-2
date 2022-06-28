@@ -6,10 +6,6 @@ export interface FsDocumentBase {
   name: string;
 }
 
-export interface FsDocumentBaseWithStringIndex extends FsDocumentBase {
-  index: string;
-}
-
 export interface FsDocumentBaseWithOrder extends FsDocumentBase {
   order: number;
 }
@@ -22,85 +18,198 @@ export interface FsDocumentBaseWithCode extends FsDocumentBase {
 /**
  * Practical data types.
  */
-export interface FsAbility extends FsDocumentBase {
-  type: string;
-  descriptions: string[];
-  keiryakuInterval?: number;
-  keiryakuCost?: number;
-  tokenLayouts?: string[];
+export class FsAbility implements FsDocumentBase {
+  id = '';
+
+  name = '';
+
+  type: string = '';
+
+  descriptions: string[] = [];
+
+  interval: number = 0;
+
+  cost: number = 0;
+
+  tokenLayouts: string[] = [];
 }
 
-export interface FsAbilityType extends FsDocumentBaseWithOrder {}
+export class FsAbilityType implements FsDocumentBaseWithOrder {
+  id = '';
 
-export interface FsCharacterTag extends FsDocumentBase {
-  characters: string[];
+  name = '';
+
+  order = 0;
 }
 
-export interface FsCharacterType extends FsDocumentBaseWithCode {
-  weaponTypes: string[];
-  geographTypes: string[];
-  regions?: string[];
-  isCostCalcEnable: boolean;
-  isKaichikuEnable: boolean;
-  hasSubTypes: boolean;
-  subTypes?: FsSubCharacterType[];
+export class FsCharacterTag implements FsDocumentBase {
+  id = '';
+
+  name = '';
+
+  characters: string[] = [];
 }
 
-export interface FsSubCharacterType extends FsDocumentBaseWithCode {}
+export class FsCharacterType implements FsDocumentBaseWithCode {
+  id = '';
+
+  name = '';
+
+  code = '';
+
+  count = 0;
+
+  weaponTypes: string[] = [];
+
+  geographTypes: string[] = [];
+
+  regions: string[] = [];
+
+  isCostCalcEnable: boolean = false;
+
+  isKaichikuEnable: boolean = false;
+
+  hasSubTypes: boolean = false;
+
+  subTypes: FsSubCharacterType[] = [];
+}
+
+export class FsSubCharacterType implements FsDocumentBaseWithCode {
+  id = '';
+
+  name = '';
+
+  code = '00';
+
+  count = 0;
+}
 
 export const FsCharacterRarerityMax = 7;
 
-export interface FsCharacter extends FsDocumentBase {
-  index: string;
-  type: string;
-  subType?: string;
-  rarerity: number;
-  weaponType: string;
-  geographTypes: string[];
-  region?: string;
-  cost: number;
-  costKai?: number;
-  abilities?: string[];
-  abilitiesKai?: string[];
-  voiceActors?: string[];
-  illustrators?: string[];
-  motifWeapons?: string[];
-  motifFacilities?: string[];
-  tags?: string[];
+export class FsCharacter implements FsDocumentBase {
+  id = '';
+
+  name = '';
+
+  index: string = '';
+
+  type: string = '';
+
+  subType: string = '';
+
+  rarerity: number = 0;
+
+  weaponType: string = '';
+
+  geographTypes: string[] = [];
+
+  region: string = '';
+
+  cost: number = 0;
+
+  costKai: number = 0;
+
+  abilities: string[] = [];
+
+  abilitiesKai: string[] = [];
+
+  voiceActors: string[] = [];
+
+  illustrators: string[] = [];
+
+  motifWeapons: string[] = [];
+
+  motifFacilities: string[] = [];
+
+  tags: string[] = [];
 }
 
-export interface FsFacilityType extends FsDocumentBaseWithCode {}
+export class FsFacilityType implements FsDocumentBaseWithCode {
+  id = '';
+
+  name = '';
+
+  code = '';
+
+  count = 0;
+}
 
 export const FsFacilityRarerityMax = 5;
 
-export interface FsFacility extends FsDocumentBase {
-  type: string;
-  rarerity: number;
-  descriptions?: string[];
-  effects?: string[];
-  details?: string[];
+export class FsFacility implements FsDocumentBase {
+  id = '';
+
+  name = '';
+
+  type: string = '';
+
+  rarerity: number = 0;
+
+  descriptions: string[] = [];
+
+  effects: string[] = [];
+
+  details: string[] = [];
 }
 
-export interface FsGeographType extends FsDocumentBaseWithOrder {}
+export class FsGeographType implements FsDocumentBaseWithOrder {
+  id = '';
 
-export interface FsIllustrator extends FsDocumentBase {}
+  name = '';
 
-export interface FsRegion extends FsDocumentBaseWithOrder {}
+  order = 0;
+}
 
-export interface FsVoiceActor extends FsDocumentBase {}
+export class FsIllustrator implements FsDocumentBase {
+  id = '';
 
-export interface FsWeaponType extends FsDocumentBaseWithCode {
-  baseCost: number;
+  name = '';
+}
+
+export class FsRegion implements FsDocumentBaseWithOrder {
+  id = '';
+
+  name = '';
+
+  order = 0;
+}
+
+export class FsVoiceActor implements FsDocumentBase {
+  id = '';
+
+  name = '';
+}
+
+export class FsWeaponType implements FsDocumentBaseWithCode {
+  id = '';
+
+  name = '';
+
+  code = '';
+
+  count = 0;
+
+  baseCost: number = 0;
 }
 
 export const FsWeaponRarerityMax = 5;
 
-export interface FsWeapon extends FsDocumentBase {
-  type: string;
-  rarerity: number;
-  descriptions: string[];
-  attack: number;
-  attackKai?: number;
-  effects: string[];
-  effectsKai?: string[];
+export class FsWeapon implements FsDocumentBase {
+  id = '';
+
+  name = '';
+
+  type: string = '';
+
+  rarerity: number = 0;
+
+  descriptions: string[] = [];
+
+  attack: number = 0;
+
+  attackKai: number = 0;
+
+  effects: string[] = [];
+
+  effectsKai: string[] = [];
 }

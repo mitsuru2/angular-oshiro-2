@@ -5,7 +5,7 @@ import {
   FsWeaponRarerityMax,
   FsWeaponType,
 } from 'src/app/services/firestore-data/firestore-document.interface';
-import { NewWeaponFormMode, NewWeaponFormResult } from './new-weapon-form.interface';
+import { NewWeaponFormContent, NewWeaponFormMode, NewWeaponFormResult } from './new-weapon-form.interface';
 
 @Component({
   selector: 'app-new-weapon-form',
@@ -175,14 +175,18 @@ export class NewWeaponFormComponent implements OnChanges {
 
       // Make weapon data to be returned.
       result.canceled = false;
-      result.type = this.selectedType;
-      result.name = this.inputName;
-      result.rarerity = this.selectedRarerity;
-      result.attack = this.inputAttack;
-      result.attackKai = this.inputAttackKai;
-      result.descriptions = this.inputDescriptions.filter((text) => text.length > 0);
-      result.effects = this.inputEffects.filter((text) => text.length > 0);
-      result.effectsKai = this.inputEffectsKai.filter((text) => text.length > 0);
+      const content = new NewWeaponFormContent();
+      content.type = this.selectedType;
+      content.name = this.inputName;
+      content.rarerity = this.selectedRarerity;
+      content.attack = this.inputAttack;
+      if (content.rarerity === 4) {
+        content.attackKai = this.inputAttackKai;
+      }
+      content.descriptions = this.inputDescriptions.filter((text) => text.length > 0);
+      content.effects = this.inputEffects.filter((text) => text.length > 0);
+      content.effectsKai = this.inputEffectsKai.filter((text) => text.length > 0);
+      result.content = content;
     }
 
     return result;

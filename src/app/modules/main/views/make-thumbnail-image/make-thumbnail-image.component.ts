@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
 import { HtmlCanvas } from '../../utils/html-canvas/html-canvas.utility';
 import { loadImageFile } from '../../utils/image-file/image-file.utility';
@@ -9,8 +9,16 @@ import { MakeThumbnailImageResult, WH, XY } from './make-thumbnail-image.interfa
   templateUrl: './make-thumbnail-image.component.html',
   styleUrls: ['./make-thumbnail-image.component.scss'],
 })
-export class MakeThumbnailImageComponent implements OnChanges, AfterViewChecked {
-  className = 'MakeThumbnailImageComponent';
+export class MakeThumbnailImageComponent implements OnChanges, AfterViewInit {
+  readonly className = 'MakeThumbnailImageComponent';
+
+  /** Status. */
+  @Input() dialogMode: boolean = false;
+
+  @Input() shown: boolean = false;
+
+  /** Timer */
+  timerId: any; // For interval timer control.
 
   /** Appearance. */
   @Input() okLabel = 'OK';
@@ -22,9 +30,7 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewChecked 
   /** Input image file. */
   @Input() inputFile!: File;
 
-  inputImage = new Image();
-
-  isImageLoaded = false;
+  inputImage?: any;
 
   /** Thumbnail and canvas size. */
   @Input() thumbSize: WH = { w: 200, h: 200 }; // px.
@@ -39,8 +45,9 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewChecked 
   scaledImageSize: WH = { w: 0, h: 0 };
 
   /** Canvas. */
-  // canvas?: HTMLCanvasElement;
   canvas?: HtmlCanvas;
+
+  readonly canvasId = 'MakeThumbnailImage_Preview';
 
   /** Mouse */
   isMouseDragging = false;
@@ -56,63 +63,90 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewChecked 
   //============================================================================
   // Class methods.
   //
+  /**
+   * Constructor. Nothing to do.
+   * @param logger NGX logger instance injection.
+   */
   constructor(private logger: NGXLogger) {
     this.logger.trace(`new ${this.className}()`);
   }
 
-  ngOnChanges() {
+  /**
+   * Lifecycle hook called on input parameter changes.
+   * (1) Under the dialog mode, it init canvas element after the dialog is shown.
+   * (2) It loads input image.
+   * @param changes Change information of input parameters.
+   */
+  ngOnChanges(changes: SimpleChanges): void {
     const location = `${this.className}.ngOnChanges()`;
-    this.logger.trace(location);
 
-    if (!this.inputFile) {
-      return;
+    // CASE: The shown flag is changed.
+    // If it's in dialog mode, start interval to get canvas.
+    if (changes['shown']) {
+      this.logger.trace(location, 'shown', this.shown);
+      const shownChange = changes['shown'];
+      if (shownChange.previousValue === false && shownChange.currentValue === true) {
+        if (this.dialogMode) {
+          this.timerId = setInterval(() => {
+            this.canvas = HtmlCanvas.createCanvas(this.canvasId);
+            if (this.canvas) {
+              clearInterval(this.timerId);
+              this.initCanvas(this.canvas);
+            } else {
+              this.logger.info(location, 'Canvas is not ready.');
+            }
+          }, 200);
+        }
+      }
+      if (shownChange.previousValue === true && shownChange.currentValue === false) {
+        clearInterval(this.timerId);
+      }
     }
 
-    // Update scale info.
-    //this.onImageScaleInputChange({ value: this.imageScale });
-
-    // Load image data.
-    this.loadImage(this.inputFile);
-  }
-
-  ngAfterViewChecked() {
-    const location = `${this.className}.ngAfterViewChecked()`;
-
-    if (!this.canvas) {
-      this.canvas = HtmlCanvas.createCanvas('MakeThumbnailImage_Preview');
-      if (this.canvas) {
-        this.logger.info(location, 'Canvas is initialized.');
-        this.canvas.width = this.canvasSize.w;
-        this.canvas.height = this.canvasSize.h;
-        if (this.isImageLoaded) {
-          this.onImageScaleInputChange({ value: this.imageScale });
-          this.draw();
-        }
-
-        // Register event listener.
-        this.canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
-        this.canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
-        this.canvas.addEventListener('mouseout', this.onMouseOut.bind(this));
-        this.canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
+    // CASE: The source image file is changed.
+    // It load input source image.
+    if (changes['inputFile']) {
+      this.logger.trace(location, 'inputFile');
+      if (this.inputFile) {
+        this.loadImage(this.inputFile);
       }
     }
   }
 
-  onImageScaleInputChange(event: any) {
-    const location = `${this.className}.onImageScaleInputChange()`;
-    this.logger.trace(location, { value: event.value });
+  /**
+   * Lifecycle hook called on view is initialized.
+   * If it is normal page (not dialog), canvas is available after view is initialized.
+   */
+  ngAfterViewInit(): void {
+    if (!this.dialogMode) {
+      this.canvas = HtmlCanvas.createCanvas(this.canvasId);
+      if (this.canvas) {
+        this.initCanvas(this.canvas);
+      }
+    }
+  }
 
+  /**
+   * Event handler of the image scale input.
+   * It calculate image position and image size after scaling.
+   * @param event Number input event.
+   */
+  onImageScaleInputChange(event: any) {
     // Calculate image position.
     this.imagePos = this.calcScaledImagePos(event.value, this.scaledImageSize, this.imagePos);
 
     // Calculate scaled image size.
     this.scaledImageSize = this.calcScaledImageSize(event.value);
 
-    if (this.isImageLoaded) {
+    if (this.inputImage) {
       this.draw();
     }
   }
 
+  /**
+   * OK button click event handler.
+   * It makes thumbnail image and returns it to the parent component.
+   */
   onOkClick() {
     const location = `${this.className}.onOkClick()`;
     this.logger.trace(location);
@@ -122,6 +156,10 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewChecked 
     this.thumbResult.emit({ canceled: false, thumb: this.thumbData });
   }
 
+  /**
+   * Cancel button click event handler.
+   * It returns the canceled flag.
+   */
   onCancelClick() {
     const location = `${this.className}.onCancelClick()`;
     this.logger.trace(location);
@@ -132,12 +170,35 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewChecked 
   //============================================================================
   // Private methods.
   //
+  //----------------------------------------------------------------------------
+  // Set up functions.
+  //
+  private initCanvas(canvas: HtmlCanvas) {
+    const location = `${this.className}.initCanvas()`;
+    this.logger.trace(location);
+
+    // Set canvas size.
+    canvas.width = this.canvasSize.w;
+    canvas.height = this.canvasSize.h;
+
+    // Register event listener.
+    canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
+    canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
+    canvas.addEventListener('mouseout', this.onMouseOut.bind(this));
+    canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
+
+    // Draw if image is also available.
+    if (this.inputImage) {
+      this.onImageScaleInputChange({ value: this.imageScale });
+      this.draw();
+    }
+  }
+
   private loadImage(inputFile: File) {
     const promise = loadImageFile(inputFile);
     promise.then((result) => {
       this.inputImage = result;
       this.imagePos.x = (this.canvasSize.w - this.inputImage.width) / 2;
-      this.isImageLoaded = true;
       this.scaledImageSize = this.calcScaledImageSize(100);
       if (this.canvas) {
         this.onImageScaleInputChange({ value: this.imageScale });
@@ -146,9 +207,10 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewChecked 
     });
   }
 
+  //----------------------------------------------------------------------------
+  // Drawing methods.
+  //
   private draw() {
-    const location = `${this.className}.draw()`;
-
     if (this.canvas) {
       this.canvas.clear();
       this.drawImage();
@@ -157,13 +219,7 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewChecked 
     }
   }
 
-  private clearCanvas(context: CanvasRenderingContext2D) {
-    context.clearRect(0, 0, this.canvasSize.w, this.canvasSize.h);
-  }
-
   private drawImage() {
-    const location = `${this.className}.drawImage()`;
-
     if (this.canvas) {
       this.canvas.drawImage(
         this.inputImage,
@@ -173,22 +229,27 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewChecked 
         this.scaledImageSize.h
       );
     }
-    this.logger.debug(location, { width: this.inputImage.width, height: this.inputImage.height }, this.scaledImageSize);
   }
 
+  /**
+   * Fill margin area with transparent color.
+   * Margin area is separated four rectangles like below.
+   * +-----------------+
+   * |        1        |
+   * +---+---------+---+
+   * |   |         |   |
+   * | 2 |         | 3 |
+   * |   |         |   |
+   * +---+---------+---+
+   * |        4        |
+   * +-----------------+
+   */
   private drawMarginFrame() {
-    // Set color.
-    // 50% transparent gray.
     if (this.canvas) {
-      this.canvas.fillStyle = 'rgba(128, 128, 128, 0.5)';
+      this.canvas.fillStyle = 'rgba(128, 128, 128, 0.5)'; // 50% gray.
       this.canvas.drawRect(0, 0, this.canvasSize.w, this.margin.h);
       this.canvas.drawRect(0, this.margin.h, this.margin.w, this.canvasSize.h - this.margin.h * 2);
-      this.canvas.drawRect(
-        this.canvasSize.w - this.margin.w,
-        this.margin.h,
-        this.margin.w,
-        this.canvasSize.h - this.margin.h * 2
-      );
+      this.canvas.drawRect(this.canvasSize.w - this.margin.w, this.margin.h, this.margin.w, this.canvasSize.h - this.margin.h * 2); // eslint-disable-line
       this.canvas.drawRect(0, this.canvasSize.h - this.margin.h, this.canvasSize.w, this.margin.h);
     }
   }
@@ -201,24 +262,22 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewChecked 
     }
   }
 
+  //----------------------------------------------------------------------------
+  // Mouse event handlers.
+  //
   private onMouseDown() {
-    //const location = `${this.className}.onMouseDown()`;
     this.isMouseDragging = true;
   }
 
   private onMouseUp() {
-    //const location = `${this.className}.onMouseUp()`;
     this.isMouseDragging = false;
   }
 
   private onMouseOut() {
-    //const location = `${this.className}.onMouseOut()`;
     this.isMouseDragging = false;
   }
 
   private onMouseMove(event: MouseEvent) {
-    //const location = `${this.className}.onMouseMove()`;
-
     if (this.isMouseDragging) {
       this.imagePos.x += event.movementX;
       this.imagePos.y += event.movementY;
@@ -226,6 +285,9 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewChecked 
     }
   }
 
+  //----------------------------------------------------------------------------
+  // Image scaling.
+  //
   private calcScaledImageSize(scale: number): WH {
     const width = Math.ceil((this.inputImage.width * scale) / 100);
     const height = Math.ceil((this.inputImage.height * scale) / 100);
@@ -244,6 +306,9 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewChecked 
     return { x: this.canvasSize.w / 2 - scaledCenterX, y: this.canvasSize.h / 2 - scaledCenterY };
   }
 
+  //----------------------------------------------------------------------------
+  // Making output data.
+  //
   private makeThumbnailImageData() {
     const location = `${this.className}.makeThumbnailImageData()`;
 

@@ -21,7 +21,10 @@ import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-
 import { FsCollectionName } from 'src/app/services/firestore-data/firestore-collection-name.enum';
 import { ref, Storage, uploadBytes } from '@angular/fire/storage';
 import { AbstractControl, NG_VALIDATORS, ValidationErrors, Validator, ValidatorFn } from '@angular/forms';
-import { NewCharacterFormResult } from '../../views/new-character-form/new-character-form.interface';
+import {
+  NewCharacterFormContent,
+  NewCharacterFormResult,
+} from '../../views/new-character-form/new-character-form.interface';
 
 @Component({
   selector: 'app-new-character',
@@ -76,7 +79,7 @@ export class NewCharacterComponent implements OnInit {
   isDialogShow = false;
 
   /** New character form. */
-  newCharacterFormResult?: NewCharacterFormResult;
+  newCharacterFormContent = new NewCharacterFormContent();
 
   /** New character confirmation dialog. */
   showConfirmationDialog = false;
@@ -109,8 +112,8 @@ export class NewCharacterComponent implements OnInit {
     this.logger.trace(location, { formResult: formResult });
 
     /** If valid data input, open the confirmation dialog. */
-    if (!formResult.canceled) {
-      this.newCharacterFormResult = formResult;
+    if (!formResult.canceled && formResult.content) {
+      this.newCharacterFormContent = formResult.content;
       this.showConfirmationDialog = true;
     }
   }
@@ -128,215 +131,192 @@ export class NewCharacterComponent implements OnInit {
     }
 
     // Upload input data.
-    if (this.newCharacterFormResult) {
-      this.uploadCharacterInfo(this.newCharacterFormResult);
-    }
+    this.uploadCharacterInfo(this.newCharacterFormContent);
   }
 
   /**
    * Old codes from here.
    */
 
-  async submit() {
-    this.logger.trace(`NewCharacterComponent.submit()`);
+  // async submit() {
+  //   this.logger.trace(`NewCharacterComponent.submit()`);
 
-    if (this.selectedRarerity && this.selectedWeaponType) {
-      //const count = await this.firestore.incrementCounter(FsCollectionName.CharacterTypes, 0);
-      const count = 1;
+  //   if (this.selectedRarerity && this.selectedWeaponType) {
+  //     //const count = await this.firestore.incrementCounter(FsCollectionName.CharacterTypes, 0);
+  //     const count = 1;
 
-      const character: FsCharacter = {
-        id: '', // Auto ID.
-        index: `10-${('0000' + count.toString(16).toUpperCase()).slice(-4)}`,
-        name: this.inputName,
-        type: 'this.selectedCharacterType.id',
-        rarerity: this.selectedRarerity,
-        weaponType: this.selectedWeaponType.id,
-        geographTypes: [this.selectedGeographTypes[0].id],
-        region: '',
-        cost: 99,
-      };
-      this.logger.debug(character);
+  //     const character: FsCharacter = {
+  //       id: '', // Auto ID.
+  //       index: `10-${('0000' + count.toString(16).toUpperCase()).slice(-4)}`,
+  //       name: this.inputName,
+  //       type: 'this.selectedCharacterType.id',
+  //       rarerity: this.selectedRarerity,
+  //       weaponType: this.selectedWeaponType.id,
+  //       geographTypes: [this.selectedGeographTypes[0].id],
+  //       region: '',
+  //       cost: 99,
+  //     };
+  //     this.logger.debug(character);
 
-      const shiromusumeImageRef = ref(
-        this.storage,
-        `images/characters/${character.index}/${character.index}_shiromusume.png`
-      );
-      //uploadBytes(shiromusumeImageRef, this.shiromusumeFile).then((snp) => {
-      //  this.logger.debug('uploaded', snp);
-      //});
+  //     const shiromusumeImageRef = ref(
+  //       this.storage,
+  //       `images/characters/${character.index}/${character.index}_shiromusume.png`
+  //     );
+  //     //uploadBytes(shiromusumeImageRef, this.shiromusumeFile).then((snp) => {
+  //     //  this.logger.debug('uploaded', snp);
+  //     //});
 
-      //this.firestore.addData(FsCollectionName.Characters, character);
-    }
-  }
+  //     //this.firestore.addData(FsCollectionName.Characters, character);
+  //   }
+  // }
 
-  onFileChange(id: string, event: Event) {
-    this.logger.trace(`${this.className}.onFileChange()`);
+  // onFileChange(id: string, event: Event) {
+  //   this.logger.trace(`${this.className}.onFileChange()`);
 
-    const input = event.target as HTMLInputElement;
+  //   const input = event.target as HTMLInputElement;
 
-    if (!input.files) {
-      return;
-    }
+  //   if (!input.files) {
+  //     return;
+  //   }
 
-    this.shiromusumeFile = input.files[0];
+  //   this.shiromusumeFile = input.files[0];
 
-    const fileReader = new FileReader();
-    fileReader.onload = () => {
-      const canvas = this.shiromusumePreview.nativeElement as HTMLCanvasElement;
-      const context = canvas.getContext('2d');
-      const image = new Image();
-      image.src = fileReader.result as string;
-      image.onload = () => {
-        canvas.width = image.width;
-        canvas.height = image.height;
-        context?.drawImage(image, 0, 0);
-      };
-    };
-    fileReader.readAsDataURL(input.files[0]);
-  }
+  //   const fileReader = new FileReader();
+  //   fileReader.onload = () => {
+  //     const canvas = this.shiromusumePreview.nativeElement as HTMLCanvasElement;
+  //     const context = canvas.getContext('2d');
+  //     const image = new Image();
+  //     image.src = fileReader.result as string;
+  //     image.onload = () => {
+  //       canvas.width = image.width;
+  //       canvas.height = image.height;
+  //       context?.drawImage(image, 0, 0);
+  //     };
+  //   };
+  //   fileReader.readAsDataURL(input.files[0]);
+  // }
 
-  clearFile(id: string) {
-    this.logger.trace(`${this.className}.clearFile()`);
+  // clearFile(id: string) {
+  //   this.logger.trace(`${this.className}.clearFile()`);
 
-    this.shiromusumeFile = null;
-  }
+  //   this.shiromusumeFile = null;
+  // }
 
-  clearInputName() {
-    this.inputName = '';
-  }
+  // clearInputName() {
+  //   this.inputName = '';
+  // }
 
-  setSubGeographTypeInput(isShow: boolean) {
-    this.isShowSubGeographTypeInput = isShow;
+  // setSubGeographTypeInput(isShow: boolean) {
+  //   this.isShowSubGeographTypeInput = isShow;
 
-    if (isShow === false) {
-      if (this.selectedGeographTypes.length > 1) {
-        this.selectedGeographTypes.pop();
-        this.logger.info('NewCharacterCoponent.setSubGeographTypeInput() | 2nd geograph type info has been removed.');
-      }
-    }
-  }
+  //   if (isShow === false) {
+  //     if (this.selectedGeographTypes.length > 1) {
+  //       this.selectedGeographTypes.pop();
+  //       this.logger.info('NewCharacterCoponent.setSubGeographTypeInput() | 2nd geograph type info has been removed.');
+  //     }
+  //   }
+  // }
 
-  shiftGeographType() {
-    this.logger.trace('NewCharacterComponent.shiftGeographType()');
+  // shiftGeographType() {
+  //   this.logger.trace('NewCharacterComponent.shiftGeographType()');
 
-    if (this.selectedGeographTypes.length > 1) {
-      if (this.selectedGeographTypes[1] != undefined) {
-        this.selectedGeographTypes.shift();
-        this.isShowSubGeographTypeInput = false;
-      }
-    }
-  }
+  //   if (this.selectedGeographTypes.length > 1) {
+  //     if (this.selectedGeographTypes[1] != undefined) {
+  //       this.selectedGeographTypes.shift();
+  //       this.isShowSubGeographTypeInput = false;
+  //     }
+  //   }
+  // }
 
-  showDialog() {
-    this.logger.trace('showDialog()');
-    this.isDialogShow = true;
-  }
+  // showDialog() {
+  //   this.logger.trace('showDialog()');
+  //   this.isDialogShow = true;
+  // }
 
-  hideDialog() {
-    this.isDialogShow = false;
-    this.logger.trace('hideDialog()');
-  }
+  // hideDialog() {
+  //   this.isDialogShow = false;
+  //   this.logger.trace('hideDialog()');
+  // }
 
-  printStatus() {
-    this.logger.debug(this.isDialogShow);
-  }
+  // printStatus() {
+  //   this.logger.debug(this.isDialogShow);
+  // }
 
   //============================================================================
   // Private methods.
   //
-  private async uploadCharacterInfo(formResult: NewCharacterFormResult) {
+  private async uploadCharacterInfo(formContent: NewCharacterFormContent) {
     const location = `${this.className}.uploadCharacterInfo()`;
 
     // Make character info to be registered.
-    const character = this.makeCharacterInfo(formResult);
+    const character = this.makeCharacterInfo(formContent);
     let docId = '';
 
     // Check input voice actors.
-    for (let i = 0; i < formResult.voiceActors.length; ++i) {
+    if (formContent.voiceActor.name !== '') {
       // Add new data if not existing, and get document ID.
-      docId = await this.addDataAndGetDocumentId(FsCollectionName.VoiceActors, formResult.voiceActors[i]);
+      docId = await this.addDataAndGetDocumentId(FsCollectionName.VoiceActors, formContent.voiceActor);
 
       // Store document ID of voice actor.
-      if (!character.voiceActors) {
-        character.voiceActors = [];
-      }
       character.voiceActors.push(docId);
     }
 
     // Check input illustrators.
-    for (let i = 0; i < formResult.illustrators.length; ++i) {
+    if (formContent.illustrator.name !== '') {
       // Add new data if not existing, and get document ID.
-      docId = await this.addDataAndGetDocumentId(FsCollectionName.Illustrators, formResult.illustrators[i]);
+      docId = await this.addDataAndGetDocumentId(FsCollectionName.Illustrators, formContent.illustrator);
 
       // Store document ID of illustrator.
-      if (!character.illustrators) {
-        character.illustrators = [];
-      }
       character.illustrators.push(docId);
     }
 
     // Check input motif weapons.
-    for (let i = 0; i < formResult.motifWeapons.length; ++i) {
+    for (let i = 0; i < formContent.motifWeapons.length; ++i) {
       // Add new data if not existing, and get document ID.
-      docId = await this.addDataAndGetDocumentId(FsCollectionName.Weapons, formResult.motifWeapons[i]);
+      docId = await this.addDataAndGetDocumentId(FsCollectionName.Weapons, formContent.motifWeapons[i]);
 
       // Store document ID of motif weapons.
-      if (!character.motifWeapons) {
-        character.motifWeapons = [];
-      }
       character.motifWeapons.push(docId);
     }
 
     // Check input motif facilities.
-    for (let i = 0; i < formResult.motifFacilities.length; ++i) {
+    for (let i = 0; i < formContent.motifFacilities.length; ++i) {
       // Add new data if not existing, and get document ID.
-      docId = await this.addDataAndGetDocumentId(FsCollectionName.Facilities, formResult.motifFacilities[i]);
+      docId = await this.addDataAndGetDocumentId(FsCollectionName.Facilities, formContent.motifFacilities[i]);
 
       // Store document ID of motif facilities.
-      if (!character.motifFacilities) {
-        character.motifFacilities = [];
-      }
       character.motifFacilities.push(docId);
     }
 
     // Check input character tags.
-    for (let i = 0; i < formResult.characterTags.length; ++i) {
+    for (let i = 0; i < formContent.characterTags.length; ++i) {
       // Add new data if not existing, and get document ID.
-      docId = await this.addDataAndGetDocumentId(FsCollectionName.CharacterTags, formResult.characterTags[i]);
+      docId = await this.addDataAndGetDocumentId(FsCollectionName.CharacterTags, formContent.characterTags[i]);
 
       // Store document ID of character tags.
-      if (!character.tags) {
-        character.tags = [];
-      }
       character.tags.push(docId);
     }
 
     // Check input abilities.
-    for (let i = 0; i < formResult.abilities.length; ++i) {
+    for (let i = 0; i < formContent.abilities.length; ++i) {
       // Add new data if not existing, and get document ID.
-      docId = await this.addDataAndGetDocumentId(FsCollectionName.Abilities, formResult.abilities[i]);
+      docId = await this.addDataAndGetDocumentId(FsCollectionName.Abilities, formContent.abilities[i]);
 
       // Store document ID of ability.
-      if (!character.abilities) {
-        character.abilities = [];
-      }
       character.abilities.push(docId);
     }
 
     // Check input abilities (kaichiku).
-    for (let i = 0; i < formResult.abilitiesKai.length; ++i) {
+    for (let i = 0; i < formContent.abilitiesKai.length; ++i) {
       // Add new data if not existing, and get document ID.
-      docId = await this.addDataAndGetDocumentId(FsCollectionName.Abilities, formResult.abilitiesKai[i]);
+      docId = await this.addDataAndGetDocumentId(FsCollectionName.Abilities, formContent.abilitiesKai[i]);
 
       // Store document ID of ability.
-      if (!character.abilitiesKai) {
-        character.abilitiesKai = [];
-      }
       character.abilitiesKai.push(docId);
     }
 
     // Make character index.
-    character.index = await this.makeNewCharacterIndex(formResult.characterType, formResult.subCharacterType);
+    character.index = await this.makeNewCharacterIndex(formContent.characterType, formContent.subCharacterType);
     this.logger.info(location, { character: character });
 
     // Upload character info.
@@ -360,38 +340,21 @@ export class NewCharacterComponent implements OnInit {
     }
   }
 
-  private makeCharacterInfo(formResult?: NewCharacterFormResult): FsCharacter {
+  private makeCharacterInfo(formContent?: NewCharacterFormContent): FsCharacter {
     // Make blank character info.
-    const character: FsCharacter = {
-      id: '',
-      index: '',
-      type: '',
-      name: '',
-      rarerity: 0,
-      weaponType: '',
-      geographTypes: [],
-      cost: 0,
-    };
+    const character = new FsCharacter();
 
     // If form result is available, copy a part of information.
-    if (formResult) {
-      character.type = formResult.characterType.id;
-      if (formResult.subCharacterType) {
-        character.subType = formResult.subCharacterType.id;
-      }
-      character.name = formResult.characterName;
-      character.rarerity = formResult.rarerity;
-      character.weaponType = formResult.weaponType.id;
-      for (let i = 0; i < formResult.geographTypes.length; ++i) {
-        character.geographTypes.push(formResult.geographTypes[i].id);
-      }
-      if (formResult.region) {
-        character.region = formResult.region.id;
-      }
-      character.cost = formResult.cost;
-      if (formResult.costKai) {
-        character.costKai = formResult.costKai;
-      }
+    if (formContent) {
+      character.type = formContent.characterType.id;
+      character.subType = formContent.subCharacterType.id;
+      character.name = formContent.characterName;
+      character.rarerity = formContent.rarerity;
+      character.weaponType = formContent.weaponType.id;
+      character.geographTypes = formContent.geographTypes.map((item) => item.id);
+      character.region = formContent.region.id;
+      character.cost = formContent.cost;
+      character.costKai = formContent.costKai;
     }
 
     return character;
@@ -418,22 +381,21 @@ export class NewCharacterComponent implements OnInit {
     return docId;
   }
 
-  private async makeNewCharacterIndex(type: FsCharacterType, subType?: FsSubCharacterType): Promise<string> {
-    const location = `${this.className}.makeNewCharacterIndex()`;
+  private async makeNewCharacterIndex(type: FsCharacterType, subType: FsSubCharacterType): Promise<string> {
+    // const location = `${this.className}.makeNewCharacterIndex()`;
     let index = '';
     let code = type.code;
-    let subCode = subType ? subType.code : '00';
+    let subCode = subType.code;
     let count = 0;
 
     // Increment and get character type count.
     count = await this.firestore.incrementCounter(FsCollectionName.CharacterTypes, type.id);
-    if (subType) {
+    if (subCode !== '00') {
       count = await this.firestore.incrementCounter(FsCollectionName.CharacterTypes, type.id, 'SubTypes', subType.id);
     }
 
     // Make string index.
     index = `${code}-${subCode}-${(count - 1).toString(16).padStart(4, '0')}`;
-    this.logger.info(location, { index: index });
 
     return index;
   }

@@ -5,7 +5,7 @@ import {
   FsFacilityRarerityMax,
   FsFacilityType,
 } from 'src/app/services/firestore-data/firestore-document.interface';
-import { facilityFormMode, NewFacilityFormResult } from './new-facility-form.interafce';
+import { NewFacilityFormContent, NewFacilityFormMode, NewFacilityFormResult } from './new-facility-form.interafce';
 
 @Component({
   selector: 'app-new-facility-form',
@@ -19,11 +19,11 @@ export class NewFacilityFormComponent implements OnChanges {
   private className = 'NewFacilityFormComponent';
 
   /** Appearance. */
-  @Input() mode: facilityFormMode = facilityFormMode.normal;
+  @Input() mode = NewFacilityFormMode.normal;
 
-  minimumMode = facilityFormMode.minimum;
+  minimumMode = NewFacilityFormMode.minimum;
 
-  normalMode = facilityFormMode.normal;
+  normalMode = NewFacilityFormMode.normal;
 
   @Input() maxWidth = 'auto';
 
@@ -152,7 +152,7 @@ export class NewFacilityFormComponent implements OnChanges {
 
   private makeFacilityInfo(canceled: boolean) {
     const location = `${this.className}.makeFacilityInfo()`;
-    const result: NewFacilityFormResult = <NewFacilityFormResult>{};
+    const result: NewFacilityFormResult = new NewFacilityFormResult();
 
     // When the form is canceled, it returns canceled flag only.
     if (canceled) {
@@ -174,12 +174,14 @@ export class NewFacilityFormComponent implements OnChanges {
 
       // Make weapon data to be returned.
       result.canceled = false;
-      result.type = this.selectedType;
-      result.name = this.inputName;
-      result.rarerity = this.selectedRarerity;
-      result.descriptions = this.inputDescriptions.filter((text) => text.length > 0);
-      result.effects = this.inputEffects.filter((text) => text.length > 0);
-      result.details = this.inputDetails.filter((text) => text.length > 0);
+      const content = new NewFacilityFormContent();
+      content.type = this.selectedType;
+      content.name = this.inputName;
+      content.rarerity = this.selectedRarerity;
+      content.descriptions = this.inputDescriptions.filter((text) => text.length > 0);
+      content.effects = this.inputEffects.filter((text) => text.length > 0);
+      content.details = this.inputDetails.filter((text) => text.length > 0);
+      result.content = content;
     }
 
     return result;

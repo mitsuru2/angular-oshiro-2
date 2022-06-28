@@ -14,6 +14,8 @@ import { FirestoreDataService } from './services/firestore-data/firestore-data.s
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
+  readonly className = 'AppComponent';
+
   appStatusValues = AppStatus;
 
   statusMessage: string = '';
@@ -35,7 +37,8 @@ export class AppComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<boolean> {
-    this.logger.trace('AppComponent.ngOnInit()');
+    const location = `${this.className}.ngOnInit()`;
+    this.logger.trace(location);
 
     try {
       await Promise.all([
@@ -53,7 +56,7 @@ export class AppComponent implements OnInit {
         this.firestore.load(FsCollectionName.Weapons),
         this.firestore.load(FsCollectionName.WeaponTypes),
       ]);
-      this.logger.info(`AppComponent: All const data has been loaded.`);
+      this.logger.info(location, 'All const data has been loaded.');
       this.appNavi.status = AppStatus.Loaded;
     } catch {
       this.logger.error('error occurred.');

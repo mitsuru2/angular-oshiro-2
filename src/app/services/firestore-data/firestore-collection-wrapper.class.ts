@@ -17,8 +17,6 @@ import { FsDocumentBase } from './firestore-document.interface';
 import { doc } from '@firebase/firestore';
 
 export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
-  private className: string;
-
   private collection: CollectionReference<T>;
 
   data: FsDocumentBase[];
@@ -29,10 +27,7 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
 
   private unsubscribe?: Unsubscribe;
 
-  constructor(private fs: Firestore, private logger: NGXLogger, private name: FsCollectionName) {
-    this.className = `FirestoreCollectionWrapper`;
-    this.logger.trace(`new ${this.className}()`, { name: name });
-
+  constructor(private fs: Firestore, private name: FsCollectionName) {
     this.collection = collection(this.fs, name) as CollectionReference<T>;
     this.data = [];
     this.isLoaded = false;
@@ -45,9 +40,6 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
    * @returns Promise<number>. Data length.
    */
   async load(): Promise<number> {
-    const location = `${this.className}.load()`;
-    this.logger.trace(`${location}`, { name: this.name });
-
     // Clear current data.
     while (this.data.length > 0) {
       this.data.pop();
@@ -66,12 +58,7 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
         this.data.push(tmp);
       });
       this.isLoaded = true;
-      this.logger.info(`${location} Data loading finished.`, {
-        name: this.name,
-        length: Object.keys(this.data).length,
-      });
     } catch (error) {
-      this.logger.error(`${location} Data loading failed.`, { name: this.name }, error);
       throw error;
     }
 
@@ -80,9 +67,6 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
   }
 
   async loadSub<TSub extends FsDocumentBase>(docId: string, subName: string): Promise<TSub[]> {
-    const location = `${this.className}.loadSub()`;
-    this.logger.trace(location, { name: this.name, docId: docId, subName: subName });
-
     const result: TSub[] = [];
 
     // Get data.
@@ -93,19 +77,12 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
       if (snapshot.empty) {
         throw Error(`${location} Empty data.`);
       }
-      snapshot.forEach((doc) => {
-        const tmp = doc.data() as TSub;
-        tmp.id = doc.id;
+      snapshot.forEach((document) => {
+        const tmp = document.data() as TSub;
+        tmp.id = document.id;
         result.push(tmp);
       });
-      this.logger.info(`${location} Data loading finished.`, {
-        name: this.name,
-        docId: docId,
-        subName: subName,
-        length: Object.keys(this.data).length,
-      });
     } catch (error) {
-      this.logger.error(`${location} Data loading failed.`, { name: this.name, docId: docId, subName: subName }, error);
       throw error;
     }
 
@@ -117,9 +94,6 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
    * ATTENTION: Don't forget to do stop listening by stopListening().
    */
   startListening(errorFn?: (e: Error) => void): void {
-    const location = `${this.className}.startListening()`;
-    this.logger.trace(`${location}`, { name: this.name });
-
     this.isListening = true;
 
     const q = query(this.collection, orderBy('index'));
@@ -134,22 +108,17 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
         while (this.data.length > 0) {
           this.data.pop();
         }
-        snapshot.forEach((doc) => {
-          const tmp = doc.data();
-          tmp.id = doc.id;
+        snapshot.forEach((document) => {
+          const tmp = document.data();
+          tmp.id = document.id;
           this.data.push(tmp);
         });
         this.isLoaded = true;
-        this.logger.info(`${location} | Listen data received.`, {
-          name: this.name,
-          length: Object.keys(this.data).length,
-        });
       },
 
       // Error handler.
       // 'isListening' flag is cleared because it will stop listening automatically by error.
       (error) => {
-        this.logger.error('${location} | Data listening failed.', { name: this.name }, error);
         this.isListening = false;
         if (errorFn != null) {
           errorFn(error);
@@ -162,9 +131,6 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
    * It stops listening.
    */
   stopListening(): void {
-    const location = `${this.className}.stopListening()`;
-    this.logger.trace(`${location}`, { name: this.name });
-
     if (this.unsubscribe != null && this.isListening === true) {
       this.unsubscribe();
       this.isListening = false;
@@ -178,9 +144,6 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
    * @returns Promise<string>. New document ID.
    */
   async add(data: T): Promise<string> {
-    const location = `${this.className}.add()`;
-    this.logger.trace(location, { name: this.name, data: data });
-
     let docId = '';
 
     try {
@@ -193,11 +156,6 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
         // It skip to add the target data because the data is already registered.
         for (let i = 0; i < this.data.length; ++i) {
           if (this.data[i].name === data.name) {
-            this.logger.warn(location, 'Target data is already existing. Data adding is skipped.', {
-              collection: this.name,
-              id: this.data[i].id,
-              name: this.data[i].name,
-            });
             docId = this.data[i].id;
             return;
           }
@@ -210,12 +168,11 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
         // Add target data to the server.
         const docRef = await addDoc(this.collection, tmp);
         docId = docRef.id;
-        this.logger.info(location, 'Target data is added.', { collection: this.name, id: docId, name: data.name });
 
         return;
       });
     } catch (error) {
-      this.logger.error(location, error);
+      throw error;
     }
 
     return docId;
@@ -230,9 +187,6 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
    * @returns Document ID.
    */
   async pushToListField<TField>(docId: string, fieldName: string, value: TField): Promise<string> {
-    const location = `${this.className}.pushToListField()`;
-    this.logger.trace(location, { name: this.name, docId: docId, fieldName: fieldName, value: value });
-
     // Get document reference.
     const docRef = doc(this.fs, `${this.name}/${docId}`);
 
@@ -242,10 +196,9 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
       // Throw error if the target document is not existing.
       const docBody = await transaction.get(docRef);
       if (!docBody.exists()) {
-        this.logger.error(
-          `FirestoreDataService.incrementCounter() | Document was not found. { path: ${name}/${docId} }`
+        throw Error(
+          `FirestoreDataService.incrementCounter() | Document was not found. { path: ${this.name}/${docId} }`
         );
-        throw Error(`FirestoreDataService.incrementCounter() | Document was not found. { path: ${name}/${docId} }`);
       }
 
       // Update specified field.

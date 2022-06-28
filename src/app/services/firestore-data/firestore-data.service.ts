@@ -45,19 +45,19 @@ export class FirestoreDataService {
   private className = 'FirestoreDataService';
 
   collections: { [key in FsCollectionName]: FirestoreCollectionWrapper<any> } = {
-    [FsCollectionName.Abilities]:      new FirestoreCollectionWrapper<FsAbility>       (this.fs, this.logger, FsCollectionName.Abilities), // eslint-disable-line
-    [FsCollectionName.AbilityTypes]:   new FirestoreCollectionWrapper<FsAbilityType>   (this.fs, this.logger, FsCollectionName.AbilityTypes), // eslint-disable-line
-    [FsCollectionName.CharacterTags]:  new FirestoreCollectionWrapper<FsCharacterTag>  (this.fs, this.logger, FsCollectionName.CharacterTags), // eslint-disable-line
-    [FsCollectionName.CharacterTypes]: new FirestoreCollectionWrapper<FsCharacterType> (this.fs, this.logger, FsCollectionName.CharacterTypes), // eslint-disable-line
-    [FsCollectionName.Characters]:     new FirestoreCollectionWrapper<FsCharacter>     (this.fs, this.logger,FsCollectionName.Characters), // eslint-disable-line
-    [FsCollectionName.Facilities]:     new FirestoreCollectionWrapper<FsFacility>      (this.fs, this.logger, FsCollectionName.Facilities), // eslint-disable-line
-    [FsCollectionName.FacilityTypes]:  new FirestoreCollectionWrapper<FsFacilityType>  (this.fs, this.logger, FsCollectionName.FacilityTypes), // eslint-disable-line
-    [FsCollectionName.GeographTypes]:  new FirestoreCollectionWrapper<FsGeographType>  (this.fs, this.logger, FsCollectionName.GeographTypes), // eslint-disable-line
-    [FsCollectionName.Illustrators]:   new FirestoreCollectionWrapper<FsIllustrator>   (this.fs, this.logger, FsCollectionName.Illustrators), // eslint-disable-line
-    [FsCollectionName.Regions]:        new FirestoreCollectionWrapper<FsRegion>        (this.fs, this.logger,FsCollectionName.Regions), // eslint-disable-line
-    [FsCollectionName.VoiceActors]:    new FirestoreCollectionWrapper<FsVoiceActor>    (this.fs, this.logger, FsCollectionName.VoiceActors), // eslint-disable-line
-    [FsCollectionName.Weapons]:        new FirestoreCollectionWrapper<FsWeapon>        (this.fs, this.logger, FsCollectionName.Weapons), // eslint-disable-line
-    [FsCollectionName.WeaponTypes]:    new FirestoreCollectionWrapper<FsWeaponType>    (this.fs, this.logger, FsCollectionName.WeaponTypes), // eslint-disable-line
+    [FsCollectionName.Abilities]:      new FirestoreCollectionWrapper<FsAbility>       (this.fs, FsCollectionName.Abilities), // eslint-disable-line
+    [FsCollectionName.AbilityTypes]:   new FirestoreCollectionWrapper<FsAbilityType>   (this.fs, FsCollectionName.AbilityTypes), // eslint-disable-line
+    [FsCollectionName.CharacterTags]:  new FirestoreCollectionWrapper<FsCharacterTag>  (this.fs, FsCollectionName.CharacterTags), // eslint-disable-line
+    [FsCollectionName.CharacterTypes]: new FirestoreCollectionWrapper<FsCharacterType> (this.fs, FsCollectionName.CharacterTypes), // eslint-disable-line
+    [FsCollectionName.Characters]:     new FirestoreCollectionWrapper<FsCharacter>     (this.fs, FsCollectionName.Characters), // eslint-disable-line
+    [FsCollectionName.Facilities]:     new FirestoreCollectionWrapper<FsFacility>      (this.fs, FsCollectionName.Facilities), // eslint-disable-line
+    [FsCollectionName.FacilityTypes]:  new FirestoreCollectionWrapper<FsFacilityType>  (this.fs, FsCollectionName.FacilityTypes), // eslint-disable-line
+    [FsCollectionName.GeographTypes]:  new FirestoreCollectionWrapper<FsGeographType>  (this.fs, FsCollectionName.GeographTypes), // eslint-disable-line
+    [FsCollectionName.Illustrators]:   new FirestoreCollectionWrapper<FsIllustrator>   (this.fs, FsCollectionName.Illustrators), // eslint-disable-line
+    [FsCollectionName.Regions]:        new FirestoreCollectionWrapper<FsRegion>        (this.fs, FsCollectionName.Regions), // eslint-disable-line
+    [FsCollectionName.VoiceActors]:    new FirestoreCollectionWrapper<FsVoiceActor>    (this.fs, FsCollectionName.VoiceActors), // eslint-disable-line
+    [FsCollectionName.WeaponTypes]:    new FirestoreCollectionWrapper<FsWeaponType>    (this.fs, FsCollectionName.WeaponTypes), // eslint-disable-line
+    [FsCollectionName.Weapons]:        new FirestoreCollectionWrapper<FsWeapon>        (this.fs, FsCollectionName.Weapons), // eslint-disable-line
   };
 
   /**
@@ -93,6 +93,8 @@ export class FirestoreDataService {
     } catch (error) {
       throw error;
     }
+
+    // this.logger.debug(location, { name: name, data: this.collections[name].data });
 
     return result;
   }
@@ -188,7 +190,7 @@ export class FirestoreDataService {
   }
 
   sortByOrder(items: FsDocumentBaseWithOrder[], isDesc: boolean = false) {
-    const location = `${this.className}.FsDocumentBaseWithOrder()`;
+    const location = `${this.className}.sortByOrder()`;
     this.logger.trace(location);
 
     // Ascending order.
@@ -202,7 +204,7 @@ export class FirestoreDataService {
   }
 
   sortByCode(items: FsDocumentBaseWithCode[], isDesc: boolean = false) {
-    const location = `${this.className}.FsDocumentBaseWithOrder()`;
+    const location = `${this.className}.sortByCode()`;
     this.logger.trace(location);
 
     // Ascending order.
@@ -220,6 +222,7 @@ export class FirestoreDataService {
   }
 
   private async loadSubCharacterTypes() {
+    // const location = `${this.className}.loadSubCharacterTypes()`;
     const fsCollection = this.collections[FsCollectionName.CharacterTypes];
 
     for (let i = 0; i < fsCollection.data.length; ++i) {
@@ -236,7 +239,8 @@ export class FirestoreDataService {
             docData.subTypes.push(tmp[j]);
           }
         }
-        this.logger.debug(location, docData);
+      } else {
+        docData.subTypes = [];
       }
     }
   }

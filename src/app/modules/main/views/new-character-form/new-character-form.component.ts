@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
+import { CsCharacterImageTypeMax, csCharacterImageTypes } from 'src/app/services/cloud-storage/cloud-storage.interface';
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
 import {
   FsCharacterType,
@@ -22,9 +23,13 @@ import {
 import { HtmlCanvas } from '../../utils/html-canvas/html-canvas.utility';
 import { loadImageFile } from '../../utils/image-file/image-file.utility';
 import { MakeThumbnailImageResult } from '../make-thumbnail-image/make-thumbnail-image.interface';
-import { facilityFormMode, NewFacilityFormResult } from '../new-facility-form/new-facility-form.interafce';
+import { NewFacilityFormMode, NewFacilityFormResult } from '../new-facility-form/new-facility-form.interafce';
 import { NewWeaponFormMode, NewWeaponFormResult } from '../new-weapon-form/new-weapon-form.interface';
-import { FsAbilityForNewCharacterForm, NewCharacterFormResult } from './new-character-form.interface';
+import {
+  FsAbilityForNewCharacterForm,
+  NewCharacterFormContent,
+  NewCharacterFormResult,
+} from './new-character-form.interface';
 
 @Component({
   selector: 'app-new-character-form',
@@ -53,7 +58,7 @@ export class NewCharacterFormComponent implements OnChanges {
   /** Character Type */
   @Input() characterTypes!: FsCharacterType[];
 
-  selectedCharacterType!: FsCharacterType;
+  selectedCharacterType!: FsCharacterType; // Init at ngOnChanges().
 
   selectedSubCharacterType?: FsSubCharacterType;
 
@@ -63,28 +68,28 @@ export class NewCharacterFormComponent implements OnChanges {
   inputCharacterName = '';
 
   /** Rearity */
-  rarerityItems: number[] = [];
+  rarerityItems: number[] = []; // Itit at the constructor.
 
   selectedRarerity?: number;
 
   /** Weapon Type */
-  @Input() weaponTypes!: FsWeaponType[];
+  @Input() weaponTypes!: FsWeaponType[]; // All weapon types list from the database.
 
-  weaponTypeItems!: FsWeaponType[];
+  weaponTypeItems!: FsWeaponType[]; // Weapon types list filtered by the selected character type. Init at ngOnChanges().
 
   selectedWeaponType?: FsWeaponType;
 
   /** Geograph type. */
-  @Input() geographTypes!: FsGeographType[];
+  @Input() geographTypes!: FsGeographType[]; // All geograph types list from the database.
 
-  geographTypeItems!: FsGeographType[];
+  geographTypeItems!: FsGeographType[]; // Geograph types list filtered by the selected character type. Init at ngOnChanges().
 
   selectedGeographTypes: FsGeographType[] = [];
 
   /** Region. */
-  @Input() regions!: FsRegion[];
+  @Input() regions!: FsRegion[]; // All reagions list from the database.
 
-  regionItems!: FsRegion[];
+  regionItems!: FsRegion[]; // Regions list filtered by the selected character type. Init at ngOnChanges().
 
   selectedRegion?: FsRegion;
 
@@ -98,14 +103,14 @@ export class NewCharacterFormComponent implements OnChanges {
 
   suggestVoiceActorNames: string[] = [];
 
-  inputVoiceActor: FsVoiceActor = <FsVoiceActor>{ name: '' };
+  inputVoiceActor: FsVoiceActor = new FsVoiceActor();
 
   /** Illustrator. */
   @Input() illustrators!: FsIllustrator[];
 
   suggestIllustratorNames: string[] = [];
 
-  inputIllustrator: FsIllustrator = <FsIllustrator>{ name: '' };
+  inputIllustrator: FsIllustrator = new FsIllustrator();
 
   /** Motif weapons */
   @Input() weapons!: FsWeapon[];
@@ -127,7 +132,7 @@ export class NewCharacterFormComponent implements OnChanges {
   /** New facility form. */
   @Input() facilityTypes!: FsFacilityType[];
 
-  facilityFormMode = facilityFormMode.minimum;
+  facilityFormMode = NewFacilityFormMode.minimum;
 
   initialFacilityName = '';
 
@@ -160,24 +165,15 @@ export class NewCharacterFormComponent implements OnChanges {
 
   abilityFormMax = 8;
 
-  isAbilitiesValid = true;
-
-  isAbilitiesKaiValid = true;
-
   /** Validation */
   isFormValid = true;
 
   errorMessage: string = '';
 
   /** Shiromusume images. */
-  imageInputIdsAndLabels: { id: string; label: string }[] = [
-    { id: 'Shiromusume', label: '城娘' },
-    { id: 'Ojou', label: '御嬢' },
-    { id: 'Tokugi', label: '特技' },
-    { id: 'Taiha', label: '大破' },
-  ];
+  imageTypesAndLabels = csCharacterImageTypes;
 
-  imageTypeMax: number = this.imageInputIdsAndLabels.length;
+  imageTypeMax: number = CsCharacterImageTypeMax;
 
   inputImageFiles: any[] = Array(this.imageTypeMax);
 
@@ -328,7 +324,6 @@ export class NewCharacterFormComponent implements OnChanges {
     else if (inputId.indexOf('NewCharacterForm_AbilityNameInput_') >= 0) {
       // Update suggestion item list.
       const index = Number(inputId.substring(inputId.lastIndexOf('_') + 1));
-      this.logger.debug(location, { index: index });
       this.suggestAbilityNames[index] = this.makeSuggestLabels(
         query,
         this.abilities.map((item) => item.name)
@@ -346,7 +341,6 @@ export class NewCharacterFormComponent implements OnChanges {
     else if (inputId.indexOf('NewCharacterForm_AbilityNameKaiInput_') >= 0) {
       // Update suggestion item list.
       const index = Number(inputId.substring(inputId.lastIndexOf('_') + 1));
-      this.logger.debug(location, { index: index });
       this.suggestAbilityNamesKai[index] = this.makeSuggestLabels(
         query,
         this.abilities.map((item) => item.name)
@@ -455,8 +449,9 @@ export class NewCharacterFormComponent implements OnChanges {
     this.logger.trace(location, { formResult: formResult });
 
     // Import form result to motif weapon field.
-    if (!formResult.canceled) {
-      const weaponText = `${formResult.rarerity.toString()}|${formResult.type.name}|${formResult.name}`;
+    if (!formResult.canceled && formResult.content) {
+      const content = formResult.content;
+      const weaponText = `${content.rarerity.toString()}|${content.type.name}|${content.name}`;
       this.inputMotifWeapons.push(weaponText);
     }
 
@@ -475,8 +470,9 @@ export class NewCharacterFormComponent implements OnChanges {
     this.logger.trace(location, { formResult: formResult });
 
     // Import form result to motif weapon field.
-    if (!formResult.canceled) {
-      const facilityText = `${formResult.rarerity.toString()}|${formResult.type.name}|${formResult.name}`;
+    if (!formResult.canceled && formResult.content) {
+      const content = formResult.content;
+      const facilityText = `${content.rarerity.toString()}|${content.type.name}|${content.name}`;
       this.inputMotifFacilities.push(facilityText);
     }
 
@@ -495,7 +491,7 @@ export class NewCharacterFormComponent implements OnChanges {
     this.logger.trace(location, { index: index, kaichiku: kaichiku, event: event });
 
     const input = event.target as HTMLInputElement;
-    let elemId = `NewCharacterForm_${this.imageInputIdsAndLabels[index].id}Preview`;
+    let elemId = `NewCharacterForm_${this.imageTypesAndLabels[index].type}Preview`;
     elemId += kaichiku ? 'Kai' : '';
 
     if (!input.files) {
@@ -529,6 +525,9 @@ export class NewCharacterFormComponent implements OnChanges {
       } else {
         this.imageLoadFlagsKai[index] = true;
       }
+
+      // Clear element value in order to trigger events even if user select the same file.
+      input.value = '';
     });
   }
 
@@ -536,10 +535,12 @@ export class NewCharacterFormComponent implements OnChanges {
     const location = `${this.className}.onRemoveImageFileClick()`;
     this.logger.trace(location, { index: index, kaichiku: kaichiku });
 
-    if (kaichiku) {
-      this.inputImageFilesKai[index] = undefined;
-    } else {
+    if (!kaichiku) {
       this.inputImageFiles[index] = undefined;
+      this.imageLoadFlags[index] = false;
+    } else {
+      this.inputImageFilesKai[index] = undefined;
+      this.imageLoadFlagsKai[index] = false;
     }
   }
 
@@ -559,15 +560,14 @@ export class NewCharacterFormComponent implements OnChanges {
       if (this.thumbnailBlob) {
         const promise = loadImageFile(this.thumbnailBlob);
         promise.then((result) => {
-          let canvas = document.getElementById('NewCharacterForm_ThumbnailPreview') as HTMLCanvasElement;
+          let canvas = HtmlCanvas.createCanvas('NewCharacterForm_ThumbnailPreview');
           if (!canvas) {
             this.logger.error(location, 'Canvas is not availale.');
             return;
           }
-          const context = canvas.getContext('2d');
           canvas.width = result.width;
           canvas.height = result.height;
-          context?.drawImage(result, 0, 0);
+          canvas.drawImage(result, 0, 0);
         });
       }
     }
@@ -737,34 +737,26 @@ export class NewCharacterFormComponent implements OnChanges {
   }
 
   private makeFsAbilityForNewCharacterForm(base?: FsAbility): FsAbilityForNewCharacterForm {
-    const result: FsAbilityForNewCharacterForm = {
-      id: '',
-      name: '',
-      type: '',
-      descriptions: ['', '', ''],
-      keiryakuInterval: 0,
-      keiryakuCost: 0,
-      tokenLayouts: ['', ''],
-      tokenAvailable: false,
-      isExisting: false,
-    };
+    const result = new FsAbilityForNewCharacterForm();
 
     if (base) {
+      // Base FsAbility info.
       result.id = base.id;
       result.type = base.type;
       result.name = base.name;
-      for (let i = 0; i < base.descriptions.length; ++i) {
-        result.descriptions[i] = base.descriptions[i];
-      }
-      result.keiryakuInterval = base.keiryakuInterval ? base.keiryakuInterval : 0;
-      result.keiryakuCost = base.keiryakuCost ? base.keiryakuCost : 0;
-      if (base.tokenLayouts) {
-        result.tokenLayouts = ['', ''];
-        for (let i = 0; i < base.tokenLayouts.length; ++i) {
-          result.tokenLayouts[i] = base.tokenLayouts[i];
+      result.descriptions = base.descriptions;
+      result.interval = base.interval;
+      result.cost = base.cost;
+      result.tokenLayouts = base.tokenLayouts;
+
+      // Extended info.
+      for (let i = 0; i < this.abilityTypes.length; ++i) {
+        if (base.type === this.abilityTypes[i].id) {
+          result.typeName = this.abilityTypes[i].name;
+          break;
         }
       }
-      result.tokenAvailable = base.tokenLayouts ? true : false;
+      result.tokenAvailable = base.tokenLayouts.length > 0 ? true : false;
       result.isExisting = true;
     }
 
@@ -795,6 +787,8 @@ export class NewCharacterFormComponent implements OnChanges {
 
     // When the form is input, it returns input weapon data.
     else {
+      const content = new NewCharacterFormContent();
+
       // The mandatory input fields must not be null or undefined.
       // Input value validation shall be implemented at template.
       if (
@@ -819,27 +813,29 @@ export class NewCharacterFormComponent implements OnChanges {
       result.canceled = false;
 
       // Type, name, rarerity, weapon type, geograph type, and region.
-      result.characterType = this.selectedCharacterType;
-      result.characterName = this.inputCharacterName;
-      result.rarerity = this.selectedRarerity;
-      result.weaponType = this.selectedWeaponType;
-      result.geographTypes = this.selectedGeographTypes;
-      result.region = this.selectedRegion;
+      content.characterType = this.selectedCharacterType;
+      content.characterName = this.inputCharacterName;
+      content.rarerity = this.selectedRarerity;
+      content.weaponType = this.selectedWeaponType;
+      content.geographTypes = this.selectedGeographTypes;
+      if (this.selectedRegion) {
+        content.region = this.selectedRegion;
+      }
 
       // Sub character type.
-      if (result.characterType.hasSubTypes && this.selectedSubCharacterType) {
-        result.subCharacterType = this.selectedSubCharacterType;
+      if (content.characterType.subTypes.length > 0 && this.selectedSubCharacterType) {
+        content.subCharacterType = this.selectedSubCharacterType;
       }
 
       // Character cost.
-      result.cost = this.calcCharacterCost(
+      content.cost = this.calcCharacterCost(
         this.selectedCharacterType,
         this.selectedWeaponType,
         this.inputAbilities,
         this.inputAbilitiesKai,
         false
-      ) as number;
-      result.costKai = this.calcCharacterCost(
+      );
+      content.costKai = this.calcCharacterCost(
         this.selectedCharacterType,
         this.selectedWeaponType,
         this.inputAbilities,
@@ -848,111 +844,80 @@ export class NewCharacterFormComponent implements OnChanges {
       );
 
       // Voice actor.
-      result.voiceActors = [];
       if (this.inputVoiceActor.name !== '') {
-        let voiceActor: FsVoiceActor = { id: '', name: this.inputVoiceActor.name };
+        content.voiceActor = this.inputVoiceActor;
         for (let i = 0; i < this.voiceActors.length; ++i) {
-          if (voiceActor.name === this.voiceActors[i].name) {
-            voiceActor = this.voiceActors[i];
+          if (this.inputVoiceActor.name === this.voiceActors[i].name) {
+            content.voiceActor = this.voiceActors[i];
             break;
           }
         }
-        result.voiceActors.push(voiceActor);
       }
 
       // Illustrator.
-      result.illustrators = [];
       if (this.inputIllustrator.name !== '') {
-        let illustrator: FsIllustrator = { id: '', name: this.inputIllustrator.name };
+        content.illustrator = this.inputIllustrator;
         for (let i = 0; i < this.illustrators.length; ++i) {
-          if (illustrator.name === this.illustrators[i].name) {
-            illustrator = this.illustrators[i];
+          if (this.inputIllustrator.name === this.illustrators[i].name) {
+            content.illustrator = this.illustrators[i];
             break;
           }
         }
-        result.illustrators.push(illustrator);
       }
 
       // Motif weapon.
-      result.motifWeapons = [];
       for (let i = 0; i < this.inputMotifWeapons.length; ++i) {
-        result.motifWeapons.push(this.makeWeaponDataFromInputText(this.inputMotifWeapons[i]));
+        content.motifWeapons.push(this.makeWeaponDataFromInputText(this.inputMotifWeapons[i]));
       }
 
       // Motif facility.
-      result.motifFacilities = [];
       for (let i = 0; i < this.inputMotifFacilities.length; ++i) {
-        result.motifFacilities.push(this.makeFacilityDataFromInputText(this.inputMotifFacilities[i]));
+        content.motifFacilities.push(this.makeFacilityDataFromInputText(this.inputMotifFacilities[i]));
       }
 
       // Character tag.
-      result.characterTags = [];
       for (let i = 0; i < this.inputCharacterTags.length; ++i) {
-        result.characterTags.push(this.makeCharacterTagDataFromInputText(this.inputCharacterTags[i]));
+        content.characterTags.push(this.makeCharacterTagDataFromInputText(this.inputCharacterTags[i]));
       }
 
       // Ability type and ability.
       {
-        // Copy ability type.
-        result.abilityTypes = this.selectedAbilityTypes;
-        result.abilityTypesKai = this.selectedAbilityTypesKai;
-
         // Copy ability info.
-        result.abilities = [];
         for (let i = 0; i < this.inputAbilities.length; ++i) {
-          result.abilities.push(this.makeAbilityInfoForFormResult(this.inputAbilities[i]));
+          content.abilities.push(
+            this.makeAbilityInfoForFormResult(this.inputAbilities[i], this.selectedAbilityTypes[i])
+          );
         }
-        result.abilitiesKai = [];
         for (let i = 0; i < this.inputAbilitiesKai.length; ++i) {
-          result.abilitiesKai.push(this.makeAbilityInfoForFormResult(this.inputAbilitiesKai[i]));
-        }
-
-        // Copy ability type ID.
-        if (result.abilityTypes.length !== result.abilities.length) {
-          this.logger.error(location, 'Ability and ability types is not corresponding.', {
-            abilities: result.abilities,
-            abilityTypes: result.abilityTypes,
-          });
-          console.assert(false);
-        }
-        for (let i = 0; i < result.abilities.length; ++i) {
-          result.abilities[i].type = result.abilityTypes[i].id;
-        }
-
-        // Copy ability type ID. (kaichiku)
-        if (result.abilityTypesKai.length !== result.abilitiesKai.length) {
-          this.logger.error(location, 'Ability and ability types is not corresponding.', {
-            abilities: result.abilitiesKai,
-            abilityTypes: result.abilityTypesKai,
-          });
-          console.assert(false);
-        }
-        for (let i = 0; i < result.abilities.length; ++i) {
-          result.abilitiesKai[i].type = result.abilityTypesKai[i].id;
+          content.abilitiesKai.push(
+            this.makeAbilityInfoForFormResult(this.inputAbilitiesKai[i], this.selectedAbilityTypesKai[i])
+          );
         }
       }
 
       // Image files (include thumbnail).
       {
         // Make image file array.
-        result.imageFiles = Array(this.imageTypeMax);
-        result.imageFilesKai = Array(this.imageTypeMax);
+        content.imageFiles = Array(this.imageTypeMax);
+        content.imageFilesKai = Array(this.imageTypeMax);
 
         // Copy input image files.
         for (let i = 0; i < this.imageTypeMax; ++i) {
           if (this.inputImageFiles[i]) {
-            result.imageFiles[i] = this.inputImageFiles[i];
+            content.imageFiles[i] = this.inputImageFiles[i];
           }
           if (this.inputImageFilesKai[i]) {
-            result.imageFilesKai[i] = this.inputImageFilesKai[i];
+            content.imageFilesKai[i] = this.inputImageFilesKai[i];
           }
         }
 
         // Thumbnail.
         if (this.thumbnailBlob) {
-          result.thumbnailImage = this.thumbnailBlob;
+          content.thumbnailImage = this.thumbnailBlob;
         }
       }
+
+      result.content = content;
     }
 
     return result;
@@ -964,15 +929,8 @@ export class NewCharacterFormComponent implements OnChanges {
     abilities: FsAbility[],
     abilitiesKai: FsAbility[],
     kaichiku: boolean
-  ): number | undefined {
-    const location = `${this.className}.calcCharacterCost()`;
-
-    // Precondition.
-    // If the character type doesn't support kaichiku and 'kai' is TRUE,
-    // it returns undefined.
-    if (kaichiku && !characterType.isKaichikuEnable) {
-      return undefined;
-    }
+  ): number {
+    // const location = `${this.className}.calcCharacterCost()`;
 
     // CASE: Cost calcuration is disable.
     // It returns input cost value.
@@ -988,29 +946,17 @@ export class NewCharacterFormComponent implements OnChanges {
     // Get the base cost from weapon type.
     let cost = weaponType.baseCost;
 
-    // Get keyryaku id.
-    let keiryakuTypeId = '';
-    for (let abilityType of this.abilityTypes) {
-      if (abilityType.name === '計略') {
-        keiryakuTypeId = abilityType.id;
-      }
-    }
-    if (keiryakuTypeId === '') {
-      this.logger.error(location, 'Keiryaku is not found in ability type data.');
-      throw Error('Keiryaku is not found in ability type data.');
-    }
-
     // Check the character has keiryaku or not.
     let hasKeiryaku = false;
     let hasKeiryakuKai = false;
     for (let ability of abilities) {
-      if (ability.type === keiryakuTypeId) {
+      if (ability.type === this.keiryakuTypeId) {
         hasKeiryaku = true;
         break;
       }
     }
     for (let ability of abilitiesKai) {
-      if (ability.type === keiryakuTypeId) {
+      if (ability.type === this.keiryakuTypeId) {
         hasKeiryakuKai = true;
         break;
       }
@@ -1021,7 +967,11 @@ export class NewCharacterFormComponent implements OnChanges {
       cost += 2;
     } else if (hasKeiryakuKai) {
       cost += 1;
+    } else {
+      // Do nothing.
     }
+
+    // Kaichiku decreases character cost by 1.
     if (kaichiku) {
       cost -= 1;
     }
@@ -1031,7 +981,7 @@ export class NewCharacterFormComponent implements OnChanges {
 
   private makeWeaponDataFromInputText(text: string): FsWeapon {
     //const location = `${this.className}.makeWeaponDataFromInputText()`;
-    let weapon: FsWeapon = <FsWeapon>{};
+    let weapon: FsWeapon = new FsWeapon();
     let name: string = text;
 
     // Get weapon info from input text
@@ -1048,11 +998,8 @@ export class NewCharacterFormComponent implements OnChanges {
       name = tokens[2];
 
       // Make weapon info.
-      weapon.id = '';
       weapon.name = name;
       weapon.rarerity = rarerity;
-      weapon.descriptions = [];
-      weapon.attack = 0;
       for (let i = 0; i < this.weaponTypes.length; ++i) {
         if (typeName === this.weaponTypes[i].name) {
           weapon.type = this.weaponTypes[i].id;
@@ -1061,11 +1008,14 @@ export class NewCharacterFormComponent implements OnChanges {
       }
     }
 
-    // Check if the input weapon name is existing or not.
-    for (let i = 0; i < this.weapons.length; ++i) {
-      if (name === this.weapons[i].name) {
-        weapon = this.weapons[i];
-        break;
+    // Existing weapon.
+    else {
+      // Check if the input weapon name is existing or not.
+      for (let i = 0; i < this.weapons.length; ++i) {
+        if (name === this.weapons[i].name) {
+          weapon = this.weapons[i];
+          break;
+        }
       }
     }
 
@@ -1074,7 +1024,7 @@ export class NewCharacterFormComponent implements OnChanges {
 
   private makeFacilityDataFromInputText(text: string): FsFacility {
     const location = `${this.className}.makeFacilityDataFromInputText()`;
-    let facility: FsFacility = <FsFacility>{};
+    let facility: FsFacility = new FsFacility();
     let name: string = text;
 
     // Get facility info from input text
@@ -1091,7 +1041,6 @@ export class NewCharacterFormComponent implements OnChanges {
       name = tokens[2];
 
       // Make facility info.
-      facility.id = '';
       facility.name = name;
       facility.rarerity = rarerity;
       for (let i = 0; i < this.facilityTypes.length; ++i) {
@@ -1102,11 +1051,14 @@ export class NewCharacterFormComponent implements OnChanges {
       }
     }
 
-    // Check if the input facility name is existing or not.
-    for (let i = 0; i < this.facilities.length; ++i) {
-      if (name === this.facilities[i].name) {
-        facility = this.facilities[i];
-        break;
+    // Existing facility.
+    else {
+      // Check if the input facility name is existing or not.
+      for (let i = 0; i < this.facilities.length; ++i) {
+        if (name === this.facilities[i].name) {
+          facility = this.facilities[i];
+          break;
+        }
       }
     }
 
@@ -1115,7 +1067,7 @@ export class NewCharacterFormComponent implements OnChanges {
 
   private makeCharacterTagDataFromInputText(text: string): FsCharacterTag {
     const location = `${this.className}.makeCharacterTagDataFromInputText()`;
-    let tag: FsCharacterTag = <FsCharacterTag>{};
+    let tag: FsCharacterTag = new FsCharacterTag();
     let name: string = text;
 
     // Get tag info from input text
@@ -1130,39 +1082,39 @@ export class NewCharacterFormComponent implements OnChanges {
       name = tokens[0];
 
       // Make tag info.
-      tag.id = '';
       tag.name = name;
-      tag.characters = [];
     }
 
-    // Check if the input weapon name is existing or not.
-    for (let i = 0; i < this.characterTags.length; ++i) {
-      if (name === this.characterTags[i].name) {
-        tag = this.characterTags[i];
-        break;
+    // Existing character tag.
+    else {
+      // Check if the input tag name is existing or not.
+      for (let i = 0; i < this.characterTags.length; ++i) {
+        if (name === this.characterTags[i].name) {
+          tag = this.characterTags[i];
+          break;
+        }
       }
     }
 
     return tag;
   }
 
-  private makeAbilityInfoForFormResult(input: FsAbilityForNewCharacterForm): FsAbility {
-    const result: FsAbility = <FsAbility>{};
+  private makeAbilityInfoForFormResult(
+    input: FsAbilityForNewCharacterForm,
+    type: FsAbilityType
+  ): FsAbilityForNewCharacterForm {
+    const result: FsAbilityForNewCharacterForm = new FsAbilityForNewCharacterForm();
 
     result.id = input.id;
-    result.type = input.type;
+    result.type = type.id;
+    result.typeName = type.name;
     result.name = input.name;
     result.descriptions = input.descriptions.filter((text) => text.length > 0);
-    if (input.type === this.keiryakuTypeId) {
-      result.keiryakuInterval = input.keiryakuInterval;
-      result.keiryakuCost = input.keiryakuCost;
-      if (input.tokenLayouts) {
-        for (let i = 0; i < input.tokenLayouts.length; ++i) {
-          if (input.tokenLayouts[i].length > 0) {
-            result.tokenLayouts = input.tokenLayouts.filter((text) => text.length > 0);
-            break;
-          }
-        }
+    result.interval = input.interval;
+    result.cost = input.cost;
+    for (let i = 0; i < input.tokenLayouts.length; ++i) {
+      if (input.tokenLayouts[i].length > 0) {
+        result.tokenLayouts.push(input.tokenLayouts[i]);
       }
     }
 
@@ -1186,7 +1138,7 @@ export class NewCharacterFormComponent implements OnChanges {
       }
 
       // Sub-character type.
-      if (this.selectedCharacterType.subTypes && !this.selectedSubCharacterType) {
+      if (this.selectedCharacterType.subTypes.length > 0 && !this.selectedSubCharacterType) {
         this.logger.warn(location, 'No character type is selected.');
         this.errorMessage = 'キャラクタータイプを選択してください。';
         return;
@@ -1303,7 +1255,7 @@ export class NewCharacterFormComponent implements OnChanges {
       }
 
       // Description.
-      if (ability.descriptions.length === 0 || ability.descriptions[0] === '') {
+      if (!ability.descriptions || ability.descriptions.length === 0 || ability.descriptions[0] === '') {
         this.logger.warn(location, 'No ability description is input.', { index: i, kaichiku: false });
         this.errorMessage = '特技/計略の説明を入力してください。説明文は1行目から入力してください。';
         return false;

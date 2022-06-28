@@ -27,7 +27,7 @@
         (onChange)="onCharacterTypeChanged()"
       ></p-dropdown>
     </div>
-    <div class="field col-12 lg:col-6" *ngIf="selectedCharacterType.subTypes">
+    <div class="field col-12 lg:col-6" *ngIf="selectedCharacterType.subTypes.length > 0">
       <label for="NewCharacterForm_SubCharacterTypeInput">サブキャラクタータイプ</label>
       <p-dropdown
         id="NewCharacterForm_SubCharacterTypeInput"
@@ -68,7 +68,7 @@
         <div *ngFor="let item of rarerityItems" class="field-checkbox">
           <p-radioButton
             [inputId]="'NewCharacterForm_RarerityInput_' + item.toString()"
-            name="NewCharacterForm_RarerityInput_"
+            name="NewCharacterForm_RarerityInput"
             [value]="item"
             [(ngModel)]="selectedRarerity"
           ></p-radioButton>
@@ -121,7 +121,7 @@
   <!---->
   <!-- Region -->
   <!---->
-  <div class="formgrid grid" *ngIf="selectedCharacterType.regions">
+  <div class="formgrid grid" *ngIf="selectedCharacterType.regions.length > 0">
     <div class="field col">
       <label>地域</label>
       <div class="formgroup-inline">
@@ -294,7 +294,7 @@
               <p-inputNumber
                 [inputId]="'NewCharacterForm_KeiryakuIntervalInput_' + i"
                 [name]="'NewCharacterForm_KeiryakuIntervalInput_' + i"
-                [(ngModel)]="inputAbilities[i].keiryakuInterval"
+                [(ngModel)]="inputAbilities[i].interval"
                 mode="decimal"
                 [showButtons]="true"
                 suffix="秒"
@@ -309,7 +309,7 @@
               <p-inputNumber
                 [inputId]="'NewCharacterForm_KeiryakuCostInput_' + i"
                 [name]="'NewCharacterForm_KeiryakuCostInput_' + i"
-                [(ngModel)]="inputAbilities[i].keiryakuCost"
+                [(ngModel)]="inputAbilities[i].cost"
                 mode="decimal"
                 [showButtons]="true"
                 [min]="0"
@@ -455,7 +455,7 @@
               <p-inputNumber
                 [inputId]="'NewCharacterForm_KeiryakuIntervalKaiInput_' + i"
                 [name]="'NewCharacterForm_KeiryakuIntervalKaiInput_' + i"
-                [(ngModel)]="inputAbilitiesKai[i].keiryakuInterval"
+                [(ngModel)]="inputAbilitiesKai[i].interval"
                 mode="decimal"
                 [showButtons]="true"
                 suffix="秒"
@@ -470,7 +470,7 @@
               <p-inputNumber
                 [inputId]="'NewCharacterForm_KeiryakuCostKaiInput_' + i"
                 [name]="'NewCharacterForm_KeiryakuCostKaiInput_' + i"
-                [(ngModel)]="inputAbilitiesKai[i].keiryakuCost"
+                [(ngModel)]="inputAbilitiesKai[i].cost"
                 mode="decimal"
                 [showButtons]="true"
                 [min]="0"
@@ -576,24 +576,24 @@
   <!------------------------------------------------------------------------->
   <p-divider align="center"><span>画像</span></p-divider>
   <div class="formgrid grid p-fluid">
-    <div class="field col-12 lg:col-6" *ngFor="let imageType of imageInputIdsAndLabels; let i = index">
-      <label [for]="'NewCharacterForm_' + imageType.id + 'ImageInput'" pButton [label]="imageType.label" class="p-button-rounded p-button-outlined">
+    <div class="field col-12 lg:col-6" *ngFor="let imageType of imageTypesAndLabels; let i = index">
+      <label [for]="'NewCharacterForm_' + imageType.type + 'ImageInput'" pButton [label]="imageType.label" class="p-button-rounded p-button-outlined">
         <input
           type="file"
-          [id]="'NewCharacterForm_' + imageType.id + 'ImageInput'"
+          [id]="'NewCharacterForm_' + imageType.type + 'ImageInput'"
           [style]="{ display: 'none' }"
           (change)="onInputImageFileChange(i, false, $event)"
         />
       </label>
-      <div *ngIf="inputImageFiles[i]" [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex', 'margin-bottom': '0.5rem' }">
-        <div *ngIf="!imageLoadFlags[i]"><p-progressSpinner></p-progressSpinner></div>
+      <div [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex', 'margin-bottom': '0.5rem' }">
+        <div *ngIf="inputImageFiles[i] && !imageLoadFlags[i]"><p-progressSpinner></p-progressSpinner></div>
         <canvas
           [hidden]="!imageLoadFlags[i]"
-          [id]="'NewCharacterForm_' + imageType.id + 'Preview'"
+          [id]="'NewCharacterForm_' + imageType.type + 'Preview'"
           [style]="{ 'max-width': previewCanvasWidth, 'max-height': previewCanvasHeight }"
         ></canvas>
       </div>
-      <div *ngIf="inputImageFiles[i]" [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
+      <div *ngIf="imageLoadFlags[i]" [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
         <button
           pButton
           pRipple
@@ -624,17 +624,17 @@
   <!------------------------------------------------------------------------->
   <p-divider align="center"><span>画像 (改壱)</span></p-divider>
   <div class="formgrid grid p-fluid">
-    <div class="field col-12 lg:col-6" *ngFor="let imageType of imageInputIdsAndLabels; let i = index">
+    <div class="field col-12 lg:col-6" *ngFor="let imageType of imageTypesAndLabels; let i = index">
       <label
-        *ngIf="imageType.id !== 'Ojou'"
-        [for]="'NewCharacterForm_' + imageType.id + 'ImageInputKai'"
+        *ngIf="imageType.type !== 'ojou'"
+        [for]="'NewCharacterForm_' + imageType.type + 'ImageInputKai'"
         pButton
         [label]="imageType.label"
         class="p-button-rounded p-button-outlined"
       >
         <input
           type="file"
-          [id]="'NewCharacterForm_' + imageType.id + 'ImageInputKai'"
+          [id]="'NewCharacterForm_' + imageType.type + 'ImageInputKai'"
           [style]="{ display: 'none' }"
           (change)="onInputImageFileChange(i, true, $event)"
         />
@@ -642,20 +642,20 @@
       <button
         pButton
         type="button"
-        *ngIf="imageType.id === 'Ojou'"
+        *ngIf="imageType.type === 'ojou'"
         [label]="imageType.label"
         class="p-button-rounded p-button-outlined"
         disabled="true"
       ></button>
-      <div *ngIf="inputImageFilesKai[i]" [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex', 'margin-bottom': '0.5rem' }">
-        <div *ngIf="!imageLoadFlagsKai[i]"><p-progressSpinner></p-progressSpinner></div>
+      <div [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex', 'margin-bottom': '0.5rem' }">
+        <div *ngIf="inputImageFilesKai[i] && !imageLoadFlagsKai[i]"><p-progressSpinner></p-progressSpinner></div>
         <canvas
           [hidden]="!imageLoadFlagsKai[i]"
-          [id]="'NewCharacterForm_' + imageType.id + 'PreviewKai'"
+          [id]="'NewCharacterForm_' + imageType.type + 'PreviewKai'"
           [style]="{ 'max-width': previewCanvasWidth, 'max-height': previewCanvasHeight }"
         ></canvas>
       </div>
-      <div *ngIf="inputImageFilesKai[i]" [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
+      <div *ngIf="imageLoadFlagsKai[i]" [style]="{ 'justify-content': 'center', 'align-items': 'center', display: 'flex' }">
         <button
           pButton
           pRipple
@@ -755,6 +755,8 @@
   [resizable]="false"
 >
   <app-make-thumbnail-image
+    [dialogMode]="true"
+    [shown]="showMakeThumbnailDialog"
     [inputFile]="inputImageFiles[0]"
     [buttonStyleClass]="'p-button-text'"
     [imageScale]="75"

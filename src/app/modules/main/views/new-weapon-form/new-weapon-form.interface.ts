@@ -5,14 +5,26 @@ export enum NewWeaponFormMode {
   normal,
 }
 
-export interface NewWeaponFormResult {
-  canceled: boolean;
-  type: FsWeaponType;
-  name: string;
-  rarerity: number;
-  attack?: number;
+export class NewWeaponFormContent {
+  type: FsWeaponType = new FsWeaponType();
+
+  name: string = '';
+
+  rarerity: number = 0;
+
+  attack: number = 0;
+
   attackKai?: number;
-  descriptions?: string[];
-  effects?: string[];
-  effectsKai?: string[];
+
+  descriptions: string[] = [];
+
+  effects: string[] = [];
+
+  effectsKai: string[] = [];
+}
+
+export class NewWeaponFormResult {
+  canceled: boolean = true;
+
+  content?: NewWeaponFormContent;
 }

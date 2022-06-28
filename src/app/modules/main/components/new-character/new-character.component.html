@@ -35,11 +35,12 @@
   [resizable]="false"
 >
   <app-new-character-confirmation
-    *ngIf="newCharacterFormResult"
     okLabel="ＯＫ"
     cancelLabel="キャンセル"
     buttonStyleClass="p-button-text"
-    [character]="newCharacterFormResult"
+    [dialogMode]="true"
+    [shown]="showConfirmationDialog"
+    [character]="newCharacterFormContent"
     (confirmationResult)="onNewCharacterConfirmResult($event)"
   ></app-new-character-confirmation>
 </p-dialog>
