@@ -1,9 +1,11 @@
 <div class="splash-panel">
   <div>
-    <span class="title">{{ title }}</span
+    <span class="h1">{{ title }}</span
     ><br />
-    <span class="sub-title">{{ subTitle }}</span>
+    <span class="h2">{{ subTitle }}</span>
   </div>
-  <p-progressSpinner></p-progressSpinner>
-  <p>{{ message }}</p>
+  <p-progressSpinner [hidden]="ready"></p-progressSpinner>
+  <div>
+    <button class="enter-button" pButton type="button" label="ENTER" [disabled]="!ready" (click)="enter()"></button>
+  </div>
 </div>

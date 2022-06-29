@@ -1,3 +1,9 @@
-<app-splash *ngIf="appNavi.status === appStatusValues.Created" [message]="statusMessage" [title]="title" [subTitle]="subTitle"> </app-splash>
-<app-enter *ngIf="appNavi.status === appStatusValues.Loaded" [title]="title" [subTitle]="subTitle" (enterEvent)="goToMain()"></app-enter>
+<app-splash
+  *ngIf="appNavi.status !== appStatusValues.Main"
+  [ready]="appNavi.status === appStatusValues.Loaded"
+  [title]="title"
+  [subTitle]="subTitle"
+  (enterEvent)="goToMain()"
+>
+</app-splash>
 <router-outlet *ngIf="appNavi.status === appStatusValues.Main"></router-outlet>

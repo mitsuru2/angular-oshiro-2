@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
 
 @Component({
@@ -7,13 +7,20 @@ import { NGXLogger } from 'ngx-logger';
   styleUrls: ['./splash.component.scss'],
 })
 export class SplashComponent {
-  @Input() title?: string;
+  @Input() title: string = '';
 
   @Input() subTitle?: string;
 
-  @Input() message?: string;
+  @Input() ready: boolean = false;
+
+  @Output() enterEvent = new EventEmitter<boolean>();
 
   constructor(private logger: NGXLogger) {
     this.logger.trace('new SplashComponent()');
+  }
+
+  enter() {
+    this.logger.info('Enter button is pressed.');
+    this.enterEvent.emit(true);
   }
 }

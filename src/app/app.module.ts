@@ -16,10 +16,9 @@ import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { DividerModule } from 'primeng/divider';
 import { SplashComponent } from './views/splash/splash.component';
-import { EnterComponent } from './views/enter/enter.component';
 
 @NgModule({
-  declarations: [AppComponent, SplashComponent, EnterComponent],
+  declarations: [AppComponent, SplashComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
