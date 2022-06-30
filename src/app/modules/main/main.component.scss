@@ -3,12 +3,9 @@
   flex-direction: column;
   width: 100vw;
   height: 100vh;
-
-  //  overflow: hidden;
 }
 
 .tool-bar {
-  //  background-color: #ffa0a0;
 }
 
 .tool-bar-m {
@@ -30,7 +27,6 @@
     flex-grow: 1;
     padding: 0.5rem 1rem; // vertical horizontal.
     overflow-y: auto;
-    background-color: #ff4040;
   }
 }
 
