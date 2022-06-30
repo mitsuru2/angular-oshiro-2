@@ -12,7 +12,7 @@ import { AppInfo } from 'src/app/app-info.enum';
 export class MainComponent implements OnInit {
   appInfo = AppInfo;
 
-  isSignedIn = true;
+  signedIn = true;
 
   isVisible = true;
 
@@ -39,6 +39,33 @@ export class MainComponent implements OnInit {
     },
   ];
 
+  sideMenuItemsM = [
+    {
+      label: this.appInfo.title + '<br />' + this.appInfo.subTitle,
+      escape: false,
+      items: [
+        {
+          label: '新規キャラクター登録',
+          command: () => {
+            this.navigate('/main/new-character');
+          },
+        },
+        {
+          label: 'キャラクター一覧',
+          command: () => {
+            this.navigate('/main/list-character');
+          },
+        },
+        {
+          label: 'コピーライト表記',
+          command: () => {
+            this.navigate('/main/legal');
+          },
+        },
+      ],
+    },
+  ];
+
   constructor(private logger: NGXLogger, private confirmDialog: ConfirmationService, private router: Router) {
     this.logger.trace('new MainComponent()');
   }
@@ -50,7 +77,7 @@ export class MainComponent implements OnInit {
     this.confirmDialog.confirm({
       message: 'Are you sure to sign out?',
       accept: () => {
-        this.isSignedIn = false;
+        this.signedIn = false;
       },
     });
   }

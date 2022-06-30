@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
+import { AppInfo } from 'src/app/app-info.enum';
 
 @Component({
   selector: 'app-top-menu',
@@ -7,11 +8,9 @@ import { NGXLogger } from 'ngx-logger';
   styleUrls: ['./top-menu.component.scss'],
 })
 export class TopMenuComponent implements OnInit {
-  @Input() title!: string;
+  appInfo = AppInfo;
 
-  @Input() subTitle?: string;
-
-  @Input() isSignedIn!: boolean;
+  @Input() signedIn!: boolean;
 
   @Output() toggleSideMenuEvent = new EventEmitter<boolean>();
 

@@ -1,0 +1,11 @@
+<div class="tool-bar-body">
+  <div>
+    <p-button icon="pi pi-bars" (onClick)="menu.toggle($event)"></p-button>
+    <p-menu #menu [popup]="true" [model]="menuItems" [style]="{ width: 'auto' }"></p-menu>
+  </div>
+  <div>
+    <p-button icon="pi pi-user" class="left-button" [disabled]="!signedIn"></p-button>
+    <p-button *ngIf="signedIn" icon="pi pi-sign-out" class="right-button"></p-button>
+    <p-button *ngIf="!signedIn" icon="pi pi-sign-in" class="right-button"></p-button>
+  </div>
+</div>

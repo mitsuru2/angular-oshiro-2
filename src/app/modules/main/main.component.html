@@ -1,17 +1,62 @@
-<p-confirmDialog header="Confirmation" icon="pi pi-question-circle" [style]="{ width: '50vw' }"></p-confirmDialog>
-<div class="tool-bar">
-  <app-top-menu
-    [title]="appInfo.title"
-    [subTitle]="appInfo.subTitle"
-    [isSignedIn]="isSignedIn"
-    (toggleSideMenuEvent)="toggleSideMenu()"
-    (requestSignOutEvent)="askSignOut()"
-  ></app-top-menu>
-</div>
-<div class="container">
-  <app-side-menu [isOpen]="isSideMenuOpen" [items]="sideMenuItems"></app-side-menu>
-  <div class="content" id="MainContents">
-    <router-outlet></router-outlet>
+<div class="main-body" id="MainBody">
+  <div class="tool-bar"><app-top-menu [signedIn]="signedIn"></app-top-menu></div>
+  <div class="tool-bar-m"><app-top-menu-m [signedIn]="signedIn" [menuItems]="sideMenuItemsM"></app-top-menu-m></div>
+  <div class="container">
+    <div class="side-menu"><app-side-menu [menuItems]="sideMenuItems"></app-side-menu></div>
+    <div class="main-contents">
+      Main Contents
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+      <div>hoge</div>
+    </div>
   </div>
 </div>
-<!--<div class="footer"><span>Copyright (c) HogeHoge 2022.</span></div>-->

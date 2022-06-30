@@ -33,6 +33,7 @@ import { NewWeaponFormComponent } from './views/new-weapon-form/new-weapon-form.
 import { NewFacilityFormComponent } from './views/new-facility-form/new-facility-form.component';
 import { NewCharacterConfirmationComponent } from './views/new-character-confirmation/new-character-confirmation.component';
 import { MakeThumbnailImageComponent } from './views/make-thumbnail-image/make-thumbnail-image.component';
+import { TopMenuMComponent } from './views/top-menu-m/top-menu-m.component';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { MakeThumbnailImageComponent } from './views/make-thumbnail-image/make-t
     NewFacilityFormComponent,
     NewCharacterConfirmationComponent,
     MakeThumbnailImageComponent,
+    TopMenuMComponent,
   ],
   imports: [
     CommonModule,
