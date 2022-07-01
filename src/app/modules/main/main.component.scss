@@ -1,15 +1,28 @@
+.main-background {
+  display: flex;
+  justify-content: center;
+  width: 100vw;
+  background-color: var(--primary-color);
+  background-image: linear-gradient(rgb(255 255 255 / 25%), rgb(255 255 255 / 75%));
+  background-repeat: no-repeat;
+}
+
 .main-body {
   display: flex;
   flex-direction: column;
   width: 100vw;
+  max-width: 1200px;
   height: 100vh;
+  background-color: white;
 }
 
 .tool-bar {
+  padding: 0.5rem 1rem; // vertical horizontal
 }
 
 .tool-bar-m {
   display: none;
+  padding: 0.5rem 1rem; // vertical horizontal
 }
 
 .container {
@@ -19,14 +32,14 @@
   overflow-y: auto;
 
   .side-menu {
-    padding: 0;
-    margin: 0 0.5rem; // vertical horizontal.
+    width: 240px;
+    padding-left: 1rem;
     overflow-y: auto;
   }
 
   .main-contents {
     flex-grow: 1;
-    padding: 0.5rem 1rem; // vertical horizontal.
+    padding: 0 1rem; // vertical horizontal
     overflow-y: auto;
   }
 }
