@@ -25,7 +25,7 @@ export class NewWeaponFormComponent implements OnChanges {
 
   normalMode = NewWeaponFormMode.normal;
 
-  @Input() maxWidth = 'auto'; // pixel
+  @Input() styleClass = '';
 
   /** Button label and style. */
   @Input() okLabel = 'Ok';

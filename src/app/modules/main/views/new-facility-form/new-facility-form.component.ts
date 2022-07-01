@@ -25,7 +25,7 @@ export class NewFacilityFormComponent implements OnChanges {
 
   normalMode = NewFacilityFormMode.normal;
 
-  @Input() maxWidth = 'auto';
+  @Input() styleClass = '';
 
   /** Button label and style. */
   @Input() okLabel = 'Ok';

@@ -21,6 +21,8 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewInit {
   timerId: any; // For interval timer control.
 
   /** Appearance. */
+  @Input() styleClass = '';
+
   @Input() okLabel = 'OK';
 
   @Input() cancelLabel = 'Cancel';
@@ -33,7 +35,7 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewInit {
   inputImage?: any;
 
   /** Thumbnail and canvas size. */
-  @Input() thumbSize: WH = { w: 200, h: 200 }; // px.
+  @Input() thumbSize: WH = { w: 160, h: 160 }; // px.
 
   margin: WH = { w: 50, h: 50 };
 

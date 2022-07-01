@@ -25,6 +25,8 @@ import {
   NewCharacterFormContent,
   NewCharacterFormResult,
 } from '../../views/new-character-form/new-character-form.interface';
+import { CsCharacterImageTypeMax, csCharacterImageTypes } from 'src/app/services/cloud-storage/cloud-storage.interface';
+import { CloudStorageService } from 'src/app/services/cloud-storage/cloud-storage.service';
 
 @Component({
   selector: 'app-new-character',
@@ -87,7 +89,11 @@ export class NewCharacterComponent implements OnInit {
   //============================================================================
   // Class methods.
   //
-  constructor(private logger: NGXLogger, private firestore: FirestoreDataService, private storage: Storage) {
+  constructor(
+    private logger: NGXLogger,
+    private firestore: FirestoreDataService,
+    private storage: CloudStorageService
+  ) {
     this.logger.trace(`new ${this.className}()`);
   }
 
@@ -118,7 +124,7 @@ export class NewCharacterComponent implements OnInit {
     }
   }
 
-  onNewCharacterConfirmResult(result: boolean) {
+  async onNewCharacterConfirmResult(result: boolean) {
     const location = `${this.className}.onNewCharacterConfirmResult()`;
     this.logger.trace(location, { confirmationResult: result });
 
@@ -131,7 +137,12 @@ export class NewCharacterComponent implements OnInit {
     }
 
     // Upload input data.
-    this.uploadCharacterInfo(this.newCharacterFormContent);
+    const index = await this.uploadCharacterInfo(this.newCharacterFormContent);
+    if (index.length > 0) {
+      this.uploadCharacterImages(this.newCharacterFormContent, index);
+    } else {
+      this.logger.error(location, 'Invalid character index.', { index: index });
+    }
   }
 
   /**
@@ -245,7 +256,7 @@ export class NewCharacterComponent implements OnInit {
   //============================================================================
   // Private methods.
   //
-  private async uploadCharacterInfo(formContent: NewCharacterFormContent) {
+  private async uploadCharacterInfo(formContent: NewCharacterFormContent): Promise<string> {
     const location = `${this.className}.uploadCharacterInfo()`;
 
     // Make character info to be registered.
@@ -338,6 +349,8 @@ export class NewCharacterComponent implements OnInit {
         }
       }
     }
+
+    return character.index;
   }
 
   private makeCharacterInfo(formContent?: NewCharacterFormContent): FsCharacter {
@@ -398,5 +411,31 @@ export class NewCharacterComponent implements OnInit {
     index = `${code}-${subCode}-${(count - 1).toString(16).padStart(4, '0')}`;
 
     return index;
+  }
+
+  private async uploadCharacterImages(formContent: NewCharacterFormContent, index: string) {
+    // const location = `${this.className}.uploadCharacterImages()`;
+
+    // Upload images before kaichiku.
+    for (let i = 0; i < formContent.imageFiles.length; ++i) {
+      if (formContent.imageFiles[i]) {
+        const imagePath = `images/characters/${index}/${index}_${csCharacterImageTypes[i].type}.png`;
+        await this.storage.upload(imagePath, formContent.imageFiles[i]);
+      }
+    }
+
+    // Upload thumbnail.
+    if (formContent.thumbnailImage) {
+      const imagePath = `images/characters/${index}/${index}_thumb.jpg`;
+      await this.storage.upload(imagePath, formContent.thumbnailImage);
+    }
+
+    // Upload images after kaichiku.
+    for (let i = 0; i < formContent.imageFilesKai.length; ++i) {
+      if (formContent.imageFilesKai[i]) {
+        const imagePath = `images/characters/${index}/${index}_${csCharacterImageTypes[i].type}_kai.png`;
+        await this.storage.upload(imagePath, formContent.imageFilesKai[i]);
+      }
+    }
   }
 }

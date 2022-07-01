@@ -1,10 +1,10 @@
-<div class="flex flex-row gap-4">
+<div class="gap-4 make-thumbnail-view" [ngClass]="styleClass">
   <div class="flex">
     <canvas id="MakeThumbnailImage_Preview"></canvas>
   </div>
   <div class="flex flex-column justify-content-between">
-    <div class="p-fluid">
-      <label for="MakeThumbnailImage_ImageScaleInput">スケール</label>
+    <div class="scale-input">
+      <div>スケール</div>
       <p-inputNumber
         inputId="MakeThumbnailImage_ImageScaleInput"
         name="MakeThumbnailImage_ImageScaleInput"

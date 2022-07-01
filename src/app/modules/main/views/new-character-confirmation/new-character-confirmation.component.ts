@@ -33,7 +33,7 @@ export class NewCharacterConfirmationComponent implements OnChanges, AfterViewIn
   timerId: any; // For interval timer control.
 
   /** Appearance */
-  @Input() maxWidth = 'auto';
+  @Input() styleClass = '';
 
   @Input() okLabel = 'OK';
 
@@ -43,7 +43,7 @@ export class NewCharacterConfirmationComponent implements OnChanges, AfterViewIn
 
   readonly textNotAvailable = '(n.a.)';
 
-  readonly previewCanvasWidth = '200px';
+  readonly previewCanvasWidth = '160px';
 
   readonly previewCanvasHeight = this.previewCanvasWidth;
 

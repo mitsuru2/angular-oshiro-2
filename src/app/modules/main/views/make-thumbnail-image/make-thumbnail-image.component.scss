@@ -1,0 +1,19 @@
+.make-thumbnail-view {
+  display: flex;
+}
+
+.scale-input {
+
+}
+
+@media screen and (max-width: 959px) {
+  .make-thumbnail-view {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .scale-input {
+    max-width: 260px;
+    margin-bottom: 1rem;
+  }
+}

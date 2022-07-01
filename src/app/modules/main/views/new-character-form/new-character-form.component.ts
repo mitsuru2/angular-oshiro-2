@@ -734,6 +734,18 @@ export class NewCharacterFormComponent implements OnChanges {
       this.inputAbilities = [];
       this.inputAbilitiesKai = [];
     }
+
+    if (exceptItems.includes('images') === false) {
+      for (let i = 0; i < this.imageTypeMax; ++i) {
+        this.imageLoadFlags[i] = false;
+        this.inputImageFiles[i] = undefined;
+        this.imageLoadFlagsKai[i] = false;
+        this.inputImageFilesKai[i] = undefined;
+        this.thumbnailBlob = undefined;
+      }
+    }
+
+    this.logger.debug(location, { images: this.inputImageFiles });
   }
 
   private makeFsAbilityForNewCharacterForm(base?: FsAbility): FsAbilityForNewCharacterForm {
@@ -758,6 +770,10 @@ export class NewCharacterFormComponent implements OnChanges {
       }
       result.tokenAvailable = base.tokenLayouts.length > 0 ? true : false;
       result.isExisting = true;
+    }
+
+    while (result.descriptions.length < 3) {
+      result.descriptions.push('');
     }
 
     return result;
