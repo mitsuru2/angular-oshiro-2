@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
-import { MenuItem } from 'primeng/api';
 import { AppInfo } from 'src/app/app-info.enum';
 
 @Component({

@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { NGXLogger } from 'ngx-logger';
 import { MenuItem } from 'primeng/api';
-import { trigger, style, state, animate, transition, AnimationEvent } from '@angular/animations';
 
 @Component({
   selector: 'app-side-menu',
@@ -8,9 +8,13 @@ import { trigger, style, state, animate, transition, AnimationEvent } from '@ang
   styleUrls: ['./side-menu.component.scss'],
 })
 export class SideMenuComponent implements OnInit {
+  readonly className = 'SideMenuComponent';
+
   @Input() menuItems: MenuItem[] = [];
 
-  constructor() {}
+  constructor(private logger: NGXLogger) {
+    this.logger.trace();
+  }
 
   ngOnInit(): void {}
 }
