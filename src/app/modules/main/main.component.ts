@@ -14,10 +14,6 @@ export class MainComponent implements OnInit {
 
   signedIn = true;
 
-  isVisible = true;
-
-  isSideMenuOpen = true;
-
   sideMenuItems = [
     {
       label: '新規キャラクター登録',
@@ -62,6 +58,23 @@ export class MainComponent implements OnInit {
             this.navigate('/main/legal');
           },
         },
+        {
+          label: 'ユーザー設定',
+          command: () => {},
+        },
+        {
+          separator: true,
+        },
+        {
+          label: 'サインイン',
+          visible: !this.signedIn,
+          command: () => {},
+        },
+        {
+          label: 'サインアウト',
+          visible: this.signedIn,
+          command: () => {},
+        },
       ],
     },
   ];
@@ -80,11 +93,6 @@ export class MainComponent implements OnInit {
         this.signedIn = false;
       },
     });
-  }
-
-  toggleSideMenu(): void {
-    this.logger.trace('MainComponent.toggleSideMenu()');
-    this.isSideMenuOpen = !this.isSideMenuOpen;
   }
 
   navigate(url: string): void {

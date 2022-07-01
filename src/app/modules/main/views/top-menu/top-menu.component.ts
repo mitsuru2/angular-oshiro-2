@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
+import { MenuItem } from 'primeng/api';
 import { AppInfo } from 'src/app/app-info.enum';
 
 @Component({
@@ -10,9 +11,7 @@ import { AppInfo } from 'src/app/app-info.enum';
 export class TopMenuComponent implements OnInit {
   appInfo = AppInfo;
 
-  @Input() signedIn!: boolean;
-
-  @Output() toggleSideMenuEvent = new EventEmitter<boolean>();
+  @Input() signedIn: boolean = false;
 
   @Output() requestSignOutEvent = new EventEmitter<boolean>();
 
@@ -21,11 +20,6 @@ export class TopMenuComponent implements OnInit {
   }
 
   ngOnInit(): void {}
-
-  toggleSideMenu() {
-    this.logger.trace('TopMenuComponent.toggleSideMenu()');
-    this.toggleSideMenuEvent.emit(true);
-  }
 
   requestSignOut() {
     this.logger.trace('TopMenuComponent.requestSignOut()');

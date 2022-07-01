@@ -11,7 +11,7 @@ export class TopMenuMComponent implements OnInit {
   readonly className = 'TopMenuMComponent';
 
   /** Top menu. */
-  @Input() signedIn: boolean = false;
+  //@Input() signedIn: boolean = false;
 
   /** Menu dialog. */
   @Input() menuItems: MenuItem[] = [];
