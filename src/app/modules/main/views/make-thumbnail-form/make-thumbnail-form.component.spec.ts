@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MakeThumbnailImageComponent } from './make-thumbnail-image.component';
+import { MakeThumbnailFormComponent } from './make-thumbnail-form.component';
 
-describe('MakeThumbnailImageComponent', () => {
-  let component: MakeThumbnailImageComponent;
-  let fixture: ComponentFixture<MakeThumbnailImageComponent>;
+describe('MakeThumbnailFormComponent', () => {
+  let component: MakeThumbnailFormComponent;
+  let fixture: ComponentFixture<MakeThumbnailFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MakeThumbnailImageComponent ]
+      declarations: [ MakeThumbnailFormComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MakeThumbnailImageComponent);
+    fixture = TestBed.createComponent(MakeThumbnailFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

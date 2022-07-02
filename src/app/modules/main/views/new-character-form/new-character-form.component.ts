@@ -22,7 +22,7 @@ import {
 } from 'src/app/services/firestore-data/firestore-document.interface';
 import { HtmlCanvas } from '../../utils/html-canvas/html-canvas.utility';
 import { loadImageFile } from '../../utils/image-file/image-file.utility';
-import { MakeThumbnailImageResult } from '../make-thumbnail-image/make-thumbnail-image.interface';
+import { MakeThumbnailFormResult } from '../make-thumbnail-form/make-thumbnail-form.interface';
 import { NewFacilityFormMode, NewFacilityFormResult } from '../new-facility-form/new-facility-form.interafce';
 import { NewWeaponFormMode, NewWeaponFormResult } from '../new-weapon-form/new-weapon-form.interface';
 import {
@@ -544,15 +544,15 @@ export class NewCharacterFormComponent implements OnChanges {
     }
   }
 
-  onMakeThumbnailImageClick() {
-    const location = `${this.className}.onMakeThumbnailImageClick()`;
+  onMakeThumbnailFormClick() {
+    const location = `${this.className}.onMakeThumbnailFormClick()`;
     this.logger.trace(location);
 
     this.showMakeThumbnailDialog = true;
   }
 
-  onMakeThumbnailImageResult(thumbResult: MakeThumbnailImageResult) {
-    const location = `${this.className}.onMakeThumbnailImageResult()`;
+  onMakeThumbnailFormResult(thumbResult: MakeThumbnailFormResult) {
+    const location = `${this.className}.onMakeThumbnailFormResult()`;
     this.logger.trace(location, { canceld: thumbResult.canceled });
 
     if (!thumbResult.canceled) {

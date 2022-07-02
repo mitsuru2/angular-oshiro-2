@@ -2,15 +2,15 @@ import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, Simpl
 import { NGXLogger } from 'ngx-logger';
 import { HtmlCanvas } from '../../utils/html-canvas/html-canvas.utility';
 import { loadImageFile } from '../../utils/image-file/image-file.utility';
-import { MakeThumbnailImageResult, WH, XY } from './make-thumbnail-image.interface';
+import { MakeThumbnailFormResult, XY } from './make-thumbnail-form.interface';
 
 @Component({
-  selector: 'app-make-thumbnail-image',
-  templateUrl: './make-thumbnail-image.component.html',
-  styleUrls: ['./make-thumbnail-image.component.scss'],
+  selector: 'app-make-thumbnail-form',
+  templateUrl: './make-thumbnail-form.component.html',
+  styleUrls: ['./make-thumbnail-form.component.scss'],
 })
-export class MakeThumbnailImageComponent implements OnChanges, AfterViewInit {
-  readonly className = 'MakeThumbnailImageComponent';
+export class MakeThumbnailFormComponent implements OnChanges, AfterViewInit {
+  readonly className = 'MakeThumbnailFormComponent';
 
   /** Status. */
   @Input() dialogMode: boolean = false;
@@ -35,30 +35,32 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewInit {
   inputImage?: any;
 
   /** Thumbnail and canvas size. */
-  @Input() thumbSize: WH = { w: 160, h: 160 }; // px.
+  @Input() thumbSize = new XY(160, 160); // px.
 
-  margin: WH = { w: 50, h: 50 };
+  margin = new XY(50, 50);
 
-  canvasSize: WH = { w: this.thumbSize.w + this.margin.w * 2, h: this.thumbSize.h + this.margin.h * 2 };
+  canvasSize = this.thumbSize.add(this.margin.multi(2));
 
   /** Image info. */
-  imagePos: XY = { x: 0, y: 0 };
+  imagePos = new XY();
 
-  scaledImageSize: WH = { w: 0, h: 0 };
+  scaledImageSize = new XY();
 
   /** Canvas. */
   canvas?: HtmlCanvas;
 
-  readonly canvasId = 'MakeThumbnailImage_Preview';
+  readonly canvasId = 'MakeThumbnailForm_Preview';
 
   /** Mouse */
   isMouseDragging = false;
+
+  mouseLastPos: XY = new XY();
 
   /** Scale factor. */
   @Input() imageScale = 100;
 
   /** Output. */
-  @Output() thumbResult = new EventEmitter<MakeThumbnailImageResult>();
+  @Output() thumbResult = new EventEmitter<MakeThumbnailFormResult>();
 
   thumbData?: Blob;
 
@@ -153,7 +155,7 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewInit {
     const location = `${this.className}.onOkClick()`;
     this.logger.trace(location);
 
-    this.makeThumbnailImageData();
+    this.MakeThumbnailFormData();
 
     this.thumbResult.emit({ canceled: false, thumb: this.thumbData });
   }
@@ -180,8 +182,8 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewInit {
     this.logger.trace(location);
 
     // Set canvas size.
-    canvas.width = this.canvasSize.w;
-    canvas.height = this.canvasSize.h;
+    canvas.width = this.canvasSize.x;
+    canvas.height = this.canvasSize.y;
 
     // Register event listener.
     canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
@@ -200,7 +202,7 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewInit {
     const promise = loadImageFile(inputFile);
     promise.then((result) => {
       this.inputImage = result;
-      this.imagePos.x = (this.canvasSize.w - this.inputImage.width) / 2;
+      this.imagePos.x = (this.canvasSize.x - this.inputImage.width) / 2;
       this.scaledImageSize = this.calcScaledImageSize(100);
       if (this.canvas) {
         this.onImageScaleInputChange({ value: this.imageScale });
@@ -227,8 +229,8 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewInit {
         this.inputImage,
         this.imagePos.x,
         this.imagePos.y,
-        this.scaledImageSize.w,
-        this.scaledImageSize.h
+        this.scaledImageSize.x,
+        this.scaledImageSize.y
       );
     }
   }
@@ -249,26 +251,43 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewInit {
   private drawMarginFrame() {
     if (this.canvas) {
       this.canvas.fillStyle = 'rgba(128, 128, 128, 0.5)'; // 50% gray.
-      this.canvas.drawRect(0, 0, this.canvasSize.w, this.margin.h);
-      this.canvas.drawRect(0, this.margin.h, this.margin.w, this.canvasSize.h - this.margin.h * 2);
-      this.canvas.drawRect(this.canvasSize.w - this.margin.w, this.margin.h, this.margin.w, this.canvasSize.h - this.margin.h * 2); // eslint-disable-line
-      this.canvas.drawRect(0, this.canvasSize.h - this.margin.h, this.canvasSize.w, this.margin.h);
+      this.canvas.drawRect(0, 0, this.canvasSize.x, this.margin.y);
+      this.canvas.drawRect(0, this.margin.y, this.margin.x, this.canvasSize.y - this.margin.y * 2);
+      this.canvas.drawRect(this.canvasSize.x - this.margin.x, this.margin.y, this.margin.x, this.canvasSize.y - this.margin.y * 2); // eslint-disable-line
+      this.canvas.drawRect(0, this.canvasSize.y - this.margin.y, this.canvasSize.x, this.margin.y);
     }
   }
 
   private drawCenterLine() {
     if (this.canvas) {
       this.canvas.strokeStyle = 'rgba(0, 0, 255, 0.5)'; // 50% Blue.
-      this.canvas.drawLine(0, Math.ceil(this.canvasSize.h / 2), this.canvasSize.w, Math.ceil(this.canvasSize.h / 2));
-      this.canvas.drawLine(Math.ceil(this.canvasSize.w / 2), 0, Math.ceil(this.canvasSize.w / 2), this.canvasSize.h);
+      this.canvas.drawLine(0, Math.ceil(this.canvasSize.y / 2), this.canvasSize.x, Math.ceil(this.canvasSize.y / 2));
+      this.canvas.drawLine(Math.ceil(this.canvasSize.x / 2), 0, Math.ceil(this.canvasSize.x / 2), this.canvasSize.y);
     }
   }
 
   //----------------------------------------------------------------------------
   // Mouse event handlers.
   //
-  private onMouseDown() {
+  private getMousePos(event: MouseEvent | Touch): XY {
+    return new XY(event.clientX, event.clientY);
+  }
+
+  private moveImage(event: MouseEvent | Touch) {
+    // Get current mouse position (relative).
+    const curPos = this.getMousePos(event);
+
+    // Move image.
+    const move = curPos.sub(this.mouseLastPos);
+    this.imagePos = this.imagePos.add(move);
+
+    // Update last position.
+    this.mouseLastPos = curPos;
+  }
+
+  private onMouseDown(event: MouseEvent) {
     this.isMouseDragging = true;
+    this.mouseLastPos = this.getMousePos(event);
   }
 
   private onMouseUp() {
@@ -281,38 +300,58 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewInit {
 
   private onMouseMove(event: MouseEvent) {
     if (this.isMouseDragging) {
-      this.imagePos.x += event.movementX;
-      this.imagePos.y += event.movementY;
+      this.moveImage(event);
       this.draw();
+    }
+  }
+
+  private onTouchStart(event: TouchEvent) {
+    // It supports single touch only.
+    if (event.changedTouches.length === 1) {
+      this.isMouseDragging = true;
+      this.mouseLastPos = this.getMousePos(event.changedTouches[0]);
+    }
+  }
+
+  private onTouchEnd(event: TouchEvent) {
+    // It suppots single touch only.
+    if (event.changedTouches.length === 1) {
+      this.isMouseDragging = false;
+    }
+  }
+
+  private onTouchMove(event: TouchEvent) {
+    if (event.changedTouches.length === 1) {
+      if (this.isMouseDragging) {
+        this.moveImage(event.changedTouches[0]);
+        this.draw();
+      }
     }
   }
 
   //----------------------------------------------------------------------------
   // Image scaling.
   //
-  private calcScaledImageSize(scale: number): WH {
+  private calcScaledImageSize(scale: number): XY {
     const width = Math.ceil((this.inputImage.width * scale) / 100);
     const height = Math.ceil((this.inputImage.height * scale) / 100);
 
-    return { w: width, h: height };
+    return new XY(width, height);
   }
 
-  private calcScaledImagePos(scale: number, size: WH, pos: XY): XY {
-    const centerX = this.canvasSize.w / 2 - pos.x;
-    const centerY = this.canvasSize.h / 2 - pos.y;
-    const rateX = centerX / size.w;
-    const rateY = centerY / size.h;
+  private calcScaledImagePos(scale: number, size: XY, pos: XY): XY {
+    const center = this.canvasSize.div(2).sub(pos);
+    const rate = new XY(center.x / size.x, center.y / size.y);
     const scaledWH = this.calcScaledImageSize(scale);
-    const scaledCenterX = Math.ceil(scaledWH.w * rateX);
-    const scaledCenterY = Math.ceil(scaledWH.h * rateY);
-    return { x: this.canvasSize.w / 2 - scaledCenterX, y: this.canvasSize.h / 2 - scaledCenterY };
+    const scaledCenter = new XY(scaledWH.x * rate.x, scaledWH.y * rate.y);
+    return this.canvasSize.div(2).sub(scaledCenter);
   }
 
   //----------------------------------------------------------------------------
   // Making output data.
   //
-  private makeThumbnailImageData() {
-    const location = `${this.className}.makeThumbnailImageData()`;
+  private MakeThumbnailFormData() {
+    const location = `${this.className}.MakeThumbnailFormData()`;
 
     // Make dummy canvas to crop image.
     const tmpCanvas = document.createElement('canvas');
@@ -327,17 +366,16 @@ export class MakeThumbnailImageComponent implements OnChanges, AfterViewInit {
     }
 
     // Set temporary canvas size.
-    tmpCanvas.width = this.thumbSize.w;
-    tmpCanvas.height = this.thumbSize.h;
+    tmpCanvas.width = this.thumbSize.x;
+    tmpCanvas.height = this.thumbSize.y;
 
     // Fill canvas with white color.
     context.fillStyle = 'rgba(255, 255, 255, 1)';
     context.fillRect(0, 0, tmpCanvas.width, tmpCanvas.height);
 
     // Draw image to temporary canvas.
-    const posX = this.imagePos.x - this.margin.w;
-    const posY = this.imagePos.y - this.margin.h;
-    context.drawImage(this.inputImage, posX, posY, this.scaledImageSize.w, this.scaledImageSize.h);
+    const pos = this.imagePos.sub(this.margin);
+    context.drawImage(this.inputImage, pos.x, pos.y, this.scaledImageSize.x, this.scaledImageSize.y);
 
     // Get image data.
     const base64 = tmpCanvas.toDataURL('image/jpeg');

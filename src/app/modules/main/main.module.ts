@@ -18,7 +18,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { DividerModule } from 'primeng/divider';
 import { ChipsModule } from 'primeng/chips';
-import {ProgressSpinnerModule} from 'primeng/progressspinner';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 import { MainRoutingModule } from './main-routing.module';
 import { MainComponent } from './main.component';
@@ -32,7 +32,7 @@ import { NewCharacterFormComponent } from './views/new-character-form/new-charac
 import { NewWeaponFormComponent } from './views/new-weapon-form/new-weapon-form.component';
 import { NewFacilityFormComponent } from './views/new-facility-form/new-facility-form.component';
 import { NewCharacterConfirmationComponent } from './views/new-character-confirmation/new-character-confirmation.component';
-import { MakeThumbnailImageComponent } from './views/make-thumbnail-image/make-thumbnail-image.component';
+import { MakeThumbnailFormComponent } from './views/make-thumbnail-form/make-thumbnail-form.component';
 import { TopMenuMComponent } from './views/top-menu-m/top-menu-m.component';
 
 @NgModule({
@@ -47,7 +47,7 @@ import { TopMenuMComponent } from './views/top-menu-m/top-menu-m.component';
     NewWeaponFormComponent,
     NewFacilityFormComponent,
     NewCharacterConfirmationComponent,
-    MakeThumbnailImageComponent,
+    MakeThumbnailFormComponent,
     TopMenuMComponent,
   ],
   imports: [
@@ -71,7 +71,7 @@ import { TopMenuMComponent } from './views/top-menu-m/top-menu-m.component';
     AutoCompleteModule,
     DividerModule,
     ChipsModule,
-    ProgressSpinnerModule
+    ProgressSpinnerModule,
   ],
   bootstrap: [MainComponent],
   providers: [ConfirmationService],

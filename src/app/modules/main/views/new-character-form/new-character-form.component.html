@@ -612,7 +612,7 @@
     icon="pi pi-image"
     label="サムネイル作成"
     class="p-button-outlined p-button-rounded"
-    (click)="onMakeThumbnailImageClick()"
+    (click)="onMakeThumbnailFormClick()"
     [disabled]="!inputImageFiles[0]"
   ></button>
   <div *ngIf="this.thumbnailBlob" style="margin-top: 1rem">
@@ -735,13 +735,13 @@
 <!-- Make thumbnail image dialog -->
 <!---->
 <p-dialog header="サムネイル画像を作成します。" [(visible)]="showMakeThumbnailDialog" [modal]="true" [draggable]="false" [resizable]="false">
-  <app-make-thumbnail-image
+  <app-make-thumbnail-form
     [dialogMode]="true"
     styleClass="dialog"
     [shown]="showMakeThumbnailDialog"
     [inputFile]="inputImageFiles[0]"
     [buttonStyleClass]="'p-button-text'"
-    [imageScale]="70"
-    (thumbResult)="onMakeThumbnailImageResult($event)"
-  ></app-make-thumbnail-image>
+    [imageScale]="75"
+    (thumbResult)="onMakeThumbnailFormResult($event)"
+  ></app-make-thumbnail-form>
 </p-dialog>
