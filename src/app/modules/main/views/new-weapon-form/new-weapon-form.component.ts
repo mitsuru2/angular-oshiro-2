@@ -18,6 +18,9 @@ export class NewWeaponFormComponent implements OnChanges {
   //
   private className = 'NewWeaponFormComponent';
 
+  /** Lifecycle. */
+  @Input() shown = false;
+
   /** Appearance. */
   @Input() mode: NewWeaponFormMode = NewWeaponFormMode.normal;
 
@@ -82,9 +85,15 @@ export class NewWeaponFormComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Set input weapon name if initial value is set by parent component.
-    // Set input weapon name if initial value is set by parent component.
+    // Clear input values when dialog is shown.
+    if (changes['shown']) {
+      if (changes['shown'].currentValue === true) {
+        this.clearInputs();
+      }
+    }
+
     if (!changes['initialWeaponName'] || changes['initialWeaponName'].previousValue !== this.initialWeaponName) {
+      // Set input weapon name if initial value is set by parent component.
       this.inputName = this.initialWeaponName;
     }
 
@@ -131,14 +140,15 @@ export class NewWeaponFormComponent implements OnChanges {
 
   onOkClick() {
     this.formResult.emit(this.makeWeaponInfo(false));
-    this.clearInputs();
   }
 
   onCancelClick() {
     this.formResult.emit(this.makeWeaponInfo(true));
-    this.clearInputs();
   }
 
+  //============================================================================
+  // Private methods.
+  //
   private clearInputs() {
     this.selectedType = undefined;
     this.inputName = '';

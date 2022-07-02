@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AppInfo } from 'src/app/app-info.enum';
 
 @Component({
@@ -6,10 +6,6 @@ import { AppInfo } from 'src/app/app-info.enum';
   templateUrl: './legal.component.html',
   styleUrls: ['./legal.component.scss'],
 })
-export class LegalComponent implements OnInit {
+export class LegalComponent /*implements OnInit*/ {
   appInfo = AppInfo;
-
-  constructor() {}
-
-  ngOnInit(): void {}
 }

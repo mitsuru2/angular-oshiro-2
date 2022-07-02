@@ -1,4 +1,4 @@
-import { Component, Directive, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
 import {
   FsAbility,
@@ -19,13 +19,12 @@ import {
 } from 'src/app/services/firestore-data/firestore-document.interface';
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
 import { FsCollectionName } from 'src/app/services/firestore-data/firestore-collection-name.enum';
-import { ref, Storage, uploadBytes } from '@angular/fire/storage';
-import { AbstractControl, NG_VALIDATORS, ValidationErrors, Validator, ValidatorFn } from '@angular/forms';
 import {
+  FsAbilityForNewCharacterForm,
   NewCharacterFormContent,
   NewCharacterFormResult,
 } from '../../views/new-character-form/new-character-form.interface';
-import { CsCharacterImageTypeMax, csCharacterImageTypes } from 'src/app/services/cloud-storage/cloud-storage.interface';
+import { csCharacterImageTypes } from 'src/app/services/cloud-storage/cloud-storage.interface';
 import { CloudStorageService } from 'src/app/services/cloud-storage/cloud-storage.service';
 
 @Component({
@@ -33,54 +32,39 @@ import { CloudStorageService } from 'src/app/services/cloud-storage/cloud-storag
   templateUrl: './new-character.component.html',
   styleUrls: ['./new-character.component.scss'],
 })
-export class NewCharacterComponent implements OnInit {
-  @ViewChild('shiromusumePreview') shiromusumePreview!: ElementRef<HTMLCanvasElement>;
-
+export class NewCharacterComponent /*implements OnInit*/ {
   className: string = 'NewCharacterComponent';
 
-  characterTypes!: FsCharacterType[];
+  /** Firestore data */
+  abilities = this.firestore.getData(FsCollectionName.Abilities) as FsAbility[];
 
-  characters!: FsCharacter[];
+  abilityTypes = this.firestore.getData(FsCollectionName.AbilityTypes) as FsAbilityType[];
 
-  characterTags!: FsCharacterTag[];
+  characterTypes = this.firestore.getData(FsCollectionName.CharacterTypes) as FsCharacterType[];
 
-  inputName: string = '';
+  characterTags = this.firestore.getData(FsCollectionName.CharacterTags) as FsCharacterTag[];
 
-  selectedRarerity: number = 1;
+  characters = this.firestore.getData(FsCollectionName.Characters) as FsCharacter[];
 
-  geographTypes!: FsGeographType[];
+  facilityTypes = this.firestore.getData(FsCollectionName.FacilityTypes) as FsFacilityType[];
 
-  selectedGeographTypes: FsGeographType[] = [];
+  facilities = this.firestore.getData(FsCollectionName.Facilities) as FsFacility[];
 
-  isShowSubGeographTypeInput = false;
+  geographTypes = this.firestore.getData(FsCollectionName.GeographTypes) as FsGeographType[];
 
-  weaponTypes!: FsWeaponType[];
+  illustrators = this.firestore.getData(FsCollectionName.Illustrators) as FsIllustrator[];
 
-  selectedWeaponType?: FsWeaponType;
+  regions = this.firestore.getData(FsCollectionName.Regions) as FsRegion[];
 
-  regions!: FsRegion[];
+  voiceActors = this.firestore.getData(FsCollectionName.VoiceActors) as FsVoiceActor[];
 
-  voiceActors!: FsVoiceActor[];
+  weaponTypes = this.firestore.getData(FsCollectionName.WeaponTypes) as FsWeaponType[];
 
-  illustrators!: FsIllustrator[];
-
-  weapons!: FsWeapon[];
-
-  facilityTypes!: FsFacilityType[];
-
-  facilities!: FsFacility[];
-
-  abilityTypes!: FsAbilityType[];
-
-  abilities!: FsAbility[];
-
-  shiromusumeFile?: File | null;
-
-  isPlusGeographTypeButtonActive = false;
-
-  isDialogShow = false;
+  weapons = this.firestore.getData(FsCollectionName.Weapons) as FsWeapon[];
 
   /** New character form. */
+  showNewCharacterForm = true;
+
   newCharacterFormContent = new NewCharacterFormContent();
 
   /** New character confirmation dialog. */
@@ -100,21 +84,7 @@ export class NewCharacterComponent implements OnInit {
     this.logger.trace(`new ${this.className}()`);
   }
 
-  ngOnInit(): void {
-    this.characterTypes = this.firestore.getData(FsCollectionName.CharacterTypes) as FsCharacterType[];
-    this.characters = this.firestore.getData(FsCollectionName.Characters) as FsCharacter[];
-    this.characterTags = this.firestore.getData(FsCollectionName.CharacterTags) as FsCharacterTag[];
-    this.geographTypes = this.firestore.getData(FsCollectionName.GeographTypes) as FsGeographType[];
-    this.weaponTypes = this.firestore.getData(FsCollectionName.WeaponTypes) as FsWeaponType[];
-    this.weapons = this.firestore.getData(FsCollectionName.Weapons) as FsWeapon[];
-    this.facilities = this.firestore.getData(FsCollectionName.Facilities) as FsFacility[];
-    this.facilityTypes = this.firestore.getData(FsCollectionName.FacilityTypes) as FsFacilityType[];
-    this.regions = this.firestore.getData(FsCollectionName.Regions) as FsRegion[];
-    this.voiceActors = this.firestore.getData(FsCollectionName.VoiceActors) as FsVoiceActor[];
-    this.illustrators = this.firestore.getData(FsCollectionName.Illustrators) as FsIllustrator[];
-    this.abilityTypes = this.firestore.getData(FsCollectionName.AbilityTypes) as FsAbilityType[];
-    this.abilities = this.firestore.getData(FsCollectionName.Abilities) as FsAbility[];
-  }
+  // ngOnInit(): void {}
 
   onNewCharacterFormResult(formResult: NewCharacterFormResult) {
     const location = `${this.className}.onNewCharacterFormResult()`;
@@ -125,6 +95,9 @@ export class NewCharacterComponent implements OnInit {
       this.newCharacterFormContent = formResult.content;
       this.showConfirmationDialog = true;
     }
+
+    /** Clear shown flag. */
+    this.showNewCharacterForm = false;
   }
 
   async onNewCharacterConfirmResult(result: boolean) {
@@ -171,6 +144,8 @@ export class NewCharacterComponent implements OnInit {
 
       // Store document ID of voice actor.
       character.voiceActors.push(docId);
+    } else {
+      this.logger.warn(location, 'No voice actor input.');
     }
 
     // Check input illustrators.
@@ -180,6 +155,8 @@ export class NewCharacterComponent implements OnInit {
 
       // Store document ID of illustrator.
       character.illustrators.push(docId);
+    } else {
+      this.logger.warn(location, 'No illustrator input.');
     }
 
     // Check input motif weapons.
@@ -211,8 +188,11 @@ export class NewCharacterComponent implements OnInit {
 
     // Check input abilities.
     for (let i = 0; i < formContent.abilities.length; ++i) {
+      // Convert ability data for Firestore.
+      const ability = this.convFsAbilityInfo(formContent.abilities[i]);
+
       // Add new data if not existing, and get document ID.
-      docId = await this.addDataAndGetDocumentId(FsCollectionName.Abilities, formContent.abilities[i]);
+      docId = await this.addDataAndGetDocumentId(FsCollectionName.Abilities, ability);
 
       // Store document ID of ability.
       character.abilities.push(docId);
@@ -220,8 +200,11 @@ export class NewCharacterComponent implements OnInit {
 
     // Check input abilities (kaichiku).
     for (let i = 0; i < formContent.abilitiesKai.length; ++i) {
+      // Convert ability data for Firestore.
+      const ability = this.convFsAbilityInfo(formContent.abilitiesKai[i]);
+
       // Add new data if not existing, and get document ID.
-      docId = await this.addDataAndGetDocumentId(FsCollectionName.Abilities, formContent.abilitiesKai[i]);
+      docId = await this.addDataAndGetDocumentId(FsCollectionName.Abilities, ability);
 
       // Store document ID of ability.
       character.abilitiesKai.push(docId);
@@ -274,9 +257,26 @@ export class NewCharacterComponent implements OnInit {
     return character;
   }
 
-  private async addDataAndGetDocumentId<T extends FsDocumentBase>(name: FsCollectionName, data: T): Promise<string> {
+  private convFsAbilityInfo(src: FsAbilityForNewCharacterForm): FsAbility {
+    const result = new FsAbility();
+
+    result.id = src.id;
+    result.name = src.name;
+    result.type = src.type;
+    result.cost = src.cost;
+    result.interval = src.interval;
+    result.descriptions = src.descriptions;
+    result.tokenLayouts = src.tokenLayouts;
+
+    return result;
+  }
+
+  private async addDataAndGetDocumentId(name: FsCollectionName, data: FsDocumentBase): Promise<string> {
+    const location = `${this.className}.addDataAndGetDocumentId()`;
     let docId = '';
     const refData = this.firestore.getData(name);
+
+    this.logger.trace(location, { name: name, dataName: data.name });
 
     // Check if the voice actor is new or existing.
     let isFound = false;
@@ -284,12 +284,14 @@ export class NewCharacterComponent implements OnInit {
       if (refData[i].name === data.name) {
         isFound = true;
         docId = refData[i].id;
+        this.logger.debug(location, 'existing');
         break;
       }
     }
     if (!isFound) {
       // Upload voice actor info.
       docId = await this.firestore.addData(name, data);
+      this.logger.debug(location, 'new data', { docId: docId });
     }
 
     return docId;
@@ -324,13 +326,11 @@ export class NewCharacterComponent implements OnInit {
         await this.storage.upload(imagePath, formContent.imageFiles[i]);
       }
     }
-
     // Upload thumbnail.
     if (formContent.thumbnailImage) {
       const imagePath = `images/characters/${index}/${index}_thumb.jpg`;
       await this.storage.upload(imagePath, formContent.thumbnailImage);
     }
-
     // Upload images after kaichiku.
     for (let i = 0; i < formContent.imageFilesKai.length; ++i) {
       if (formContent.imageFilesKai[i]) {

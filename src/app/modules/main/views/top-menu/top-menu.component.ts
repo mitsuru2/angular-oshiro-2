@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
 import { AppInfo } from 'src/app/app-info.enum';
 
@@ -7,7 +7,7 @@ import { AppInfo } from 'src/app/app-info.enum';
   templateUrl: './top-menu.component.html',
   styleUrls: ['./top-menu.component.scss'],
 })
-export class TopMenuComponent implements OnInit {
+export class TopMenuComponent /*implements OnInit*/ {
   appInfo = AppInfo;
 
   @Input() signedIn: boolean = false;
@@ -18,7 +18,7 @@ export class TopMenuComponent implements OnInit {
     this.logger.trace('new TopMenuComponent()');
   }
 
-  ngOnInit(): void {}
+  // ngOnInit(): void {}
 
   requestSignOut() {
     this.logger.trace('TopMenuComponent.requestSignOut()');

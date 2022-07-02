@@ -18,6 +18,9 @@ export class NewFacilityFormComponent implements OnChanges {
   //
   private className = 'NewFacilityFormComponent';
 
+  /** Status */
+  @Input() shown = false;
+
   /** Appearance. */
   @Input() mode = NewFacilityFormMode.normal;
 
@@ -78,6 +81,13 @@ export class NewFacilityFormComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    // Clear input values when dialog is shown.
+    if (changes['shown']) {
+      if (changes['shown'].currentValue === true) {
+        this.clearInputs();
+      }
+    }
+
     // Set input weapon name if initial value is set by parent component.
     if (!changes['initialFacilityName'] || changes['initialFacilityName'].previousValue !== this.initialFacilityName) {
       this.inputName = this.initialFacilityName;
@@ -129,7 +139,6 @@ export class NewFacilityFormComponent implements OnChanges {
     this.logger.trace(location);
 
     this.formResult.emit(this.makeFacilityInfo(false));
-    this.clearInputs();
   }
 
   onCancelClick() {
@@ -137,7 +146,6 @@ export class NewFacilityFormComponent implements OnChanges {
     this.logger.trace(location);
 
     this.formResult.emit(this.makeFacilityInfo(true));
-    this.clearInputs();
   }
 
   private clearInputs() {

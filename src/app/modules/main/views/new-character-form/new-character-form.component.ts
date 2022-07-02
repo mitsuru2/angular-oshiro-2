@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
 import { CsCharacterImageTypeMax, csCharacterImageTypes } from 'src/app/services/cloud-storage/cloud-storage.interface';
 import { FirestoreDataService } from 'src/app/services/firestore-data/firestore-data.service';
@@ -38,6 +38,9 @@ import {
 })
 export class NewCharacterFormComponent implements OnChanges {
   private className = 'NewCharacterFormComponent';
+
+  /** Form Status */
+  @Input() shown = false;
 
   /** Appearance. */
   @Input() maxWidth = 'auto';
@@ -203,7 +206,14 @@ export class NewCharacterFormComponent implements OnChanges {
     }
   }
 
-  ngOnChanges(): void {
+  ngOnChanges(changes: SimpleChanges): void {
+    // Clear input values when dialog is shown.
+    if (changes['shown']) {
+      if (changes['shown'].currentValue === true) {
+        this.clearForm();
+      }
+    }
+
     // Character type.
     this.firestore.sortByCode(this.characterTypes);
     this.selectedCharacterType = this.characterTypes[0];
@@ -577,7 +587,6 @@ export class NewCharacterFormComponent implements OnChanges {
     this.validateForm();
     if (this.isFormValid) {
       this.formResult.emit(this.makeCharacterInfo(false));
-      this.clearForm();
     } else {
       this.scrollToTop();
     }
@@ -585,7 +594,6 @@ export class NewCharacterFormComponent implements OnChanges {
 
   onCancelClick() {
     this.formResult.emit(this.makeCharacterInfo(true));
-    this.clearForm();
   }
 
   /**
@@ -857,13 +865,18 @@ export class NewCharacterFormComponent implements OnChanges {
 
       // Voice actor.
       if (this.inputVoiceActor.name !== '') {
-        content.voiceActor = this.inputVoiceActor;
+        content.voiceActor.name = this.inputVoiceActor.name;
+        this.logger.debug(location, { input: this.inputVoiceActor });
+        this.logger.debug(location, { dst: content.voiceActor });
         for (let i = 0; i < this.voiceActors.length; ++i) {
           if (this.inputVoiceActor.name === this.voiceActors[i].name) {
             content.voiceActor = this.voiceActors[i];
+            this.logger.debug(location, 'existing', content.voiceActor);
             break;
           }
         }
+      } else {
+        this.logger.debug(location, 'No voice actor input.');
       }
 
       // Illustrator.

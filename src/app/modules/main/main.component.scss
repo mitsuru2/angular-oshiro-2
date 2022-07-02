@@ -39,6 +39,7 @@
 
   .main-contents {
     flex-grow: 1;
+    max-width: 960px;
     padding: 0 1rem; // vertical horizontal
     overflow-y: auto;
   }

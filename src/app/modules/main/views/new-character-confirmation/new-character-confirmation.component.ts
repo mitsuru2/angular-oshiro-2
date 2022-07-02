@@ -1,17 +1,6 @@
-import { ThisReceiver } from '@angular/compiler';
-import {
-  AfterViewChecked,
-  AfterViewInit,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
-import { CsCharacterImageTypeMax, csCharacterImageTypes } from 'src/app/services/cloud-storage/cloud-storage.interface';
+import { CsCharacterImageTypeMax } from 'src/app/services/cloud-storage/cloud-storage.interface';
 import { HtmlCanvas } from '../../utils/html-canvas/html-canvas.utility';
 import { loadImageFile } from '../../utils/image-file/image-file.utility';
 import { NewCharacterFormContent } from '../new-character-form/new-character-form.interface';

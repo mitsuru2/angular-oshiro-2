@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
 import { MenuItem } from 'primeng/api';
 
@@ -7,11 +7,8 @@ import { MenuItem } from 'primeng/api';
   templateUrl: './top-menu-m.component.html',
   styleUrls: ['./top-menu-m.component.scss'],
 })
-export class TopMenuMComponent implements OnInit {
+export class TopMenuMComponent /*implements OnInit*/ {
   readonly className = 'TopMenuMComponent';
-
-  /** Top menu. */
-  //@Input() signedIn: boolean = false;
 
   /** Menu dialog. */
   @Input() menuItems: MenuItem[] = [];
@@ -20,5 +17,5 @@ export class TopMenuMComponent implements OnInit {
 
   constructor(private logger: NGXLogger) {}
 
-  ngOnInit(): void {}
+  // ngOnInit(): void {}
 }

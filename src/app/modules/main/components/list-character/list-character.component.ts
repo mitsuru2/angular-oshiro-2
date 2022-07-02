@@ -9,12 +9,8 @@ import {
   FsWeapon,
   FsWeaponType,
 } from 'src/app/services/firestore-data/firestore-document.interface';
-import {
-  NewCharacterFormContent,
-  NewCharacterFormResult,
-} from '../../views/new-character-form/new-character-form.interface';
+import { NewCharacterFormContent } from '../../views/new-character-form/new-character-form.interface';
 import { NewFacilityFormResult } from '../../views/new-facility-form/new-facility-form.interafce';
-import { NewWeaponFormResult } from '../../views/new-weapon-form/new-weapon-form.interface';
 
 @Component({
   selector: 'app-list-character',

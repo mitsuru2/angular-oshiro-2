@@ -1,4 +1,3 @@
-import { literal } from '@angular/compiler/src/output/output_ast';
 import { Point2D } from './html-canvas.interface';
 
 export class HtmlCanvas {
@@ -13,7 +12,7 @@ export class HtmlCanvas {
   //============================================================================
   // Class methods.
   //
-  constructor() {}
+  // constructor() {}
 
   static createCanvas(canvasId: string): HtmlCanvas | undefined {
     // Get canvas.

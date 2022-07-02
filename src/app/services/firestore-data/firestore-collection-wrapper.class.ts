@@ -3,6 +3,7 @@ import {
   addDoc,
   collection,
   CollectionReference,
+  doc,
   Firestore,
   getDocs,
   getDocsFromServer,
@@ -12,9 +13,7 @@ import {
   runTransaction,
 } from '@angular/fire/firestore';
 import { Unsubscribe } from '@angular/fire/app-check';
-import { NGXLogger } from 'ngx-logger';
 import { FsDocumentBase } from './firestore-document.interface';
-import { doc } from '@firebase/firestore';
 
 export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
   private collection: CollectionReference<T>;
@@ -52,9 +51,9 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
       if (snapshot.empty) {
         throw Error(`${location} Empty data.`);
       }
-      snapshot.forEach((doc) => {
-        const tmp = doc.data();
-        tmp.id = doc.id;
+      snapshot.forEach((document) => {
+        const tmp = document.data();
+        tmp.id = document.id;
         this.data.push(tmp);
       });
       this.isLoaded = true;
@@ -166,7 +165,7 @@ export class FirestoreCollectionWrapper<T extends FsDocumentBase> {
         delete tmp.id;
 
         // Add target data to the server.
-        const docRef = await addDoc(this.collection, tmp);
+        const docRef = await addDoc(this.collection, tmp as T);
         docId = docRef.id;
 
         return;

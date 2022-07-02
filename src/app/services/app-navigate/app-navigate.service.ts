@@ -9,12 +9,9 @@ import { AppStatus } from './app-status.enum';
 export class AppNavigateService implements CanLoad {
   status = AppStatus.Created;
 
-  constructor() {}
+  // constructor() {}
 
-  canLoad(
-    route: Route,
-    segments: UrlSegment[]
-  ): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
+  canLoad(route: Route, segments: UrlSegment[]): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> { // eslint-disable-line
     if (this.status === AppStatus.Created) {
       return false;
     }
