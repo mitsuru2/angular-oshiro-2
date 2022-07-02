@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
 import {
   FsAbility,
@@ -26,6 +26,7 @@ import {
 } from '../../views/new-character-form/new-character-form.interface';
 import { csCharacterImageTypes } from 'src/app/services/cloud-storage/cloud-storage.interface';
 import { CloudStorageService } from 'src/app/services/cloud-storage/cloud-storage.service';
+import { NewCharacterFormComponent } from '../../views/new-character-form/new-character-form.component';
 
 @Component({
   selector: 'app-new-character',
@@ -113,6 +114,7 @@ export class NewCharacterComponent /*implements OnInit*/ {
     }
 
     // Show progress spinner.
+    this.showNewCharacterForm = true;
     this.showProgressDialog = true;
 
     // Upload input data.
@@ -125,6 +127,7 @@ export class NewCharacterComponent /*implements OnInit*/ {
     }
 
     this.showProgressDialog = false;
+    this.showNewCharacterForm = false;
   }
 
   //============================================================================
