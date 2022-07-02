@@ -6,6 +6,10 @@
 
 }
 
+.no-swipe {
+  touch-action: none;
+}
+
 @media screen and (max-width: 959px) {
   .make-thumbnail-view {
     display: flex;

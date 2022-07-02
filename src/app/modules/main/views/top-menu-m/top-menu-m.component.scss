@@ -6,7 +6,6 @@
 
 .tool-bar-icon {
   position: fixed;
-  display: flex;
-  justify-content: center;
-  width: 100%;
+  left: calc(50vw - 23px);
+  width: 100vw;
 }

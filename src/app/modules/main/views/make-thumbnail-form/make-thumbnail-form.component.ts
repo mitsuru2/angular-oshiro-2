@@ -190,6 +190,10 @@ export class MakeThumbnailFormComponent implements OnChanges, AfterViewInit {
     canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
     canvas.addEventListener('mouseout', this.onMouseOut.bind(this));
     canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
+    canvas.addEventListener('touchstart', this.onTouchStart.bind(this));
+    canvas.addEventListener('touchend', this.onTouchEnd.bind(this));
+    canvas.addEventListener('touchcancel', this.onTouchEnd.bind(this));
+    canvas.addEventListener('touchmove', this.onTouchMove.bind(this));
 
     // Draw if image is also available.
     if (this.inputImage) {
