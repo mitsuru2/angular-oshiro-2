@@ -180,8 +180,6 @@ export class FirestoreDataService {
         transaction.update(docRef, { count: count });
       });
 
-      this.logger.debug(`count: ${count}`);
-
       return count;
     } else {
       this.logger.error(`FirestoreDataService.incrementCounter() | Unsupported collection. { name: ${name} }`);

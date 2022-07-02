@@ -368,7 +368,6 @@ export class NewCharacterFormComponent implements OnChanges {
     // CASE: Ability names
     else if (inputId.indexOf('NewCharacterForm_AbilityNameInput_') >= 0) {
       const index = Number(inputId.substring(inputId.lastIndexOf('_') + 1));
-      this.logger.debug(location, { index: index, value: value });
 
       // Search ability info and copy it to input ability info.
       for (let ability of this.abilities) {
@@ -388,7 +387,6 @@ export class NewCharacterFormComponent implements OnChanges {
     // CASE: Ability name (Kai)
     else if (inputId.indexOf('NewCharacterForm_AbilityNameKaiInput_') >= 0) {
       const index = Number(inputId.substring(inputId.lastIndexOf('_') + 1));
-      this.logger.debug(location, { index: index, value: value });
 
       // Search ability info and copy it to input ability info.
       for (let ability of this.abilities) {
@@ -744,8 +742,6 @@ export class NewCharacterFormComponent implements OnChanges {
         this.thumbnailBlob = undefined;
       }
     }
-
-    this.logger.debug(location, { images: this.inputImageFiles });
   }
 
   private makeFsAbilityForNewCharacterForm(base?: FsAbility): FsAbilityForNewCharacterForm {

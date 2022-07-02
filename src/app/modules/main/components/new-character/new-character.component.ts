@@ -86,6 +86,9 @@ export class NewCharacterComponent implements OnInit {
   /** New character confirmation dialog. */
   showConfirmationDialog = false;
 
+  /** Progress spinner dialog. */
+  showProgressDialog = false;
+
   //============================================================================
   // Class methods.
   //
@@ -136,122 +139,20 @@ export class NewCharacterComponent implements OnInit {
       return;
     }
 
+    // Show progress spinner.
+    this.showProgressDialog = true;
+
     // Upload input data.
     const index = await this.uploadCharacterInfo(this.newCharacterFormContent);
     if (index.length > 0) {
-      this.uploadCharacterImages(this.newCharacterFormContent, index);
+      await this.uploadCharacterImages(this.newCharacterFormContent, index);
+      this.logger.info(location, 'Finished.');
     } else {
       this.logger.error(location, 'Invalid character index.', { index: index });
     }
+
+    this.showProgressDialog = false;
   }
-
-  /**
-   * Old codes from here.
-   */
-
-  // async submit() {
-  //   this.logger.trace(`NewCharacterComponent.submit()`);
-
-  //   if (this.selectedRarerity && this.selectedWeaponType) {
-  //     //const count = await this.firestore.incrementCounter(FsCollectionName.CharacterTypes, 0);
-  //     const count = 1;
-
-  //     const character: FsCharacter = {
-  //       id: '', // Auto ID.
-  //       index: `10-${('0000' + count.toString(16).toUpperCase()).slice(-4)}`,
-  //       name: this.inputName,
-  //       type: 'this.selectedCharacterType.id',
-  //       rarerity: this.selectedRarerity,
-  //       weaponType: this.selectedWeaponType.id,
-  //       geographTypes: [this.selectedGeographTypes[0].id],
-  //       region: '',
-  //       cost: 99,
-  //     };
-  //     this.logger.debug(character);
-
-  //     const shiromusumeImageRef = ref(
-  //       this.storage,
-  //       `images/characters/${character.index}/${character.index}_shiromusume.png`
-  //     );
-  //     //uploadBytes(shiromusumeImageRef, this.shiromusumeFile).then((snp) => {
-  //     //  this.logger.debug('uploaded', snp);
-  //     //});
-
-  //     //this.firestore.addData(FsCollectionName.Characters, character);
-  //   }
-  // }
-
-  // onFileChange(id: string, event: Event) {
-  //   this.logger.trace(`${this.className}.onFileChange()`);
-
-  //   const input = event.target as HTMLInputElement;
-
-  //   if (!input.files) {
-  //     return;
-  //   }
-
-  //   this.shiromusumeFile = input.files[0];
-
-  //   const fileReader = new FileReader();
-  //   fileReader.onload = () => {
-  //     const canvas = this.shiromusumePreview.nativeElement as HTMLCanvasElement;
-  //     const context = canvas.getContext('2d');
-  //     const image = new Image();
-  //     image.src = fileReader.result as string;
-  //     image.onload = () => {
-  //       canvas.width = image.width;
-  //       canvas.height = image.height;
-  //       context?.drawImage(image, 0, 0);
-  //     };
-  //   };
-  //   fileReader.readAsDataURL(input.files[0]);
-  // }
-
-  // clearFile(id: string) {
-  //   this.logger.trace(`${this.className}.clearFile()`);
-
-  //   this.shiromusumeFile = null;
-  // }
-
-  // clearInputName() {
-  //   this.inputName = '';
-  // }
-
-  // setSubGeographTypeInput(isShow: boolean) {
-  //   this.isShowSubGeographTypeInput = isShow;
-
-  //   if (isShow === false) {
-  //     if (this.selectedGeographTypes.length > 1) {
-  //       this.selectedGeographTypes.pop();
-  //       this.logger.info('NewCharacterCoponent.setSubGeographTypeInput() | 2nd geograph type info has been removed.');
-  //     }
-  //   }
-  // }
-
-  // shiftGeographType() {
-  //   this.logger.trace('NewCharacterComponent.shiftGeographType()');
-
-  //   if (this.selectedGeographTypes.length > 1) {
-  //     if (this.selectedGeographTypes[1] != undefined) {
-  //       this.selectedGeographTypes.shift();
-  //       this.isShowSubGeographTypeInput = false;
-  //     }
-  //   }
-  // }
-
-  // showDialog() {
-  //   this.logger.trace('showDialog()');
-  //   this.isDialogShow = true;
-  // }
-
-  // hideDialog() {
-  //   this.isDialogShow = false;
-  //   this.logger.trace('hideDialog()');
-  // }
-
-  // printStatus() {
-  //   this.logger.debug(this.isDialogShow);
-  // }
 
   //============================================================================
   // Private methods.

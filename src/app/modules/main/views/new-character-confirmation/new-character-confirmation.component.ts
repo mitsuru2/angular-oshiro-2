@@ -108,7 +108,6 @@ export class NewCharacterConfirmationComponent implements OnChanges, AfterViewIn
 
             // Draw images.
             if (this.canvasesReady && this.imagesLoaded) {
-              this.logger.debug('BP1', { canvase: this.canvasesReady, image: this.imagesLoaded });
               this.drawAllImages();
               clearInterval(this.timerId);
             }
@@ -116,7 +115,6 @@ export class NewCharacterConfirmationComponent implements OnChanges, AfterViewIn
         }
       }
       if (shownChange.previousValue === true && shownChange.currentValue === false) {
-        this.logger.debug('BP2');
         clearInterval(this.timerId);
       }
     }
@@ -215,7 +213,6 @@ export class NewCharacterConfirmationComponent implements OnChanges, AfterViewIn
     }
 
     this.canvasesReady = true;
-    this.logger.debug('BP3', { canvases: this.canvasesReady });
   }
 
   private drawAllImages() {
