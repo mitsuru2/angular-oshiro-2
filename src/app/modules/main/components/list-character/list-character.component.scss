@@ -1,0 +1,18 @@
+.list-character-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.character-list-filter {
+  text-align: center;
+}
+
+.character-list-main {
+  flex-grow: 1;
+}
+
+.character-list-pagenator {
+  margin: 1rem 0;
+  text-align: center;
+}
