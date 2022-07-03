@@ -85,6 +85,8 @@ export class NewCharacterConfirmationComponent implements OnChanges, AfterViewIn
     if (changes['shown']) {
       this.logger.trace(location, 'shown', this.shown);
       const shownChange = changes['shown'];
+      this.canvasesReady = false;
+
       if (shownChange.previousValue === false && shownChange.currentValue === true) {
         if (this.dialogMode) {
           this.timerId = setInterval(() => {
@@ -148,21 +150,29 @@ export class NewCharacterConfirmationComponent implements OnChanges, AfterViewIn
   // Image drawing.
   //
   private async loadAllImages() {
+    const location = `${this.className}.loadAllImages()`;
+
     this.imagesLoaded = false;
+    this.logger.debug(location, 'start');
+
     for (let i = 0; i < this.images.length; ++i) {
       if (this.character.imageFiles[i]) {
+        this.logger.debug(location, `images[${i}]`);
         this.images[i] = await loadImageFile(this.character.imageFiles[i]);
       }
     }
     if (this.character.thumbnailImage) {
+      this.logger.debug(location, `thumbnail`);
       this.thumbnailImage = await loadImageFile(this.character.thumbnailImage);
     }
     for (let i = 0; i < this.imagesKai.length; ++i) {
       if (this.character.imageFilesKai[i]) {
+        this.logger.debug(location, `imagesKai[${i}]`);
         this.imagesKai[i] = await loadImageFile(this.character.imageFilesKai[i]);
       }
     }
     this.imagesLoaded = true;
+    this.logger.debug(location, 'end');
   }
 
   private getAllCanvases() {
@@ -170,8 +180,6 @@ export class NewCharacterConfirmationComponent implements OnChanges, AfterViewIn
     let tmp: any;
 
     this.canvasesReady = false;
-
-    this.logger.debug('getAlllCanvases()');
 
     for (let i = 0; i < this.images.length; ++i) {
       elemId = 'NewCharacterConfirmation_ImagePreview_' + i;
@@ -205,10 +213,13 @@ export class NewCharacterConfirmationComponent implements OnChanges, AfterViewIn
   }
 
   private drawAllImages() {
+    const location = `${this.className}.drawAllImages()`;
+
     let offsetX = 0;
 
     for (let i = 0; i < this.images.length; ++i) {
       if (this.images[i]) {
+        this.logger.debug(location, `images[${i}]`);
         this.canvases[i].width = this.images[i].height;
         this.canvases[i].height = this.images[i].height;
         offsetX = (this.images[i].height - this.images[i].width) / 2;
@@ -217,6 +228,7 @@ export class NewCharacterConfirmationComponent implements OnChanges, AfterViewIn
     }
     if (this.character.thumbnailImage) {
       if (this.thumbnailCanvas && this.thumbnailImage) {
+        this.logger.debug(location, `thumbnail`);
         this.thumbnailCanvas.width = this.thumbnailImage.width;
         this.thumbnailCanvas.height = this.thumbnailImage.height;
         this.thumbnailCanvas.drawImage(this.thumbnailImage, 0, 0);
@@ -224,6 +236,7 @@ export class NewCharacterConfirmationComponent implements OnChanges, AfterViewIn
     }
     for (let i = 0; i < this.imagesKai.length; ++i) {
       if (this.imagesKai[i]) {
+        this.logger.debug(location, `imagesKai[${i}]`);
         this.canvasesKai[i].width = this.imagesKai[i].height;
         this.canvasesKai[i].height = this.imagesKai[i].height;
         offsetX = (this.imagesKai[i].height - this.imagesKai[i].width) / 2;

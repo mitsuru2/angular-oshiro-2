@@ -126,6 +126,9 @@ export class NewCharacterComponent /*implements OnInit*/ {
       this.logger.error(location, 'Invalid character index.', { index: index });
     }
 
+    // Reload firestore data.
+    await this.reloadFsData();
+
     this.showProgressDialog = false;
     this.showNewCharacterForm = false;
   }
@@ -224,7 +227,6 @@ export class NewCharacterComponent /*implements OnInit*/ {
     if (character.tags) {
       // Reload tag info.
       await this.firestore.load(FsCollectionName.CharacterTags);
-      this.characterTags = this.firestore.getData(FsCollectionName.CharacterTags) as FsCharacterTag[];
 
       // Add character ID to tag.
       for (let i = 0; i < this.characterTags.length; ++i) {
@@ -346,5 +348,17 @@ export class NewCharacterComponent /*implements OnInit*/ {
         await this.storage.upload(imagePath, formContent.imageFilesKai[i]);
       }
     }
+  }
+
+  private async reloadFsData() {
+    await Promise.all([
+      this.firestore.load(FsCollectionName.Abilities),
+      this.firestore.load(FsCollectionName.CharacterTags),
+      this.firestore.load(FsCollectionName.Characters),
+      this.firestore.load(FsCollectionName.Facilities),
+      this.firestore.load(FsCollectionName.VoiceActors),
+      this.firestore.load(FsCollectionName.Illustrators),
+      this.firestore.load(FsCollectionName.Weapons),
+    ]);
   }
 }
