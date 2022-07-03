@@ -648,7 +648,7 @@ export class NewCharacterFormComponent implements OnChanges {
     }
 
     // Open new weapon form if input motif weapon name is new.
-    if (this.facilities.findIndex((item) => item.name === value) < 0) {
+    if (this.weapons.findIndex((item) => item.name === value) < 0) {
       this.inputMotifWeapons.splice(index);
       this.initialWeaponName = value;
       this.showWeaponForm = true;
