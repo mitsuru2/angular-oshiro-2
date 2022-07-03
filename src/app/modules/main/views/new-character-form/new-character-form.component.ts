@@ -351,10 +351,17 @@ export class NewCharacterFormComponent implements OnChanges {
     else if (inputId.indexOf('NewCharacterForm_AbilityNameKaiInput_') >= 0) {
       // Update suggestion item list.
       const index = Number(inputId.substring(inputId.lastIndexOf('_') + 1));
-      this.suggestAbilityNamesKai[index] = this.makeSuggestLabels(
-        query,
-        this.abilities.map((item) => item.name)
-      );
+
+      // Add input ability names to the suggest candidates.
+      let tmpAbilityNames = this.abilities.map((item) => item.name);
+      for (let i = 0; i < this.inputAbilities.length; ++i) {
+        if (tmpAbilityNames.includes(this.inputAbilities[i].name) === false) {
+          tmpAbilityNames.push(this.inputAbilities[i].name);
+        }
+      }
+
+      // Make suggest ability name list.
+      this.suggestAbilityNamesKai[index] = this.makeSuggestLabels(query, tmpAbilityNames);
 
       // Clear existing flag.
       this.inputAbilitiesKai[index].isExisting = false;
@@ -383,13 +390,14 @@ export class NewCharacterFormComponent implements OnChanges {
       for (let ability of this.abilities) {
         if (ability.name === value) {
           this.inputAbilities[index] = this.makeFsAbilityForNewCharacterForm(ability);
-        }
-
-        // Search ablity type and copy it to selected ability type.
-        for (let abilityType of this.abilityTypes) {
-          if (abilityType.id === this.inputAbilities[index].type) {
-            this.selectedAbilityTypes[index] = abilityType;
+          // Search ablity type and copy it to selected ability type.
+          for (let abilityType of this.abilityTypes) {
+            if (ability.type === abilityType.id) {
+              this.selectedAbilityTypes[index] = abilityType;
+              break;
+            }
           }
+          break;
         }
       }
     }
@@ -397,17 +405,30 @@ export class NewCharacterFormComponent implements OnChanges {
     // CASE: Ability name (Kai)
     else if (inputId.indexOf('NewCharacterForm_AbilityNameKaiInput_') >= 0) {
       const index = Number(inputId.substring(inputId.lastIndexOf('_') + 1));
+      let found = false;
 
       // Search ability info and copy it to input ability info.
       for (let ability of this.abilities) {
         if (ability.name === value) {
           this.inputAbilitiesKai[index] = this.makeFsAbilityForNewCharacterForm(ability);
+          // Search ablity type and copy it to selected ability type.
+          for (let abilityType of this.abilityTypes) {
+            if (ability.type === abilityType.id) {
+              this.selectedAbilityTypesKai[index] = abilityType;
+              break;
+            }
+          }
+          found = true;
+          break;
         }
+      }
 
-        // Search ablity type and copy it to selected ability type.
-        for (let abilityType of this.abilityTypes) {
-          if (abilityType.id === this.inputAbilitiesKai[index].type) {
-            this.selectedAbilityTypesKai[index] = abilityType;
+      // Search ability from input ability list.
+      if (!found) {
+        for (let i = 0; i < this.inputAbilities.length; ++i) {
+          if (this.inputAbilities[i].name === value) {
+            this.inputAbilitiesKai[index] = this.makeFsAbilityForNewCharacterForm(this.inputAbilities[i]);
+            this.selectedAbilityTypesKai[index] = this.selectedAbilityTypes[i];
           }
         }
       }
@@ -866,22 +887,17 @@ export class NewCharacterFormComponent implements OnChanges {
       // Voice actor.
       if (this.inputVoiceActor.name !== '') {
         content.voiceActor.name = this.inputVoiceActor.name;
-        this.logger.debug(location, { input: this.inputVoiceActor });
-        this.logger.debug(location, { dst: content.voiceActor });
         for (let i = 0; i < this.voiceActors.length; ++i) {
           if (this.inputVoiceActor.name === this.voiceActors[i].name) {
             content.voiceActor = this.voiceActors[i];
-            this.logger.debug(location, 'existing', content.voiceActor);
             break;
           }
         }
-      } else {
-        this.logger.debug(location, 'No voice actor input.');
       }
 
       // Illustrator.
       if (this.inputIllustrator.name !== '') {
-        content.illustrator = this.inputIllustrator;
+        content.illustrator.name = this.inputIllustrator.name;
         for (let i = 0; i < this.illustrators.length; ++i) {
           if (this.inputIllustrator.name === this.illustrators[i].name) {
             content.illustrator = this.illustrators[i];

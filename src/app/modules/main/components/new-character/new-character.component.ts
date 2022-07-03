@@ -222,6 +222,11 @@ export class NewCharacterComponent /*implements OnInit*/ {
 
     // Update character tag info.
     if (character.tags) {
+      // Reload tag info.
+      await this.firestore.load(FsCollectionName.CharacterTags);
+      this.characterTags = this.firestore.getData(FsCollectionName.CharacterTags) as FsCharacterTag[];
+
+      // Add character ID to tag.
       for (let i = 0; i < this.characterTags.length; ++i) {
         for (let j = 0; j < character.tags.length; ++j) {
           if (this.characterTags[i].id === character.tags[j]) {
