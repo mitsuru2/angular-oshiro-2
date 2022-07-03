@@ -10,8 +10,7 @@
 .main-body {
   display: flex;
   flex-direction: column;
-  width: auto;
-  max-width: 1200px;
+  width: min(1200px, 100vw);
   height: 100vh;
   background-color: white;
 }
@@ -40,7 +39,6 @@
 
   .main-contents {
     flex-grow: 1;
-    max-width: 960px;
     padding: 0 1rem; // vertical horizontal
     overflow-y: auto;
   }
