@@ -10,7 +10,7 @@
 .main-body {
   display: flex;
   flex-direction: column;
-  width: 100vw;
+  width: auto;
   max-width: 1200px;
   height: 100vh;
   background-color: white;
@@ -33,6 +33,7 @@
 
   .side-menu {
     width: 240px;
+    min-width: 240px;
     padding-left: 1rem;
     overflow-y: auto;
   }
@@ -56,5 +57,14 @@
 
   .side-menu {
     display: none;
+  }
+
+  .main-body {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    max-width: auto;
+    height: 100vh;
+    background-color: white;
   }
 }
