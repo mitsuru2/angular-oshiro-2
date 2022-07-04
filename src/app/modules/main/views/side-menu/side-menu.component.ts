@@ -13,6 +13,6 @@ export class SideMenuComponent /*implements OnInit*/ {
   @Input() menuItems: MenuItem[] = [];
 
   constructor(private logger: NGXLogger) {
-    this.logger.trace();
+    this.logger.trace(`new ${this.className}()`);
   }
 }

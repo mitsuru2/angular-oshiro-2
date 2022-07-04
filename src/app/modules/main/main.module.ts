@@ -19,6 +19,7 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { DividerModule } from 'primeng/divider';
 import { ChipsModule } from 'primeng/chips';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { DataViewModule } from 'primeng/dataview';
 
 import { MainRoutingModule } from './main-routing.module';
 import { MainComponent } from './main.component';
@@ -72,6 +73,7 @@ import { TopMenuMComponent } from './views/top-menu-m/top-menu-m.component';
     DividerModule,
     ChipsModule,
     ProgressSpinnerModule,
+    DataViewModule,
   ],
   bootstrap: [MainComponent],
   providers: [ConfirmationService],

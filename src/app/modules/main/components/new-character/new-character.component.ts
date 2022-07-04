@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
 import {
   FsAbility,
@@ -26,7 +26,6 @@ import {
 } from '../../views/new-character-form/new-character-form.interface';
 import { csCharacterImageTypes } from 'src/app/services/cloud-storage/cloud-storage.interface';
 import { CloudStorageService } from 'src/app/services/cloud-storage/cloud-storage.service';
-import { NewCharacterFormComponent } from '../../views/new-character-form/new-character-form.component';
 
 @Component({
   selector: 'app-new-character',
@@ -332,19 +331,19 @@ export class NewCharacterComponent /*implements OnInit*/ {
     // Upload images before kaichiku.
     for (let i = 0; i < formContent.imageFiles.length; ++i) {
       if (formContent.imageFiles[i]) {
-        const imagePath = `images/characters/${index}/${index}_${csCharacterImageTypes[i].type}.png`;
+        const imagePath = this.storage.makeCharacterImagePath(index, csCharacterImageTypes[i].type, false);
         await this.storage.upload(imagePath, formContent.imageFiles[i]);
       }
     }
     // Upload thumbnail.
     if (formContent.thumbnailImage) {
-      const imagePath = `images/characters/${index}/${index}_thumb.jpg`;
+      const imagePath = this.storage.makeCharacterThumbnailPath(index);
       await this.storage.upload(imagePath, formContent.thumbnailImage);
     }
     // Upload images after kaichiku.
     for (let i = 0; i < formContent.imageFilesKai.length; ++i) {
       if (formContent.imageFilesKai[i]) {
-        const imagePath = `images/characters/${index}/${index}_${csCharacterImageTypes[i].type}_kai.png`;
+        const imagePath = this.storage.makeCharacterImagePath(index, csCharacterImageTypes[i].type, true);
         await this.storage.upload(imagePath, formContent.imageFilesKai[i]);
       }
     }

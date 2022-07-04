@@ -16,12 +16,16 @@
 }
 
 .tool-bar {
-  padding: 0.5rem 1rem; // vertical horizontal
+  padding-top: 0.5rem;
+  padding-right: 1rem;
+  padding-left: 1rem;
 }
 
 .tool-bar-m {
   display: none;
-  padding: 0.5rem 1rem; // vertical horizontal
+  padding-top: 0.5rem;
+  padding-right: 1rem;
+  padding-left: 1rem;
 }
 
 .container {
@@ -33,13 +37,16 @@
   .side-menu {
     width: 240px;
     min-width: 240px;
+    padding-top: 0.5rem;
     padding-left: 1rem;
     overflow-y: auto;
   }
 
   .main-contents {
     flex-grow: 1;
-    padding: 0 1rem; // vertical horizontal
+    padding-top: 0.5rem;
+    padding-right: 1rem;
+    padding-left: 1rem;
     overflow-y: auto;
   }
 }
