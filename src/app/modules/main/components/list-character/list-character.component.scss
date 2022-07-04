@@ -29,6 +29,27 @@
     justify-content: center;
     padding-top: 0.5rem;
     padding-bottom: 1rem;
-    background-color: magenta;
+  }
+}
+
+:host ::ng-deep .paginator.p-paginator {
+  .p-paginator-page {
+    border-radius: 50%; // Circle.
+  }
+
+  .p-paginator-first {
+    border-radius: 50%;
+  }
+
+  .p-paginator-prev {
+    border-radius: 50%;
+  }
+
+  .p-paginator-next {
+    border-radius: 50%;
+  }
+
+  .p-paginator-last {
+    border-radius: 50%;
   }
 }

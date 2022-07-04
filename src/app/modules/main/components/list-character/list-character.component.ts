@@ -22,7 +22,7 @@ export class ThumbImageWrapper {
 export class Paginator {
   first: number = 0;
 
-  rowNum: number = 5;
+  rowNum: number = 4;
 
   rowIndexes: number[] = [];
 
@@ -110,7 +110,8 @@ export class ListCharacterComponent implements OnInit, AfterViewInit {
     if (this.viewInited) {
       for (let i = 0; i < thumbCount; ++i) {
         const img = document.getElementById(`Thumb_${i}`) as HTMLImageElement;
-        img.src = this.thumbImages[this.filteredIndexes[i]].url;
+        img.hidden = false;
+        img.src = this.thumbImages[this.filteredIndexes[i + this.paginator.first]].url;
       }
     }
   }
@@ -127,8 +128,30 @@ export class ListCharacterComponent implements OnInit, AfterViewInit {
           break;
         }
         const img = document.getElementById(`Thumb_${i}`) as HTMLImageElement;
-        img.src = this.thumbImages[this.filteredIndexes[i]].url;
+        img.hidden = false;
+        img.src = this.thumbImages[this.filteredIndexes[i + this.paginator.first]].url;
       }
+    }
+  }
+
+  async onPageChange(event: any) {
+    const location = `${this.className}.onPageChange()`;
+    this.logger.trace(location, event);
+
+    // Update paginate info.
+    this.paginator.first = event.first;
+
+    // Load thumbnail images.
+    const thumbCount = await this.loadThumbImages();
+
+    for (let i = 0; i < thumbCount; ++i) {
+      const img = document.getElementById(`Thumb_${i}`) as HTMLImageElement;
+      img.hidden = false;
+      img.src = this.thumbImages[this.filteredIndexes[i + this.paginator.first]].url;
+    }
+    for (let i = thumbCount; i < this.paginator.rowNum; ++i) {
+      const img = document.getElementById(`Thumb_${i}`) as HTMLImageElement;
+      img.hidden = true;
     }
   }
 
@@ -143,12 +166,13 @@ export class ListCharacterComponent implements OnInit, AfterViewInit {
 
     for (let i = 0; i < this.paginator.rowNum; ++i) {
       // Exit loop if out of filtered index list.
-      if (i >= this.filteredIndexes.length) {
+      if (i + this.paginator.first >= this.filteredIndexes.length) {
         break;
       }
 
       // Call image load function and store the returned promise.
-      const path = this.storage.makeCharacterThumbnailPath(this.characters[this.filteredIndexes[i]].index);
+      const index = this.characters[this.filteredIndexes[i + this.paginator.first]].index;
+      const path = this.storage.makeCharacterThumbnailPath(index);
       promises.push(this.storage.get(path));
       thumbCount++;
     }
@@ -158,8 +182,8 @@ export class ListCharacterComponent implements OnInit, AfterViewInit {
 
     // Store thumnail images.
     for (let i = 0; i < thumbCount; ++i) {
-      this.thumbImages[this.filteredIndexes[i]].data = blobs[i];
-      this.thumbImages[this.filteredIndexes[i]].url = window.URL.createObjectURL(blobs[i]);
+      this.thumbImages[this.filteredIndexes[i + this.paginator.first]].data = blobs[i];
+      this.thumbImages[this.filteredIndexes[i + this.paginator.first]].url = window.URL.createObjectURL(blobs[i]);
     }
 
     // Set flag.
