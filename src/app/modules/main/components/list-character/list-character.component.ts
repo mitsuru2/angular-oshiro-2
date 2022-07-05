@@ -1,6 +1,7 @@
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { NGXLogger } from 'ngx-logger';
+import { tmpdir } from 'os';
 import { AppInfo } from 'src/app/app-info.enum';
 import { CloudStorageService } from 'src/app/services/cloud-storage/cloud-storage.service';
 import { FsCollectionName } from 'src/app/services/firestore-data/firestore-collection-name.enum';
@@ -19,6 +20,7 @@ import {
   FsWeapon,
   FsWeaponType,
 } from 'src/app/services/firestore-data/firestore-document.interface';
+import { resourceLimits } from 'worker_threads';
 
 export class ThumbImageWrapper {
   url: string = '';
@@ -40,6 +42,13 @@ export class Paginator {
   }
 }
 
+export enum TableCellType {
+  h1,
+  h2,
+  h3,
+  data,
+}
+
 @Component({
   selector: 'app-list-character',
   templateUrl: './list-character.component.html',
@@ -56,7 +65,6 @@ export class ListCharacterComponent implements OnInit, AfterViewInit {
   thumbLoaded = false;
 
   /** Firestore data. */
-
   abilities = this.firestore.getData(FsCollectionName.Abilities) as FsAbility[];
 
   abilityTypes = this.firestore.getData(FsCollectionName.AbilityTypes) as FsAbilityType[];
@@ -232,6 +240,9 @@ export class ListCharacterComponent implements OnInit, AfterViewInit {
     }
   }
 
+  //----------------------------------------------------------------------------
+  // Character info table.
+  //
   private makeCharacterInfoTables() {
     const location = `${this.className}.makeCharacterInfoTable()`;
 
@@ -261,46 +272,45 @@ export class ListCharacterComponent implements OnInit, AfterViewInit {
 
     // Get tbody element.
     const t = document.getElementById(tableId) as HTMLTableElement;
-    const tbody = t.tBodies.length === 0 ? t.createTBody() : t.tBodies[0];
 
     // 1st row: Character name.
-    let tr = tbody.insertRow();
+    let tr = t.insertRow();
     let td = tr.insertCell();
     td.textContent = `${character.name} (★${character.rarerity})`;
     td.colSpan = 2;
-    td.style.border = 'solid';
-    td.style.borderWidth = 'thin';
-    // td.style.borderCollapse = 'collapse';
+    this.setTdStyle(td);
 
     // 2nd row: Basic information.
-    tr = tbody.insertRow();
+    tr = t.insertRow();
     td = tr.insertCell();
     td.textContent = '基本情報';
-    td.style.border = 'solid';
-    td.style.borderWidth = 'thin';
-    // td.style.borderCollapse = 'collapse';
-
+    this.setTdStyle(td);
     td = tr.insertCell();
     td.textContent = this.makeBasicInfoText(character);
-    td.style.border = 'solid';
-    td.style.borderWidth = 'thin';
-    // td.style.borderCollapse = 'collapse';
+    this.setTdStyle(td);
 
-    // t.style.border = 'solid';
-    // t.style.borderWidth = 'thin';
-    t.style.borderCollapse = 'collapse';
+    // 3rd row: Motif weapons and facilities.
+    tr = t.insertRow();
+    td = tr.insertCell();
+    td.textContent = 'モチーフ武器/施設';
+    this.setTdStyle(td);
+    td = tr.insertCell();
+    td.textContent = this.makeMotifWeaponAndFacilityText(character);
+    this.setTdStyle(td);
   }
 
   private clearTable(tableId: string) {
     const t = document.getElementById(tableId) as HTMLTableElement;
 
-    if (t) {
-      for (let i = 0; i < t.tBodies.length; ++i) {
-        while (t.tBodies[i].rows.length > 0) {
-          t.deleteRow(0);
-        }
-      }
+    while (t.rows.length > 0) {
+      t.deleteRow(0);
     }
+  }
+
+  private setTdStyle(td: HTMLTableCellElement, type: TableCellType = TableCellType.data) {
+    td.style.border = 'solid';
+    td.style.borderWidth = 'thin';
+    td.style.borderColor = 'var(--primary-color)';
   }
 
   private makeBasicInfoText(character: FsCharacter): string {
@@ -335,28 +345,93 @@ export class ListCharacterComponent implements OnInit, AfterViewInit {
       result += tmp;
     }
 
-    // CV
+    // Cost.
+    if (character.cost > 0) {
+      let tmp = `, コスト: ${character.cost}`;
+      if (character.costKai > 0) {
+        tmp += `/${character.costKai}(改)`;
+      }
+      result += tmp;
+    }
+
+    // CV.
     if (character.voiceActors.length > 0) {
-      let tmp = ', CV: ';
+      let tmp = `, CV: `;
+      if (character.voiceActors.length >= 2) {
+        tmp += '[';
+      }
       for (let i = 0; i < character.voiceActors.length; ++i) {
-        let cv = this.voiceActors.find((item) => item.id === character.voiceActors[i]);
         if (i > 0) {
-          tmp += '/';
+          tmp += ', ';
         }
+        const cv = this.voiceActors.find((item) => item.id === character.voiceActors[i]);
         tmp += cv ? cv.name : 'n.a.';
+      }
+      if (character.voiceActors.length >= 2) {
+        tmp += ']';
       }
       result += tmp;
     }
 
     // Illustrator.
     if (character.illustrators.length > 0) {
-      let tmp = ', イラスト: ';
+      let tmp = `, イラスト: `;
+      if (character.illustrators.length >= 2) {
+        tmp += '[';
+      }
       for (let i = 0; i < character.illustrators.length; ++i) {
-        let illust = this.illustrators.find((item) => item.id === character.illustrators[i]);
         if (i > 0) {
-          tmp += '/';
+          tmp += ', ';
         }
-        tmp += illust ? illust.name : 'n.a.';
+        const illustrator = this.illustrators.find((item) => item.id === character.illustrators[i]);
+        tmp += illustrator ? illustrator.name : 'n.a.';
+      }
+      if (character.illustrators.length >= 2) {
+        tmp += ']';
+      }
+      result += tmp;
+    }
+
+    return result;
+  }
+
+  private makeMotifWeaponAndFacilityText(character: FsCharacter): string {
+    let result = '';
+
+    // No motif weapons and facilities.
+    if (character.motifWeapons.length === 0 && character.motifFacilities.length === 0) {
+      return 'なし';
+    }
+
+    // Motif weapons.
+    if (character.motifWeapons.length > 0) {
+      let tmp = '';
+      for (let i = 0; i < character.motifWeapons.length; ++i) {
+        const wp = this.weapons.find((item) => item.id === character.motifWeapons[i]);
+        if (wp) {
+          if (i > 0 || result.length > 0) {
+            tmp += ', ';
+          }
+          tmp += wp.name;
+        }
+      }
+      result += tmp;
+    }
+
+    // Motif facilities.
+    if (character.motifFacilities.length > 0) {
+      let tmp = '';
+      for (let i = 0; i < character.motifFacilities.length; ++i) {
+        const fc = this.facilities.find((item) => item.id === character.motifFacilities[i]);
+        if (fc) {
+          const fcType = this.facilityTypes.find((item) => item.id === fc.type);
+          if (fcType) {
+            if (i > 0 || result.length > 0) {
+              tmp += ', ';
+            }
+            tmp += `${fc.name}(${fcType.name})`;
+          }
+        }
       }
       result += tmp;
     }
